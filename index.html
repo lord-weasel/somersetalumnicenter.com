@@ -107,15 +107,7 @@ border-radius: 100px;
 padding: 10px 20px;
 box-shadow: 0 4px 22px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.95) inset;
 border: 1px solid rgba(255,255,255,0.95);
-cursor: pointer;
-transition: transform 0.15s, box-shadow 0.15s;
-user-select: none;
 }
-.hero-status-pill:hover {
-transform: translateY(-1px);
-box-shadow: 0 6px 28px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.95) inset;
-}
-.hero-status-pill:active { transform: translateY(0); }
 .hero-status-area {
 font-weight: 600;
 letter-spacing: 0.07em;
@@ -138,10 +130,6 @@ box-shadow: 0 0 0 3px rgba(62,207,122,0.38);
 background: #c4c0ce;
 box-shadow: 0 0 0 2px rgba(200,110,120,0.35);
 }
-.facility-status-dot.is-override {
-background: #e07b3a;
-box-shadow: 0 0 0 3px rgba(224,123,58,0.38);
-}
 .facility-status-label {
 font-weight: 700;
 letter-spacing: 0.02em;
@@ -159,7 +147,6 @@ position: relative;
 z-index: 2;
 padding: 0 16px;
 }
-
 /* HERO */
 .hero {
 min-height: 100vh;
@@ -531,174 +518,6 @@ padding: 44px 24px; font-size: 0.83rem; line-height: 1.9; border-top: 3px solid 
 }
 footer strong { color: rgba(255,255,255,0.78); }
 
-/* ── OVERRIDE MODAL ──────────────────────────────────────────────────────── */
-.override-backdrop {
-display: none;
-position: fixed; inset: 0; z-index: 500;
-background: rgba(10,3,18,0.72);
-backdrop-filter: blur(4px);
-align-items: center; justify-content: center;
-animation: backdropIn 0.18s ease;
-}
-.override-backdrop.visible { display: flex; }
-@keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
-
-.override-modal {
-background: #1e0d26;
-border: 1px solid rgba(212,162,62,0.25);
-border-radius: 16px;
-padding: 36px 40px;
-width: 100%;
-max-width: 420px;
-margin: 16px;
-box-shadow: 0 24px 80px rgba(0,0,0,0.55);
-animation: modalIn 0.22s cubic-bezier(0.22,1,0.36,1);
-position: relative;
-}
-@keyframes modalIn { from { opacity:0; transform:scale(0.93) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
-
-.override-modal-close {
-position: absolute; top: 16px; right: 16px;
-background: none; border: none;
-color: rgba(255,255,255,0.3);
-font-size: 1.3rem; cursor: pointer; line-height: 1;
-transition: color 0.15s;
-padding: 4px 8px;
-}
-.override-modal-close:hover { color: rgba(255,255,255,0.7); }
-
-.override-facility-badge {
-display: inline-flex; align-items: center; gap: 8px;
-background: rgba(255,255,255,0.05);
-border: 1px solid rgba(255,255,255,0.1);
-border-radius: 100px;
-padding: 6px 14px;
-font-size: 0.72rem;
-font-weight: 700;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: rgba(255,255,255,0.55);
-margin-bottom: 20px;
-}
-.override-facility-badge .badge-dot {
-width: 8px; height: 8px; border-radius: 50%;
-}
-
-.override-modal h3 {
-font-family: ‘Playfair Display’, serif;
-font-size: 1.3rem;
-color: var(–white);
-margin-bottom: 6px;
-line-height: 1.3;
-}
-.override-modal .override-desc {
-font-size: 0.85rem;
-color: rgba(255,255,255,0.42);
-line-height: 1.6;
-margin-bottom: 24px;
-}
-
-/* toggle switch */
-.override-toggle-row {
-display: flex; align-items: center; justify-content: space-between;
-background: rgba(255,255,255,0.04);
-border: 1px solid rgba(255,255,255,0.08);
-border-radius: 10px;
-padding: 14px 18px;
-margin-bottom: 20px;
-}
-.override-toggle-label {
-font-size: 0.88rem; font-weight: 600; color: rgba(255,255,255,0.8);
-}
-.override-toggle-sub {
-font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 2px;
-}
-.toggle-switch {
-position: relative; width: 46px; height: 26px; flex-shrink: 0;
-}
-.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
-.toggle-track {
-position: absolute; inset: 0; border-radius: 100px;
-background: rgba(255,255,255,0.12);
-transition: background 0.2s;
-cursor: pointer;
-}
-.toggle-track::after {
-content: ‘’;
-position: absolute; top: 3px; left: 3px;
-width: 20px; height: 20px; border-radius: 50%;
-background: rgba(255,255,255,0.5);
-transition: transform 0.2s, background 0.2s;
-}
-.toggle-switch input:checked + .toggle-track { background: #e07b3a; }
-.toggle-switch input:checked + .toggle-track::after {
-transform: translateX(20px);
-background: var(–white);
-}
-
-.override-pw-label {
-font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-color: rgba(255,255,255,0.35); margin-bottom: 8px;
-}
-.override-pw-input {
-width: 100%;
-background: rgba(255,255,255,0.05);
-border: 1px solid rgba(255,255,255,0.14);
-border-radius: 8px;
-padding: 12px 16px;
-color: var(–white);
-font-family: ‘DM Sans’, sans-serif;
-font-size: 0.95rem;
-outline: none;
-transition: border-color 0.18s;
-margin-bottom: 6px;
-}
-.override-pw-input:focus { border-color: rgba(212,162,62,0.5); }
-.override-pw-input.error { border-color: #e05555; animation: shake 0.3s ease; }
-@keyframes shake {
-0%,100% { transform: translateX(0); }
-20% { transform: translateX(-6px); }
-40% { transform: translateX(6px); }
-60% { transform: translateX(-4px); }
-80% { transform: translateX(4px); }
-}
-.override-error-msg {
-font-size: 0.78rem; color: #e07070; margin-bottom: 14px; min-height: 18px;
-display: none;
-}
-.override-error-msg.visible { display: block; }
-
-.override-submit {
-width: 100%;
-background: var(–gold);
-border: none;
-border-radius: 8px;
-padding: 13px;
-color: var(–white);
-font-family: ‘DM Sans’, sans-serif;
-font-size: 0.95rem;
-font-weight: 700;
-cursor: pointer;
-transition: background 0.18s, opacity 0.18s;
-margin-top: 8px;
-}
-.override-submit:hover { background: var(–gold-light); }
-.override-submit:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.override-success {
-display: none; text-align: center; padding: 12px 0 4px;
-}
-.override-success.visible { display: block; animation: fadeUp 0.25s ease; }
-.override-success-icon {
-font-size: 2.2rem; margin-bottom: 10px;
-}
-.override-success p {
-font-size: 0.9rem; color: rgba(255,255,255,0.55); line-height: 1.65;
-}
-.override-success strong { color: rgba(255,255,255,0.85); }
-
-/* ── END OVERRIDE MODAL ─────────────────────────────────────────────────── */
-
 @media (max-width: 820px) {
 .about-grid { grid-template-columns: 1fr; }
 .facility-info { grid-template-columns: 1fr; padding: 36px 28px; }
@@ -718,7 +537,6 @@ nav ul a { font-size: 0.73rem; }
 .party-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px; }
 .facilities { padding: 0 16px; }
 .facility-item { font-size: 0.72rem; padding: 14px 12px; }
-.override-modal { padding: 28px 22px; }
 }
 @media (max-width: 420px) { nav ul { display: none; } }
 </style>
@@ -745,15 +563,15 @@ nav ul a { font-size: 0.73rem; }
 
 <section class="hero" id="home">
   <div class="hero-status" aria-live="polite">
-    <div class="hero-status-pill" id="pill-gym" onclick="openOverrideModal('gym')" title="Click to manage gym status">
-      <span class="facility-status-dot" id="dot-gym" role="img" aria-label=""></span>
+    <div class="hero-status-pill">
+      <span class="facility-status-dot" role="img" aria-label=""></span>
       <span class="hero-status-area">Gym</span>
-      <span class="facility-status-label" id="label-gym"></span>
+      <span class="facility-status-label"></span>
     </div>
-    <div class="hero-status-pill" id="pill-pool" onclick="openOverrideModal('pool')" title="Click to manage pool status">
-      <span class="facility-status-dot" id="dot-pool" role="img" aria-label=""></span>
+    <div class="hero-status-pill">
+      <span class="facility-status-dot" role="img" aria-label=""></span>
       <span class="hero-status-area">Pool</span>
-      <span class="facility-status-label" id="label-pool"></span>
+      <span class="facility-status-label"></span>
     </div>
   </div>
   <p class="hero-status-hint">Open to the public Monday&ndash;Friday 8am&ndash;1pm &amp; 5&ndash;8pm, Saturday 8am&ndash;12pm</p>
@@ -775,7 +593,7 @@ nav ul a { font-size: 0.73rem; }
   <div class="facility-item"><span class="dot"></span>Silver Sneakers</div>
 </div>
 
-<!-- ABOUT -->
+<!-- ABOUT (top) -->
 
 <section id="about">
   <div class="container">
@@ -814,6 +632,7 @@ nav ul a { font-size: 0.73rem; }
   </div>
 </div>
 
+<!-- Facility info block -->
 <div class="facility-info">
   <div>
     <div class="section-label">Our Facility</div>
@@ -860,6 +679,7 @@ nav ul a { font-size: 0.73rem; }
     <div class="step-dot" id="dot-3"></div>
   </div>
 
+  <!-- Step 1 -->
   <div class="wizard-step active" id="step-0">
     <div class="wizard-question">What type of membership?</div>
     <div class="wizard-sub">Select the option that best fits you.</div>
@@ -874,6 +694,7 @@ nav ul a { font-size: 0.73rem; }
     </div>
   </div>
 
+  <!-- Step 2 -->
   <div class="wizard-step" id="step-1">
     <div class="wizard-question">How long would you like?</div>
     <div class="wizard-sub">Longer commitments offer better monthly value.</div>
@@ -888,6 +709,7 @@ nav ul a { font-size: 0.73rem; }
     </div>
   </div>
 
+  <!-- Step 3 -->
   <div class="wizard-step" id="step-2">
     <div class="wizard-question">Any of these apply to you?</div>
     <div class="wizard-sub">We'll find the best rate you qualify for.</div>
@@ -903,6 +725,7 @@ nav ul a { font-size: 0.73rem; }
     </div>
   </div>
 
+  <!-- Result -->
   <div class="wizard-step" id="step-3">
     <div class="wizard-question">Your Membership Rates</div>
     <div class="wizard-sub" id="result-subtitle"></div>
@@ -1052,381 +875,143 @@ nav ul a { font-size: 0.73rem; }
   <span style="font-size:0.76rem;opacity:0.5;">Party reservations must be approved by Ed Davis in advance. School-related activities take priority scheduling.</span>
 </footer>
 
-<!-- ── OVERRIDE MODAL ──────────────────────────────────────────────────────── -->
-
-<div class="override-backdrop" id="override-backdrop" onclick="handleBackdropClick(event)">
-  <div class="override-modal" id="override-modal" role="dialog" aria-modal="true" aria-labelledby="override-modal-title">
-    <button class="override-modal-close" onclick="closeOverrideModal()" aria-label="Close">&times;</button>
-
-```
-<div class="override-facility-badge">
-  <span class="badge-dot" id="modal-badge-dot"></span>
-  <span id="modal-badge-label"></span>
-</div>
-
-<h3 id="override-modal-title">Facility Status Override</h3>
-<p class="override-desc" id="override-desc"></p>
-
-<div class="override-toggle-row">
-  <div>
-    <div class="override-toggle-label" id="toggle-label">Mark as temporarily closed</div>
-    <div class="override-toggle-sub" id="toggle-sub">Will reopen automatically at next scheduled open time</div>
-  </div>
-  <label class="toggle-switch" aria-label="Toggle override">
-    <input type="checkbox" id="override-toggle" onchange="handleToggleChange()">
-    <span class="toggle-track"></span>
-  </label>
-</div>
-
-<div class="override-pw-label">Password required</div>
-<input
-  type="password"
-  class="override-pw-input"
-  id="override-pw"
-  placeholder="Enter override password"
-  autocomplete="current-password"
-  onkeydown="handlePwKeydown(event)"
->
-<div class="override-error-msg" id="override-error"></div>
-
-<button class="override-submit" id="override-submit" onclick="submitOverride()">Apply Override</button>
-
-<div class="override-success" id="override-success">
-  <div class="override-success-icon">✓</div>
-  <p id="override-success-msg">Override applied. <strong>Status updated.</strong></p>
-</div>
-```
-
-  </div>
-</div>
-<!-- ── END OVERRIDE MODAL ─────────────────────────────────────────────────── -->
-
 <script>
-// ── Membership Wizard ────────────────────────────────────────────────────────
-const answers = { type: null, duration: null, eligibility: null };
+  const answers = { type: null, duration: null, eligibility: null };
 
-function selectOpt(step, val) {
-  const keys = ['type','duration','eligibility'];
-  answers[keys[step]] = val;
-  if (step === 0 && val === 'student') {
-    ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = true; el.style.opacity = '0.3'; });
-  } else if (step === 0) {
-    ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = false; el.style.opacity = '1'; });
-  }
-  document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => b.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  document.getElementById(`next-${step}`).disabled = false;
-}
+  function selectOpt(step, val) {
+    const keys = ['type','duration','eligibility'];
+    answers[keys[step]] = val;
 
-function nextStep(current) {
-  document.getElementById(`step-${current}`).classList.remove('active');
-  document.getElementById(`step-${current + 1}`).classList.add('active');
-  updateWizardDots(current + 1);
-}
-
-function prevStep(current) {
-  document.getElementById(`step-${current}`).classList.remove('active');
-  document.getElementById(`step-${current - 1}`).classList.add('active');
-  updateWizardDots(current - 1);
-}
-
-function updateWizardDots(active) {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById(`dot-${i}`);
-    d.classList.remove('active','done');
-    if (i < active) d.classList.add('done');
-    else if (i === active) d.classList.add('active');
-  }
-}
-
-const rates = {
-  single:  { alumni:{monthly:'$10 / mo',sixmonth:'$50 / 6 mo',annual:'$90 / yr'}, senior:{monthly:'$15 / mo',sixmonth:'$75 / 6 mo',annual:'$135 / yr'}, city:{monthly:'$25 / mo',sixmonth:'$100 / 6 mo',annual:'$175 / yr'}, none:{monthly:'$45 / mo',sixmonth:'$200 / 6 mo',annual:'$350 / yr'} },
-  couple:  { alumni:null, senior:{monthly:'$25 / mo',sixmonth:'$125 / 6 mo',annual:'$225 / yr'}, city:{monthly:'$35 / mo',sixmonth:'$150 / 6 mo',annual:'$250 / yr'}, none:{monthly:'$55 / mo',sixmonth:'$300 / 6 mo',annual:'$500 / yr'} },
-  family:  { alumni:{monthly:'$20 / mo',sixmonth:'$90 / 6 mo',annual:'$140 / yr'}, senior:null, city:{monthly:'$40 / mo',sixmonth:'$175 / 6 mo',annual:'$300 / yr'}, none:{monthly:'$60 / mo',sixmonth:'$300 / 6 mo',annual:'$540 / yr'} },
-  student: { alumni:null, senior:null, city:{monthly:'$15 / mo',sixmonth:null,annual:null}, none:{monthly:'$25 / mo',sixmonth:null,annual:null} }
-};
-
-const tierNames = { alumni:'Somerset Alumni', senior:'Senior (65+)', city:'City School Tax Payer', none:'Non-City Tax Payer (Standard)' };
-const tierOrder = ['alumni','senior','city','none'];
-
-function getPrice(type, tier, dur) { const t = rates[type][tier]; return t ? (t[dur] || null) : null; }
-
-function showResult() {
-  nextStep(2); updateWizardDots(3);
-  const { type, duration, eligibility } = answers;
-  const typeLabel = { single:'Single', couple:'Couple', family:'Family', student:'Student' }[type];
-  const durLabel  = { monthly:'Monthly', sixmonth:'6-Month', annual:'Annual' }[duration];
-  document.getElementById('result-subtitle').textContent = `${typeLabel} · ${durLabel} membership`;
-  const qualifyMap = { alumni: eligibility==='alumni', senior: eligibility==='senior', city: eligibility==='city'||eligibility==='alumni', none: true };
-  let bestTier = null;
-  for (const tier of tierOrder) { if (qualifyMap[tier] && getPrice(type, tier, duration)) { bestTier = tier; break; } }
-  let html = '<div class="result-tier">';
-  for (const tier of tierOrder) {
-    const price = getPrice(type, tier, duration);
-    if (!price) continue;
-    const isBest = tier === bestTier;
-    const qualifies = qualifyMap[tier];
-    html += `<div class="result-item ${isBest?'best':''}">
-      <span class="tier-name">${tierNames[tier]}
-        ${isBest ? '<span class="best-badge">Your best rate</span>' : ''}
-        ${qualifies && !isBest ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.32);margin-left:6px">you qualify</span>' : ''}
-        ${!qualifies ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.22);margin-left:6px">not eligible</span>' : ''}
-      </span>
-      <span class="tier-price">${price}</span>
-    </div>`;
-  }
-  html += '</div>';
-  if (!bestTier) {
-    html = '<p style="color:rgba(255,255,255,0.55)">This combination is not available. Please check with the front desk.</p>';
-  } else {
-    const note1 = type === 'student' ? ' Student memberships are monthly only.' : '';
-    const note2 = (type === 'couple' && eligibility === 'alumni') ? ' Alumni rates do not include a couple option — city rate shown as your best available.' : '';
-    html += `<p class="result-note">Your best available rate is highlighted above.${note1}${note2} Please contact the front desk to confirm eligibility and sign up.</p>`;
-  }
-  document.getElementById('result-box').innerHTML = `<h3>Here are your rates</h3>${html}`;
-}
-
-function restart() {
-  answers.type = null; answers.duration = null; answers.eligibility = null;
-  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step-0').classList.add('active');
-  document.querySelectorAll('.option-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; b.style.opacity = '1'; });
-  document.querySelectorAll('.btn-next').forEach(b => b.disabled = true);
-  updateWizardDots(0);
-}
-
-// ── Facility Status + Override ───────────────────────────────────────────────
-
-// Server-side state fetched from status.php
-let serverOverrides = { gym: null, pool: null };
-
-// Which facility the modal is currently targeting
-let modalFacility = null;
-
-/**
- * Returns true if the facility is currently within scheduled open hours (ET).
- * Mon–Fri 08:00–13:00 and 17:00–20:00 | Sat 08:00–12:00
- */
-function isScheduledOpen(d) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    weekday: 'long', hour: 'numeric', minute: 'numeric', hour12: false
-  }).formatToParts(d);
-  const weekday = parts.find(p => p.type === 'weekday').value;
-  const h = +parts.find(p => p.type === 'hour').value;
-  const m = +parts.find(p => p.type === 'minute').value;
-  const t = h * 60 + m;
-  if (weekday === 'Sunday') return false;
-  if (weekday === 'Saturday') return t >= 480 && t < 720;
-  return (t >= 480 && t < 780) || (t >= 1020 && t < 1200);
-}
-
-/**
- * Applies current state to the DOM for one facility pill.
- * Priority: server override > scheduled hours
- */
-function applyFacilityUI(facility) {
-  const dot   = document.getElementById(`dot-${facility}`);
-  const label = document.getElementById(`label-${facility}`);
-  if (!dot || !label) return;
-
-  const override = serverOverrides[facility];
-  const nowTs    = Math.floor(Date.now() / 1000);
-
-  let isOpen, isOverride;
-
-  if (override && override.state === 'closed' && override.until > nowTs) {
-    // Active manual override
-    isOpen     = false;
-    isOverride = true;
-  } else {
-    // Fall back to schedule
-    isOpen     = isScheduledOpen(new Date());
-    isOverride = false;
-  }
-
-  dot.className = 'facility-status-dot ' + (isOverride ? 'is-override' : (isOpen ? 'is-open' : 'is-closed'));
-  dot.setAttribute('aria-label', isOpen ? 'Open' : 'Closed');
-  label.textContent = isOpen ? 'Open' : 'Closed';
-}
-
-function applyAllFacilities() {
-  applyFacilityUI('gym');
-  applyFacilityUI('pool');
-}
-
-/** Fetch the current override state from the server */
-async function fetchServerStatus() {
-  try {
-    const res = await fetch('/status.php', { cache: 'no-store' });
-    if (!res.ok) return;
-    const data = await res.json();
-    serverOverrides.gym  = data.gym  || null;
-    serverOverrides.pool = data.pool || null;
-  } catch (_) {
-    // Server unreachable — fall back to schedule only
-  }
-  applyAllFacilities();
-}
-
-// ── Override Modal ───────────────────────────────────────────────────────────
-
-function openOverrideModal(facility) {
-  modalFacility = facility;
-  const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
-
-  // Badge
-  const dot = document.getElementById('modal-badge-dot');
-  const override = serverOverrides[facility];
-  const nowTs = Math.floor(Date.now() / 1000);
-  const hasActiveOverride = override && override.state === 'closed' && override.until > nowTs;
-  const isOpen = hasActiveOverride ? false : isScheduledOpen(new Date());
-
-  dot.style.background = hasActiveOverride ? '#e07b3a' : (isOpen ? '#3ecf7a' : '#c4c0ce');
-  document.getElementById('modal-badge-label').textContent = facilityName;
-  document.getElementById('override-modal-title').textContent = facilityName + ' Status Override';
-
-  // Set toggle state and description
-  const toggle = document.getElementById('override-toggle');
-  if (hasActiveOverride) {
-    toggle.checked = true;
-    const untilDate = new Date(override.until * 1000);
-    const untilStr  = untilDate.toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-    document.getElementById('override-desc').textContent =
-      `The ${facilityName.toLowerCase()} is currently overridden as closed. Toggle off to restore normal schedule.`;
-    document.getElementById('toggle-label').textContent  = 'Override active — marked as closed';
-    document.getElementById('toggle-sub').textContent    = `Reopens automatically at ${untilStr} ET`;
-  } else {
-    toggle.checked = false;
-    document.getElementById('override-desc').textContent =
-      `Toggle on to mark the ${facilityName.toLowerCase()} as temporarily closed. It will automatically reopen at the next scheduled open time.`;
-    document.getElementById('toggle-label').textContent  = 'Mark as temporarily closed';
-    document.getElementById('toggle-sub').textContent    = 'Will reopen automatically at next scheduled open time';
-  }
-
-  // Reset form state
-  const pw = document.getElementById('override-pw');
-  pw.value = '';
-  pw.classList.remove('error');
-  document.getElementById('override-error').classList.remove('visible');
-  document.getElementById('override-error').textContent = '';
-  document.getElementById('override-submit').disabled = false;
-  document.getElementById('override-submit').textContent = 'Apply Override';
-  document.getElementById('override-success').classList.remove('visible');
-
-  document.getElementById('override-backdrop').classList.add('visible');
-  setTimeout(() => pw.focus(), 120);
-}
-
-function closeOverrideModal() {
-  document.getElementById('override-backdrop').classList.remove('visible');
-  modalFacility = null;
-}
-
-function handleBackdropClick(e) {
-  if (e.target === document.getElementById('override-backdrop')) closeOverrideModal();
-}
-
-function handleToggleChange() {
-  const toggle = document.getElementById('override-toggle');
-  const facility = modalFacility;
-  if (!facility) return;
-  const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
-  if (toggle.checked) {
-    document.getElementById('toggle-label').textContent = 'Mark as temporarily closed';
-    document.getElementById('toggle-sub').textContent   = 'Will reopen automatically at next scheduled open time';
-    document.getElementById('override-submit').textContent = 'Apply Override';
-  } else {
-    document.getElementById('toggle-label').textContent = 'Remove override — restore schedule';
-    document.getElementById('toggle-sub').textContent   = `${facilityName} will show status based on regular hours`;
-    document.getElementById('override-submit').textContent = 'Remove Override';
-  }
-}
-
-function handlePwKeydown(e) {
-  if (e.key === 'Enter') submitOverride();
-}
-
-async function submitOverride() {
-  const facility = modalFacility;
-  if (!facility) return;
-
-  const pw     = document.getElementById('override-pw');
-  const toggle = document.getElementById('override-toggle');
-  const btn    = document.getElementById('override-submit');
-  const errEl  = document.getElementById('override-error');
-
-  const password = pw.value.trim();
-  if (!password) {
-    showPwError('Please enter the override password.');
-    return;
-  }
-
-  const action = toggle.checked ? 'close' : 'open';
-
-  btn.disabled = true;
-  btn.textContent = 'Applying…';
-  errEl.classList.remove('visible');
-
-  try {
-    const res = await fetch('/status.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ facility, action, password }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      showPwError(data.error || 'Something went wrong. Try again.');
-      btn.disabled = false;
-      btn.textContent = 'Apply Override';
-      return;
+    if (step === 0 && val === 'student') {
+      ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = true; el.style.opacity = '0.3'; });
+    } else if (step === 0) {
+      ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = false; el.style.opacity = '1'; });
     }
 
-    // Success — update local state and UI
-    await fetchServerStatus();
+    document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => b.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    document.getElementById(`next-${step}`).disabled = false;
+  }
 
-    const successMsg = document.getElementById('override-success-msg');
-    const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
-    if (action === 'close') {
-      const untilDate = new Date(data.until * 1000);
-      const untilStr  = untilDate.toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-      successMsg.innerHTML = `<strong>${facilityName} marked closed.</strong> Will reopen automatically at ${untilStr} ET.`;
+  function nextStep(current) {
+    document.getElementById(`step-${current}`).classList.remove('active');
+    document.getElementById(`step-${current + 1}`).classList.add('active');
+    updateDots(current + 1);
+  }
+
+  function prevStep(current) {
+    document.getElementById(`step-${current}`).classList.remove('active');
+    document.getElementById(`step-${current - 1}`).classList.add('active');
+    updateDots(current - 1);
+  }
+
+  function updateDots(active) {
+    for (let i = 0; i < 4; i++) {
+      const d = document.getElementById(`dot-${i}`);
+      d.classList.remove('active','done');
+      if (i < active) d.classList.add('done');
+      else if (i === active) d.classList.add('active');
+    }
+  }
+
+  const rates = {
+    single:  { alumni:{monthly:'$10 / mo',sixmonth:'$50 / 6 mo',annual:'$90 / yr'}, senior:{monthly:'$15 / mo',sixmonth:'$75 / 6 mo',annual:'$135 / yr'}, city:{monthly:'$25 / mo',sixmonth:'$100 / 6 mo',annual:'$175 / yr'}, none:{monthly:'$45 / mo',sixmonth:'$200 / 6 mo',annual:'$350 / yr'} },
+    couple:  { alumni:null, senior:{monthly:'$25 / mo',sixmonth:'$125 / 6 mo',annual:'$225 / yr'}, city:{monthly:'$35 / mo',sixmonth:'$150 / 6 mo',annual:'$250 / yr'}, none:{monthly:'$55 / mo',sixmonth:'$300 / 6 mo',annual:'$500 / yr'} },
+    family:  { alumni:{monthly:'$20 / mo',sixmonth:'$90 / 6 mo',annual:'$140 / yr'}, senior:null, city:{monthly:'$40 / mo',sixmonth:'$175 / 6 mo',annual:'$300 / yr'}, none:{monthly:'$60 / mo',sixmonth:'$300 / 6 mo',annual:'$540 / yr'} },
+    student: { alumni:null, senior:null, city:{monthly:'$15 / mo',sixmonth:null,annual:null}, none:{monthly:'$25 / mo',sixmonth:null,annual:null} }
+  };
+
+  const tierNames = { alumni:'Somerset Alumni', senior:'Senior (65+)', city:'City School Tax Payer', none:'Non-City Tax Payer (Standard)' };
+  const tierOrder = ['alumni','senior','city','none'];
+
+  function getPrice(type, tier, dur) { const t = rates[type][tier]; return t ? (t[dur] || null) : null; }
+
+  function showResult() {
+    nextStep(2); updateDots(3);
+    const { type, duration, eligibility } = answers;
+    const typeLabel = { single:'Single', couple:'Couple', family:'Family', student:'Student' }[type];
+    const durLabel  = { monthly:'Monthly', sixmonth:'6-Month', annual:'Annual' }[duration];
+    document.getElementById('result-subtitle').textContent = `${typeLabel} · ${durLabel} membership`;
+
+    const qualifyMap = { alumni: eligibility==='alumni', senior: eligibility==='senior', city: eligibility==='city'||eligibility==='alumni', none: true };
+    let bestTier = null;
+    for (const tier of tierOrder) { if (qualifyMap[tier] && getPrice(type, tier, duration)) { bestTier = tier; break; } }
+
+    let html = '<div class="result-tier">';
+    for (const tier of tierOrder) {
+      const price = getPrice(type, tier, duration);
+      if (!price) continue;
+      const isBest = tier === bestTier;
+      const qualifies = qualifyMap[tier];
+      html += `<div class="result-item ${isBest?'best':''}">
+        <span class="tier-name">${tierNames[tier]}
+          ${isBest ? '<span class="best-badge">Your best rate</span>' : ''}
+          ${qualifies && !isBest ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.32);margin-left:6px">you qualify</span>' : ''}
+          ${!qualifies ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.22);margin-left:6px">not eligible</span>' : ''}
+        </span>
+        <span class="tier-price">${price}</span>
+      </div>`;
+    }
+    html += '</div>';
+
+    if (!bestTier) {
+      html = '<p style="color:rgba(255,255,255,0.55)">This combination is not available. Please check with the front desk.</p>';
     } else {
-      successMsg.innerHTML = `<strong>Override cleared.</strong> ${facilityName} is back on its normal schedule.`;
+      const note1 = type === 'student' ? ' Student memberships are monthly only.' : '';
+      const note2 = (type === 'couple' && eligibility === 'alumni') ? ' Alumni rates do not include a couple option — city rate shown as your best available.' : '';
+      html += `<p class="result-note">Your best available rate is highlighted above.${note1}${note2} Please contact the front desk to confirm eligibility and sign up.</p>`;
     }
 
-    document.getElementById('override-success').classList.add('visible');
-    btn.textContent = 'Done';
-
-    setTimeout(closeOverrideModal, 2200);
-
-  } catch (_) {
-    showPwError('Could not reach the server. Check your connection.');
-    btn.disabled = false;
-    btn.textContent = 'Apply Override';
+    document.getElementById('result-box').innerHTML = `<h3>Here are your rates</h3>${html}`;
   }
-}
 
-function showPwError(msg) {
-  const pw  = document.getElementById('override-pw');
-  const err = document.getElementById('override-error');
-  pw.classList.remove('error');
-  void pw.offsetWidth; // force reflow to re-trigger animation
-  pw.classList.add('error');
-  err.textContent = msg;
-  err.classList.add('visible');
-  pw.value = '';
-  setTimeout(() => pw.focus(), 50);
-}
+  function restart() {
+    answers.type = null; answers.duration = null; answers.eligibility = null;
+    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-0').classList.add('active');
+    document.querySelectorAll('.option-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; b.style.opacity = '1'; });
+    document.querySelectorAll('.btn-next').forEach(b => b.disabled = true);
+    updateDots(0);
+  }
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-
-fetchServerStatus();
-setInterval(fetchServerStatus, 60000); // re-check every minute (also purges expired overrides)
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverrideModal(); });
+  (function () {
+    if (window.__facilityHoursStatus) return;
+    window.__facilityHoursStatus = true;
+    function isOpenEastern(d) {
+      var parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        weekday: 'long',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+      }).formatToParts(d);
+      var weekday = parts.find(function (p) { return p.type === 'weekday'; }).value;
+      var h = +parts.find(function (p) { return p.type === 'hour'; }).value;
+      var m = +parts.find(function (p) { return p.type === 'minute'; }).value;
+      var t = h * 60 + m;
+      if (weekday === 'Sunday') return false;
+      if (weekday === 'Saturday') return t >= 8 * 60 && t < 12 * 60;
+      if (weekday === 'Monday' || weekday === 'Tuesday' || weekday === 'Wednesday' ||
+          weekday === 'Thursday' || weekday === 'Friday') {
+        return (t >= 8 * 60 && t < 13 * 60) || (t >= 17 * 60 && t < 20 * 60);
+      }
+      return false;
+    }
+    function updateFacilityStatus() {
+      var open = isOpenEastern(new Date());
+      var word = open ? 'Open' : 'Closed';
+      document.querySelectorAll('.facility-status-dot').forEach(function (el) {
+        el.classList.toggle('is-open', open);
+        el.classList.toggle('is-closed', !open);
+        el.setAttribute('aria-label', word);
+      });
+      document.querySelectorAll('.facility-status-label').forEach(function (el) {
+        el.textContent = word;
+      });
+    }
+    updateFacilityStatus();
+    setInterval(updateFacilityStatus, 60000);
+  })();
 </script>
 
 </body>
