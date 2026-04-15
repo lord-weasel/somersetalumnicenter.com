@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -24,525 +25,709 @@
     --shadow:       rgba(94,23,113,0.08);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+- { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--white);
-    color: var(--text);
-    overflow-x: hidden;
-  }
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–white);
+color: var(–text);
+overflow-x: hidden;
+}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; width: 100%; z-index: 100;
-    background: var(--purple);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 48px;
-    height: 66px;
-    border-bottom: 3px solid var(--gold);
-  }
-  .nav-logo {
-    font-family: 'Playfair Display', serif;
-    color: var(--white);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    line-height: 1.25;
-  }
-  .nav-logo span { color: var(--gold-light); }
-  nav ul { list-style: none; display: flex; gap: 36px; }
-  nav ul a {
-    color: rgba(255,255,255,0.78);
-    text-decoration: none;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.18s;
-  }
-  nav ul a:hover { color: var(--gold-light); }
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-  }
-  .nav-call {
-    flex-shrink: 0;
-    background: var(--gold);
-    color: var(--white);
-    font-weight: 700;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 5px;
-    transition: background 0.18s, transform 0.15s;
-    white-space: nowrap;
-  }
-  .nav-call:hover { background: var(--gold-light); color: var(--white); }
+/* NAV */
+nav {
+position: fixed; top: 0; width: 100%; z-index: 100;
+background: var(–purple);
+display: flex; align-items: center; justify-content: space-between;
+padding: 0 48px;
+height: 66px;
+border-bottom: 3px solid var(–gold);
+}
+.nav-logo {
+font-family: ‘Playfair Display’, serif;
+color: var(–white);
+font-size: 1.05rem;
+font-weight: 700;
+letter-spacing: 0.01em;
+line-height: 1.25;
+}
+.nav-logo span { color: var(–gold-light); }
+nav ul { list-style: none; display: flex; gap: 36px; }
+nav ul a {
+color: rgba(255,255,255,0.78);
+text-decoration: none;
+font-size: 0.82rem;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+transition: color 0.18s;
+}
+nav ul a:hover { color: var(–gold-light); }
+.nav-right {
+display: flex;
+align-items: center;
+gap: 28px;
+}
+.nav-call {
+flex-shrink: 0;
+background: var(–gold);
+color: var(–white);
+font-weight: 700;
+font-size: 0.75rem;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+text-decoration: none;
+padding: 10px 18px;
+border-radius: 5px;
+transition: background 0.18s, transform 0.15s;
+white-space: nowrap;
+}
+.nav-call:hover { background: var(–gold-light); color: var(–white); }
 
-  /* FACILITY STATUS (hero) — white pills, green / grey-red dots */
-  .hero-status {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 14px 18px;
-    margin: 0 auto 6px;
-    max-width: 720px;
-    position: relative;
-    z-index: 2;
-    padding: 0 12px;
-  }
-  .hero-status-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--white);
-    border-radius: 100px;
-    padding: 10px 20px;
-    box-shadow: 0 4px 22px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.95) inset;
-    border: 1px solid rgba(255,255,255,0.95);
-  }
-  .hero-status-area {
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    color: var(--text-mid);
-  }
-  .facility-status-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    transition: background 0.2s, box-shadow 0.2s;
-  }
-  .facility-status-dot.is-open {
-    background: #3ecf7a;
-    box-shadow: 0 0 0 3px rgba(62,207,122,0.38);
-  }
-  .facility-status-dot.is-closed {
-    background: #c4c0ce;
-    box-shadow: 0 0 0 2px rgba(200,110,120,0.35);
-  }
-  .facility-status-label {
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: var(--purple);
-    font-size: 0.88rem;
-  }
-  .hero-status-hint {
-    width: 100%;
-    text-align: center;
-    font-size: 0.9rem;
-    line-height: 1.55;
-    color: rgba(255,255,255,0.72);
-    margin: 4px 0 12px;
-    position: relative;
-    z-index: 2;
-    padding: 0 16px;
-  }
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    background: var(--purple);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    padding: 110px 24px 72px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    border: 80px solid rgba(255,255,255,0.03);
-    top: -120px; right: -180px;
-    pointer-events: none;
-  }
-  .hero-badge {
-    display: inline-block;
-    background: transparent;
-    border: 1px solid rgba(212,162,62,0.5);
-    color: var(--gold-light);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 6px 20px;
-    border-radius: 100px;
-    margin-bottom: 28px;
-    position: relative;
-  }
-  .hero-sub {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.45);
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    position: relative;
-  }
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.8rem, 6vw, 5rem);
-    font-weight: 900;
-    color: var(--white);
-    line-height: 1.1;
-    margin-bottom: 24px;
-    position: relative;
-  }
-  .hero h1 em { font-style: normal; color: var(--gold-light); }
-  .hero p {
-    max-width: 500px;
-    font-size: 1.05rem;
-    color: rgba(255,255,255,0.65);
-    line-height: 1.75;
-    margin-bottom: 44px;
-    position: relative;
-  }
-  .hero-cta {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--white);
-    font-weight: 700;
-    font-size: 0.95rem;
-    padding: 15px 40px;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: background 0.18s, transform 0.15s;
-    position: relative;
-    letter-spacing: 0.03em;
-  }
+/* FACILITY STATUS (hero) — white pills, green / grey-red dots */
+.hero-status {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+align-items: center;
+gap: 14px 18px;
+margin: 0 auto 6px;
+max-width: 720px;
+position: relative;
+z-index: 2;
+padding: 0 12px;
+}
+.hero-status-pill {
+display: flex;
+align-items: center;
+gap: 10px;
+background: var(–white);
+border-radius: 100px;
+padding: 10px 20px;
+box-shadow: 0 4px 22px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.95) inset;
+border: 1px solid rgba(255,255,255,0.95);
+cursor: pointer;
+transition: transform 0.15s, box-shadow 0.15s;
+user-select: none;
+}
+.hero-status-pill:hover {
+transform: translateY(-1px);
+box-shadow: 0 6px 28px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.95) inset;
+}
+.hero-status-pill:active { transform: translateY(0); }
+.hero-status-area {
+font-weight: 600;
+letter-spacing: 0.07em;
+text-transform: uppercase;
+font-size: 0.72rem;
+color: var(–text-mid);
+}
+.facility-status-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+flex-shrink: 0;
+transition: background 0.2s, box-shadow 0.2s;
+}
+.facility-status-dot.is-open {
+background: #3ecf7a;
+box-shadow: 0 0 0 3px rgba(62,207,122,0.38);
+}
+.facility-status-dot.is-closed {
+background: #c4c0ce;
+box-shadow: 0 0 0 2px rgba(200,110,120,0.35);
+}
+.facility-status-dot.is-override {
+background: #e07b3a;
+box-shadow: 0 0 0 3px rgba(224,123,58,0.38);
+}
+.facility-status-label {
+font-weight: 700;
+letter-spacing: 0.02em;
+color: var(–purple);
+font-size: 0.88rem;
+}
+.hero-status-hint {
+width: 100%;
+text-align: center;
+font-size: 0.9rem;
+line-height: 1.55;
+color: rgba(255,255,255,0.72);
+margin: 4px 0 12px;
+position: relative;
+z-index: 2;
+padding: 0 16px;
+}
 
-  /* FACILITIES STRIP */
-  .facilities {
-    background: var(--off-white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 40px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .facility-item {
-    display: flex; align-items: center; gap: 9px;
-    color: var(--text-mid);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    padding: 18px 24px;
-    border-right: 1px solid var(--border);
-    text-transform: uppercase;
-  }
-  .facility-item:last-child { border-right: none; }
-  .facility-item .dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--gold);
-    flex-shrink: 0;
-  }
+/* HERO */
+.hero {
+min-height: 100vh;
+background: var(–purple);
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+text-align: center;
+padding: 110px 24px 72px;
+position: relative;
+overflow: hidden;
+}
+.hero::after {
+content: ‘’;
+position: absolute;
+width: 600px; height: 600px;
+border-radius: 50%;
+border: 80px solid rgba(255,255,255,0.03);
+top: -120px; right: -180px;
+pointer-events: none;
+}
+.hero-badge {
+display: inline-block;
+background: transparent;
+border: 1px solid rgba(212,162,62,0.5);
+color: var(–gold-light);
+font-size: 0.7rem;
+font-weight: 700;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+padding: 6px 20px;
+border-radius: 100px;
+margin-bottom: 28px;
+position: relative;
+}
+.hero-sub {
+font-size: 0.9rem;
+color: rgba(255,255,255,0.45);
+font-weight: 400;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+margin-bottom: 20px;
+position: relative;
+}
+.hero h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(2.8rem, 6vw, 5rem);
+font-weight: 900;
+color: var(–white);
+line-height: 1.1;
+margin-bottom: 24px;
+position: relative;
+}
+.hero h1 em { font-style: normal; color: var(–gold-light); }
+.hero p {
+max-width: 500px;
+font-size: 1.05rem;
+color: rgba(255,255,255,0.65);
+line-height: 1.75;
+margin-bottom: 44px;
+position: relative;
+}
+.hero-cta {
+display: inline-block;
+background: var(–gold);
+color: var(–white);
+font-weight: 700;
+font-size: 0.95rem;
+padding: 15px 40px;
+border-radius: 5px;
+text-decoration: none;
+cursor: pointer;
+border: none;
+transition: background 0.18s, transform 0.15s;
+position: relative;
+letter-spacing: 0.03em;
+}
 
-  /* SHARED */
-  section { padding: 88px 24px; }
-  .container { max-width: 1100px; margin: 0 auto; }
-  .section-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-  .section-label.on-dark { color: var(--gold-light); }
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.9rem, 4vw, 2.8rem);
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-    margin-bottom: 14px;
-  }
-  .section-title.light { color: var(--white); }
-  .section-intro {
-    font-size: 1rem;
-    color: var(--text-mid);
-    max-width: 580px;
-    line-height: 1.75;
-    margin-bottom: 52px;
-  }
-  .section-intro.light { color: rgba(255,255,255,0.6); }
+/* FACILITIES STRIP */
+.facilities {
+background: var(–off-white);
+border-bottom: 1px solid var(–border);
+padding: 0 40px;
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+}
+.facility-item {
+display: flex; align-items: center; gap: 9px;
+color: var(–text-mid);
+font-size: 0.78rem;
+font-weight: 600;
+letter-spacing: 0.07em;
+padding: 18px 24px;
+border-right: 1px solid var(–border);
+text-transform: uppercase;
+}
+.facility-item:last-child { border-right: none; }
+.facility-item .dot {
+width: 5px; height: 5px;
+border-radius: 50%;
+background: var(–gold);
+flex-shrink: 0;
+}
 
-  /* ABOUT */
-  #about { background: var(--white); border-bottom: 1px solid var(--border); }
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    margin-top: 12px;
-  }
-  .person-card {
-    background: var(--white);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    box-shadow: 0 2px 18px var(--shadow);
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-  .person-card:hover { box-shadow: 0 8px 36px var(--shadow); transform: translateY(-3px); }
-  .person-accent-bar { height: 5px; background: var(--purple); }
-  .person-card.gold-card .person-accent-bar { background: var(--gold); }
-  .person-photo-area {
-    width: 100%;
-    height: 500px;
-    background: var(--purple-pale);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .person-card.gold-card .person-photo-area { background: var(--gold-pale); }
-  .person-photo-area img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-  .person-initials-lg {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: var(--purple);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: var(--white);
-    font-weight: 700;
-  }
-  .person-card.gold-card .person-initials-lg { background: var(--gold); }
-  .person-body { padding: 28px 32px 32px; }
-  .person-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .person-role {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--purple-light);
-    margin-bottom: 18px;
-  }
-  .person-card.gold-card .person-role { color: var(--gold); }
-  .person-bio { font-size: 0.93rem; color: var(--text-mid); line-height: 1.75; }
-  .person-bio p + p { margin-top: 12px; }
-  .person-bio em { font-style: italic; color: var(--text-light); }
+/* SHARED */
+section { padding: 88px 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label {
+font-size: 0.68rem;
+font-weight: 700;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 10px;
+}
+.section-label.on-dark { color: var(–gold-light); }
+.section-title {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(1.9rem, 4vw, 2.8rem);
+font-weight: 700;
+color: var(–text);
+line-height: 1.2;
+margin-bottom: 14px;
+}
+.section-title.light { color: var(–white); }
+.section-intro {
+font-size: 1rem;
+color: var(–text-mid);
+max-width: 580px;
+line-height: 1.75;
+margin-bottom: 52px;
+}
+.section-intro.light { color: rgba(255,255,255,0.6); }
 
-  .facility-info {
-    background: var(--purple);
-    border-radius: 14px;
-    padding: 56px;
-    margin-top: 56px;
-    display: grid;
-    grid-template-columns: 1fr 1.15fr;
-    gap: 52px;
-    align-items: start;
-  }
-  .facility-info .section-label { color: var(--gold-light); }
-  .facility-info h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    color: var(--white);
-    margin-bottom: 18px;
-    line-height: 1.3;
-  }
-  .facility-info p { color: rgba(255,255,255,0.62); font-size: 0.93rem; line-height: 1.75; margin-bottom: 14px; }
-  .stat-row { display: flex; gap: 36px; margin-top: 28px; }
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--gold-light);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
-  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-top: 4px; }
-  .feature-list li { display: flex; align-items: flex-start; gap: 13px; color: rgba(255,255,255,0.72); font-size: 0.9rem; line-height: 1.55; }
-  .feature-list .chk {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--gold-light);
-    flex-shrink: 0;
-    margin-top: 0.42em;
-  }
+/* ABOUT */
+#about { background: var(–white); border-bottom: 1px solid var(–border); }
+.about-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 28px;
+margin-top: 12px;
+}
+.person-card {
+background: var(–white);
+border-radius: 12px;
+border: 1px solid var(–border);
+overflow: hidden;
+box-shadow: 0 2px 18px var(–shadow);
+transition: box-shadow 0.2s, transform 0.2s;
+}
+.person-card:hover { box-shadow: 0 8px 36px var(–shadow); transform: translateY(-3px); }
+.person-accent-bar { height: 5px; background: var(–purple); }
+.person-card.gold-card .person-accent-bar { background: var(–gold); }
+.person-photo-area {
+width: 100%;
+height: 500px;
+background: var(–purple-pale);
+border-bottom: 1px solid var(–border);
+overflow: hidden;
+display: flex; align-items: center; justify-content: center;
+}
+.person-card.gold-card .person-photo-area { background: var(–gold-pale); }
+.person-photo-area img {
+width: 100%; height: 100%;
+object-fit: cover;
+object-position: center;
+display: block;
+}
+.person-initials-lg {
+width: 72px; height: 72px;
+border-radius: 50%;
+background: var(–purple);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘Playfair Display’, serif;
+font-size: 1.6rem;
+color: var(–white);
+font-weight: 700;
+}
+.person-card.gold-card .person-initials-lg { background: var(–gold); }
+.person-body { padding: 28px 32px 32px; }
+.person-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.35rem;
+font-weight: 700;
+color: var(–text);
+margin-bottom: 4px;
+}
+.person-role {
+font-size: 0.72rem;
+font-weight: 700;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–purple-light);
+margin-bottom: 18px;
+}
+.person-card.gold-card .person-role { color: var(–gold); }
+.person-bio { font-size: 0.93rem; color: var(–text-mid); line-height: 1.75; }
+.person-bio p + p { margin-top: 12px; }
+.person-bio em { font-style: italic; color: var(–text-light); }
 
-  /* WIZARD */
-  #membership { background: var(--purple); }
-  .wizard-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-    padding: 48px;
-    max-width: 660px;
-    margin: 0 auto;
-  }
-  .step-indicator { display: flex; gap: 7px; margin-bottom: 36px; }
-  .step-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; }
-  .step-dot.active { background: var(--gold-light); width: 22px; border-radius: 4px; }
-  .step-dot.done { background: rgba(212,162,62,0.45); }
-  .wizard-step { display: none; }
-  .wizard-step.active { display: block; animation: fadeUp 0.28s ease; }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-  .wizard-question { font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--white); margin-bottom: 8px; line-height: 1.3; }
-  .wizard-sub { font-size: 0.87rem; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
-  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-  .option-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 9px;
-    padding: 17px 14px;
-    color: rgba(255,255,255,0.85);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.18s;
-    line-height: 1.4;
-  }
-  .option-btn:hover, .option-btn.selected { background: rgba(212,162,62,0.14); border-color: var(--gold-light); color: var(--gold-light); }
-  .opt-desc { font-size: 0.73rem; opacity: 0.55; display: block; margin-top: 2px; }
-  .wizard-nav { display: flex; gap: 11px; margin-top: 26px; align-items: center; }
-  .btn-back {
-    background: none; border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.55);
-    padding: 11px 22px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; cursor: pointer; transition: all 0.18s;
-  }
-  .btn-back:hover { border-color: rgba(255,255,255,0.4); color: var(--white); }
-  .btn-next {
-    background: var(--gold); border: none; color: var(--white);
-    padding: 11px 30px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: background 0.18s;
-  }
-  .btn-next:hover { background: var(--gold-light); }
-  .btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
-  .result-box {
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(212,162,62,0.25);
-    border-radius: 11px; padding: 30px; margin-top: 6px;
-  }
-  .result-box h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--white); margin-bottom: 18px; }
-  .result-tier { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-  .result-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 13px 16px; border-radius: 7px;
-    background: rgba(255,255,255,0.04); border: 1px solid transparent;
-  }
-  .result-item.best { background: rgba(212,162,62,0.13); border-color: rgba(212,162,62,0.35); }
-  .result-item .tier-name { font-weight: 600; color: var(--white); font-size: 0.87rem; }
-  .result-item .tier-price { font-weight: 700; color: var(--gold-light); font-size: 1rem; }
-  .best-badge {
-    font-size: 0.62rem; background: var(--gold); color: var(--white);
-    padding: 2px 8px; border-radius: 100px; font-weight: 700; letter-spacing: 0.06em;
-    text-transform: uppercase; margin-left: 8px; vertical-align: middle;
-  }
-  .result-note { font-size: 0.83rem; color: rgba(255,255,255,0.45); line-height: 1.65; }
-  .btn-restart {
-    background: none; border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.6);
-    padding: 9px 20px; border-radius: 7px; font-family: 'DM Sans', sans-serif;
-    font-size: 0.83rem; cursor: pointer; margin-top: 18px; transition: all 0.18s;
-  }
-  .btn-restart:hover { border-color: rgba(255,255,255,0.45); color: var(--white); }
+.facility-info {
+background: var(–purple);
+border-radius: 14px;
+padding: 56px;
+margin-top: 56px;
+display: grid;
+grid-template-columns: 1fr 1.15fr;
+gap: 52px;
+align-items: start;
+}
+.facility-info .section-label { color: var(–gold-light); }
+.facility-info h2 {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(1.5rem, 3vw, 2rem);
+color: var(–white);
+margin-bottom: 18px;
+line-height: 1.3;
+}
+.facility-info p { color: rgba(255,255,255,0.62); font-size: 0.93rem; line-height: 1.75; margin-bottom: 14px; }
+.stat-row { display: flex; gap: 36px; margin-top: 28px; }
+.stat-num {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.9rem;
+font-weight: 700;
+color: var(–gold-light);
+line-height: 1;
+margin-bottom: 4px;
+}
+.stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-top: 4px; }
+.feature-list li { display: flex; align-items: flex-start; gap: 13px; color: rgba(255,255,255,0.72); font-size: 0.9rem; line-height: 1.55; }
+.feature-list .chk {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: var(–gold-light);
+flex-shrink: 0;
+margin-top: 0.42em;
+}
 
-  /* RATES */
-  #rates { background: var(--off-white); }
-  .rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); gap: 18px; margin-bottom: 36px; }
-  .rate-card {
-    border-radius: 11px; overflow: hidden; border: 1px solid var(--border);
-    background: var(--white); box-shadow: 0 2px 14px var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .rate-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px var(--shadow); }
-  .rate-card-header { padding: 20px 22px 15px; background: var(--purple); color: var(--white); }
-  .rate-card-header.alumni  { background: var(--purple-mid); }
-  .rate-card-header.city    { background: #1c4a2e; }
-  .rate-card-header.senior  { background: #4a2020; }
-  .rate-type { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
-  .rate-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; }
-  .rate-card-body { padding: 18px 22px; }
-  .rate-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.87rem; }
-  .rate-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .rate-label { color: var(--text-light); }
-  .rate-price { font-weight: 700; color: var(--text); }
-  .rate-na { color: #ccc; font-style: italic; font-size: 0.78rem; }
-  .extras-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
-  .extra-card { background: var(--white); border-radius: 9px; padding: 18px 20px; border: 1px solid var(--border); border-left: 3px solid var(--purple-light); }
-  .extra-card h4 { font-weight: 700; font-size: 0.87rem; margin-bottom: 7px; color: var(--text); }
-  .extra-card p { font-size: 0.83rem; color: var(--text-mid); line-height: 1.6; }
+/* WIZARD */
+#membership { background: var(–purple); }
+.wizard-card {
+background: rgba(255,255,255,0.06);
+border: 1px solid rgba(255,255,255,0.12);
+border-radius: 14px;
+padding: 48px;
+max-width: 660px;
+margin: 0 auto;
+}
+.step-indicator { display: flex; gap: 7px; margin-bottom: 36px; }
+.step-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+.step-dot.active { background: var(–gold-light); width: 22px; border-radius: 4px; }
+.step-dot.done { background: rgba(212,162,62,0.45); }
+.wizard-step { display: none; }
+.wizard-step.active { display: block; animation: fadeUp 0.28s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.wizard-question { font-family: ‘Playfair Display’, serif; font-size: 1.45rem; color: var(–white); margin-bottom: 8px; line-height: 1.3; }
+.wizard-sub { font-size: 0.87rem; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
+.option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.option-btn {
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.14);
+border-radius: 9px;
+padding: 17px 14px;
+color: rgba(255,255,255,0.85);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.92rem;
+font-weight: 500;
+cursor: pointer;
+text-align: center;
+transition: all 0.18s;
+line-height: 1.4;
+}
+.option-btn:hover, .option-btn.selected { background: rgba(212,162,62,0.14); border-color: var(–gold-light); color: var(–gold-light); }
+.opt-desc { font-size: 0.73rem; opacity: 0.55; display: block; margin-top: 2px; }
+.wizard-nav { display: flex; gap: 11px; margin-top: 26px; align-items: center; }
+.btn-back {
+background: none; border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.55);
+padding: 11px 22px; border-radius: 7px; font-family: ‘DM Sans’, sans-serif; font-size: 0.88rem; cursor: pointer; transition: all 0.18s;
+}
+.btn-back:hover { border-color: rgba(255,255,255,0.4); color: var(–white); }
+.btn-next {
+background: var(–gold); border: none; color: var(–white);
+padding: 11px 30px; border-radius: 7px; font-family: ‘DM Sans’, sans-serif; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: background 0.18s;
+}
+.btn-next:hover { background: var(–gold-light); }
+.btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+.result-box {
+background: rgba(255,255,255,0.05); border: 1px solid rgba(212,162,62,0.25);
+border-radius: 11px; padding: 30px; margin-top: 6px;
+}
+.result-box h3 { font-family: ‘Playfair Display’, serif; font-size: 1.4rem; color: var(–white); margin-bottom: 18px; }
+.result-tier { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.result-item {
+display: flex; justify-content: space-between; align-items: center;
+padding: 13px 16px; border-radius: 7px;
+background: rgba(255,255,255,0.04); border: 1px solid transparent;
+}
+.result-item.best { background: rgba(212,162,62,0.13); border-color: rgba(212,162,62,0.35); }
+.result-item .tier-name { font-weight: 600; color: var(–white); font-size: 0.87rem; }
+.result-item .tier-price { font-weight: 700; color: var(–gold-light); font-size: 1rem; }
+.best-badge {
+font-size: 0.62rem; background: var(–gold); color: var(–white);
+padding: 2px 8px; border-radius: 100px; font-weight: 700; letter-spacing: 0.06em;
+text-transform: uppercase; margin-left: 8px; vertical-align: middle;
+}
+.result-note { font-size: 0.83rem; color: rgba(255,255,255,0.45); line-height: 1.65; }
+.btn-restart {
+background: none; border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.6);
+padding: 9px 20px; border-radius: 7px; font-family: ‘DM Sans’, sans-serif;
+font-size: 0.83rem; cursor: pointer; margin-top: 18px; transition: all 0.18s;
+}
+.btn-restart:hover { border-color: rgba(255,255,255,0.45); color: var(–white); }
 
-  /* COMPLIMENTARY */
-  #complimentary { background: var(--white); border-top: 1px solid var(--border); }
-  .comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 32px; }
-  .comp-item {
-    background: var(--purple-pale); border-radius: 8px; padding: 15px 18px;
-    font-size: 0.87rem; color: var(--text); font-weight: 500;
-    border-left: 3px solid var(--purple-light); line-height: 1.4;
-  }
+/* RATES */
+#rates { background: var(–off-white); }
+.rates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); gap: 18px; margin-bottom: 36px; }
+.rate-card {
+border-radius: 11px; overflow: hidden; border: 1px solid var(–border);
+background: var(–white); box-shadow: 0 2px 14px var(–shadow); transition: transform 0.2s, box-shadow 0.2s;
+}
+.rate-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px var(–shadow); }
+.rate-card-header { padding: 20px 22px 15px; background: var(–purple); color: var(–white); }
+.rate-card-header.alumni  { background: var(–purple-mid); }
+.rate-card-header.city    { background: #1c4a2e; }
+.rate-card-header.senior  { background: #4a2020; }
+.rate-type { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+.rate-card-header h3 { font-family: ‘Playfair Display’, serif; font-size: 1.05rem; font-weight: 700; }
+.rate-card-body { padding: 18px 22px; }
+.rate-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(–border); font-size: 0.87rem; }
+.rate-row:last-child { border-bottom: none; padding-bottom: 0; }
+.rate-label { color: var(–text-light); }
+.rate-price { font-weight: 700; color: var(–text); }
+.rate-na { color: #ccc; font-style: italic; font-size: 0.78rem; }
+.extras-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+.extra-card { background: var(–white); border-radius: 9px; padding: 18px 20px; border: 1px solid var(–border); border-left: 3px solid var(–purple-light); }
+.extra-card h4 { font-weight: 700; font-size: 0.87rem; margin-bottom: 7px; color: var(–text); }
+.extra-card p { font-size: 0.83rem; color: var(–text-mid); line-height: 1.6; }
 
-  /* PARTY */
-  .party-banner {
-    background: var(--purple); border-radius: 14px; padding: 44px 48px;
-    display: flex; align-items: center; justify-content: space-between; gap: 24px;
-    margin-top: 44px; flex-wrap: wrap; border: 1px solid rgba(212,162,62,0.2);
-  }
-  .party-banner h3 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--white); margin-bottom: 8px; }
-  .party-banner p { color: rgba(255,255,255,0.6); font-size: 0.92rem; max-width: 440px; line-height: 1.65; }
-  .party-cta {
-    display: inline-block; background: var(--gold); color: var(--white); font-weight: 700;
-    padding: 13px 30px; border-radius: 7px; text-decoration: none; font-size: 0.92rem;
-    white-space: nowrap; flex-shrink: 0; transition: background 0.18s;
-  }
-  .party-cta:hover { background: var(--gold-light); }
+/* COMPLIMENTARY */
+#complimentary { background: var(–white); border-top: 1px solid var(–border); }
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 32px; }
+.comp-item {
+background: var(–purple-pale); border-radius: 8px; padding: 15px 18px;
+font-size: 0.87rem; color: var(–text); font-weight: 500;
+border-left: 3px solid var(–purple-light); line-height: 1.4;
+}
 
-  /* FOOTER */
-  footer {
-    background: var(--text); color: rgba(255,255,255,0.45); text-align: center;
-    padding: 44px 24px; font-size: 0.83rem; line-height: 1.9; border-top: 3px solid var(--gold);
-  }
-  footer strong { color: rgba(255,255,255,0.78); }
+/* PARTY */
+.party-banner {
+background: var(–purple); border-radius: 14px; padding: 44px 48px;
+display: flex; align-items: center; justify-content: space-between; gap: 24px;
+margin-top: 44px; flex-wrap: wrap; border: 1px solid rgba(212,162,62,0.2);
+}
+.party-banner h3 { font-family: ‘Playfair Display’, serif; font-size: 1.7rem; color: var(–white); margin-bottom: 8px; }
+.party-banner p { color: rgba(255,255,255,0.6); font-size: 0.92rem; max-width: 440px; line-height: 1.65; }
+.party-cta {
+display: inline-block; background: var(–gold); color: var(–white); font-weight: 700;
+padding: 13px 30px; border-radius: 7px; text-decoration: none; font-size: 0.92rem;
+white-space: nowrap; flex-shrink: 0; transition: background 0.18s;
+}
+.party-cta:hover { background: var(–gold-light); }
 
-  @media (max-width: 820px) {
-    .about-grid { grid-template-columns: 1fr; }
-    .facility-info { grid-template-columns: 1fr; padding: 36px 28px; }
-  }
-  @media (max-width: 640px) {
-    nav { padding: 0 20px; }
-    .nav-right { gap: 14px; }
-    nav ul { gap: 16px; }
-    nav ul a { font-size: 0.73rem; }
-    .nav-call { font-size: 0.68rem; padding: 9px 14px; }
-    .hero-status { gap: 10px 14px; }
-    .hero-status-pill { padding: 8px 16px; gap: 8px; }
-    .hero-status-area { font-size: 0.68rem; }
-    .facility-status-label { font-size: 0.8rem; }
-    .hero-status-hint { font-size: 0.84rem; }
-    .wizard-card { padding: 28px 18px; }
-    .party-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px; }
-    .facilities { padding: 0 16px; }
-    .facility-item { font-size: 0.72rem; padding: 14px 12px; }
-  }
-  @media (max-width: 420px) { nav ul { display: none; } }
+/* FOOTER */
+footer {
+background: var(–text); color: rgba(255,255,255,0.45); text-align: center;
+padding: 44px 24px; font-size: 0.83rem; line-height: 1.9; border-top: 3px solid var(–gold);
+}
+footer strong { color: rgba(255,255,255,0.78); }
+
+/* ── OVERRIDE MODAL ──────────────────────────────────────────────────────── */
+.override-backdrop {
+display: none;
+position: fixed; inset: 0; z-index: 500;
+background: rgba(10,3,18,0.72);
+backdrop-filter: blur(4px);
+align-items: center; justify-content: center;
+animation: backdropIn 0.18s ease;
+}
+.override-backdrop.visible { display: flex; }
+@keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
+
+.override-modal {
+background: #1e0d26;
+border: 1px solid rgba(212,162,62,0.25);
+border-radius: 16px;
+padding: 36px 40px;
+width: 100%;
+max-width: 420px;
+margin: 16px;
+box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+animation: modalIn 0.22s cubic-bezier(0.22,1,0.36,1);
+position: relative;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(0.93) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+.override-modal-close {
+position: absolute; top: 16px; right: 16px;
+background: none; border: none;
+color: rgba(255,255,255,0.3);
+font-size: 1.3rem; cursor: pointer; line-height: 1;
+transition: color 0.15s;
+padding: 4px 8px;
+}
+.override-modal-close:hover { color: rgba(255,255,255,0.7); }
+
+.override-facility-badge {
+display: inline-flex; align-items: center; gap: 8px;
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.1);
+border-radius: 100px;
+padding: 6px 14px;
+font-size: 0.72rem;
+font-weight: 700;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: rgba(255,255,255,0.55);
+margin-bottom: 20px;
+}
+.override-facility-badge .badge-dot {
+width: 8px; height: 8px; border-radius: 50%;
+}
+
+.override-modal h3 {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.3rem;
+color: var(–white);
+margin-bottom: 6px;
+line-height: 1.3;
+}
+.override-modal .override-desc {
+font-size: 0.85rem;
+color: rgba(255,255,255,0.42);
+line-height: 1.6;
+margin-bottom: 24px;
+}
+
+/* toggle switch */
+.override-toggle-row {
+display: flex; align-items: center; justify-content: space-between;
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 10px;
+padding: 14px 18px;
+margin-bottom: 20px;
+}
+.override-toggle-label {
+font-size: 0.88rem; font-weight: 600; color: rgba(255,255,255,0.8);
+}
+.override-toggle-sub {
+font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 2px;
+}
+.toggle-switch {
+position: relative; width: 46px; height: 26px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+position: absolute; inset: 0; border-radius: 100px;
+background: rgba(255,255,255,0.12);
+transition: background 0.2s;
+cursor: pointer;
+}
+.toggle-track::after {
+content: ‘’;
+position: absolute; top: 3px; left: 3px;
+width: 20px; height: 20px; border-radius: 50%;
+background: rgba(255,255,255,0.5);
+transition: transform 0.2s, background 0.2s;
+}
+.toggle-switch input:checked + .toggle-track { background: #e07b3a; }
+.toggle-switch input:checked + .toggle-track::after {
+transform: translateX(20px);
+background: var(–white);
+}
+
+.override-pw-label {
+font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+color: rgba(255,255,255,0.35); margin-bottom: 8px;
+}
+.override-pw-input {
+width: 100%;
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.14);
+border-radius: 8px;
+padding: 12px 16px;
+color: var(–white);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.95rem;
+outline: none;
+transition: border-color 0.18s;
+margin-bottom: 6px;
+}
+.override-pw-input:focus { border-color: rgba(212,162,62,0.5); }
+.override-pw-input.error { border-color: #e05555; animation: shake 0.3s ease; }
+@keyframes shake {
+0%,100% { transform: translateX(0); }
+20% { transform: translateX(-6px); }
+40% { transform: translateX(6px); }
+60% { transform: translateX(-4px); }
+80% { transform: translateX(4px); }
+}
+.override-error-msg {
+font-size: 0.78rem; color: #e07070; margin-bottom: 14px; min-height: 18px;
+display: none;
+}
+.override-error-msg.visible { display: block; }
+
+.override-submit {
+width: 100%;
+background: var(–gold);
+border: none;
+border-radius: 8px;
+padding: 13px;
+color: var(–white);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.95rem;
+font-weight: 700;
+cursor: pointer;
+transition: background 0.18s, opacity 0.18s;
+margin-top: 8px;
+}
+.override-submit:hover { background: var(–gold-light); }
+.override-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.override-success {
+display: none; text-align: center; padding: 12px 0 4px;
+}
+.override-success.visible { display: block; animation: fadeUp 0.25s ease; }
+.override-success-icon {
+font-size: 2.2rem; margin-bottom: 10px;
+}
+.override-success p {
+font-size: 0.9rem; color: rgba(255,255,255,0.55); line-height: 1.65;
+}
+.override-success strong { color: rgba(255,255,255,0.85); }
+
+/* ── END OVERRIDE MODAL ─────────────────────────────────────────────────── */
+
+@media (max-width: 820px) {
+.about-grid { grid-template-columns: 1fr; }
+.facility-info { grid-template-columns: 1fr; padding: 36px 28px; }
+}
+@media (max-width: 640px) {
+nav { padding: 0 20px; }
+.nav-right { gap: 14px; }
+nav ul { gap: 16px; }
+nav ul a { font-size: 0.73rem; }
+.nav-call { font-size: 0.68rem; padding: 9px 14px; }
+.hero-status { gap: 10px 14px; }
+.hero-status-pill { padding: 8px 16px; gap: 8px; }
+.hero-status-area { font-size: 0.68rem; }
+.facility-status-label { font-size: 0.8rem; }
+.hero-status-hint { font-size: 0.84rem; }
+.wizard-card { padding: 28px 18px; }
+.party-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px; }
+.facilities { padding: 0 16px; }
+.facility-item { font-size: 0.72rem; padding: 14px 12px; }
+.override-modal { padding: 28px 22px; }
+}
+@media (max-width: 420px) { nav ul { display: none; } }
 </style>
+
 </head>
 <body>
 
 <!-- NAV -->
+
 <nav>
   <div class="nav-logo">Somerset <span>Alumni</span><br>&amp; Aquatic Center</div>
   <div class="nav-right">
@@ -557,17 +742,18 @@
 </nav>
 
 <!-- HERO -->
+
 <section class="hero" id="home">
   <div class="hero-status" aria-live="polite">
-    <div class="hero-status-pill">
-      <span class="facility-status-dot" role="img" aria-label=""></span>
+    <div class="hero-status-pill" id="pill-gym" onclick="openOverrideModal('gym')" title="Click to manage gym status">
+      <span class="facility-status-dot" id="dot-gym" role="img" aria-label=""></span>
       <span class="hero-status-area">Gym</span>
-      <span class="facility-status-label"></span>
+      <span class="facility-status-label" id="label-gym"></span>
     </div>
-    <div class="hero-status-pill">
-      <span class="facility-status-dot" role="img" aria-label=""></span>
+    <div class="hero-status-pill" id="pill-pool" onclick="openOverrideModal('pool')" title="Click to manage pool status">
+      <span class="facility-status-dot" id="dot-pool" role="img" aria-label=""></span>
       <span class="hero-status-area">Pool</span>
-      <span class="facility-status-label"></span>
+      <span class="facility-status-label" id="label-pool"></span>
     </div>
   </div>
   <p class="hero-status-hint">Open to the public Monday&ndash;Friday 8am&ndash;1pm &amp; 5&ndash;8pm, Saturday 8am&ndash;12pm</p>
@@ -579,6 +765,7 @@
 </section>
 
 <!-- FACILITIES STRIP -->
+
 <div class="facilities">
   <div class="facility-item"><span class="dot"></span>Lap Pool</div>
   <div class="facility-item"><span class="dot"></span>Therapy Pool</div>
@@ -588,246 +775,254 @@
   <div class="facility-item"><span class="dot"></span>Silver Sneakers</div>
 </div>
 
-<!-- ABOUT (top) -->
+<!-- ABOUT -->
+
 <section id="about">
   <div class="container">
     <div class="section-label">Our People</div>
     <h2 class="section-title">Meet the Team</h2>
     <p class="section-intro" style="margin-bottom:36px;">The Alumni &amp; Aquatic Center is shaped by dedicated individuals committed to the health and wellbeing of the Somerset community.</p>
 
-    <div class="about-grid">
-      <div class="person-card">
-        <div class="person-accent-bar"></div>
-        <div class="person-photo-area">
-          <img src="ed-davis.jpg" alt="Ed Davis">
-        </div>
-        <div class="person-body">
-          <div class="person-name">Ed Davis</div>
-          <div class="person-role">Emperor Edwin</div>
-          <div class="person-bio">
-            <p>Hi, my name is Edwin Davis and I am the best thing to ever happen to this place. One day I will run for president and take over America as we know it. I have imperial ambitions and will expand America into Europe, conquering those scallywags. Once I have total world domination, I will force everyone to name their firstborn Edwin. After my reign, the world will be full of Edwin's, as it rightfully should. This will kickstart generation Ed, where they will remember me for thousands of years. May the patriarchy live on. #Edwin</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="person-card gold-card">
-        <div class="person-accent-bar"></div>
-        <div class="person-photo-area">
-          <img src="calvin-rollyson.jpg" alt="Calvin Rollyson">
-        </div>
-        <div class="person-body">
-          <div class="person-name">Calvin Rollyson</div>
-          <div class="person-role">Second in command in the Edwin Davis Imperial Squadron</div>
-          <div class="person-bio">
-            <p>I am Calvin Rollyson and I am second in command in the Edwin Davis Imperial Squadron. I plan to overthrow Emperor Edwin and overtake the Alumni Empire by myself. In our conquest of world domination, we will employ a strict regimen of no personal hygiene for our subjects. They will not be granted the permission to use the following: deodorant, toothpaste/toothbrush, showers or any cleansings of the sort, cologne or smell good, and last but not least, no clothes. This will ensure equality amongst all Edwin Davis's making us the most elite race in the history of our great planet. I run this joint fn.</p>
-          </div>
-        </div>
+```
+<div class="about-grid">
+  <div class="person-card">
+    <div class="person-accent-bar"></div>
+    <div class="person-photo-area">
+      <img src="ed-davis.jpg" alt="Ed Davis">
+    </div>
+    <div class="person-body">
+      <div class="person-name">Ed Davis</div>
+      <div class="person-role">Emperor Edwin</div>
+      <div class="person-bio">
+        <p>Hi, my name is Edwin Davis and I am the best thing to ever happen to this place. One day I will run for president and take over America as we know it. I have imperial ambitions and will expand America into Europe, conquering those scallywags. Once I have total world domination, I will force everyone to name their firstborn Edwin. After my reign, the world will be full of Edwin's, as it rightfully should. This will kickstart generation Ed, where they will remember me for thousands of years. May the patriarchy live on. #Edwin</p>
       </div>
     </div>
+  </div>
 
-    <!-- Facility info block -->
-    <div class="facility-info">
-      <div>
-        <div class="section-label">Our Facility</div>
-        <h2>A Renovated Community Gem</h2>
-        <p>The Somerset Independent Alumni &amp; Aquatic Center, formerly known as SomerFit, was purchased by the Somerset Independent School District in April 2018 and fully renovated to serve both the school's swim teams and the broader public.</p>
-        <p>The district invested in comprehensive renovations including updated pool equipment, reroofing, and modern interior finishes — transforming it into a premier fitness and aquatics destination for Pulaski County.</p>
-        <div class="stat-row">
-          <div><div class="stat-num">2</div><div class="stat-lbl">Pools</div></div>
-          <div><div class="stat-num">2018</div><div class="stat-lbl">Acquired</div></div>
-          <div><div class="stat-num">1,000+</div><div class="stat-lbl">Students Served</div></div>
-        </div>
-      </div>
-      <div>
-        <ul class="feature-list">
-          <li><span class="chk" aria-hidden="true"></span>Open to the public Monday&ndash;Friday 8am&ndash;1pm &amp; 5&ndash;8pm, Saturday 8am&ndash;12pm</li>
-          <li><span class="chk" aria-hidden="true"></span>Heated therapy pool with a gentle ramp and lift arm for residents with limited mobility</li>
-          <li><span class="chk" aria-hidden="true"></span>Exercise equipment, yoga, Pilates, and group fitness classes for all skill levels</li>
-          <li><span class="chk" aria-hidden="true"></span>Indoor and outdoor basketball courts open to members</li>
-          <li><span class="chk" aria-hidden="true"></span>Silver Sneakers program for eligible seniors, promoting health and social engagement</li>
-          <li><span class="chk" aria-hidden="true"></span>Multi-purpose room available for events and parties</li>
-          <li><span class="chk" aria-hidden="true"></span>Lap pool for competitive swimming and adult exercise, serving the Somerset High School swim team and community</li>
-        </ul>
+  <div class="person-card gold-card">
+    <div class="person-accent-bar"></div>
+    <div class="person-photo-area">
+      <img src="calvin-rollyson.jpg" alt="Calvin Rollyson">
+    </div>
+    <div class="person-body">
+      <div class="person-name">Calvin Rollyson</div>
+      <div class="person-role">Second in command in the Edwin Davis Imperial Squadron</div>
+      <div class="person-bio">
+        <p>I am Calvin Rollyson and I am second in command in the Edwin Davis Imperial Squadron. I plan to overthrow Emperor Edwin and overtake the Alumni Empire by myself. In our conquest of world domination, we will employ a strict regimen of no personal hygiene for our subjects. They will not be granted the permission to use the following: deodorant, toothpaste/toothbrush, showers or any cleansings of the sort, cologne or smell good, and last but not least, no clothes. This will ensure equality amongst all Edwin Davis's making us the most elite race in the history of our great planet. I run this joint fn.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="facility-info">
+  <div>
+    <div class="section-label">Our Facility</div>
+    <h2>A Renovated Community Gem</h2>
+    <p>The Somerset Independent Alumni &amp; Aquatic Center, formerly known as SomerFit, was purchased by the Somerset Independent School District in April 2018 and fully renovated to serve both the school's swim teams and the broader public.</p>
+    <p>The district invested in comprehensive renovations including updated pool equipment, reroofing, and modern interior finishes — transforming it into a premier fitness and aquatics destination for Pulaski County.</p>
+    <div class="stat-row">
+      <div><div class="stat-num">2</div><div class="stat-lbl">Pools</div></div>
+      <div><div class="stat-num">2018</div><div class="stat-lbl">Acquired</div></div>
+      <div><div class="stat-num">1,000+</div><div class="stat-lbl">Students Served</div></div>
+    </div>
+  </div>
+  <div>
+    <ul class="feature-list">
+      <li><span class="chk" aria-hidden="true"></span>Open to the public Monday&ndash;Friday 8am&ndash;1pm &amp; 5&ndash;8pm, Saturday 8am&ndash;12pm</li>
+      <li><span class="chk" aria-hidden="true"></span>Heated therapy pool with a gentle ramp and lift arm for residents with limited mobility</li>
+      <li><span class="chk" aria-hidden="true"></span>Exercise equipment, yoga, Pilates, and group fitness classes for all skill levels</li>
+      <li><span class="chk" aria-hidden="true"></span>Indoor and outdoor basketball courts open to members</li>
+      <li><span class="chk" aria-hidden="true"></span>Silver Sneakers program for eligible seniors, promoting health and social engagement</li>
+      <li><span class="chk" aria-hidden="true"></span>Multi-purpose room available for events and parties</li>
+      <li><span class="chk" aria-hidden="true"></span>Lap pool for competitive swimming and adult exercise, serving the Somerset High School swim team and community</li>
+    </ul>
+  </div>
+</div>
+```
+
   </div>
 </section>
 
 <!-- MEMBERSHIP WIZARD -->
+
 <section id="membership">
   <div class="container">
     <div class="section-label on-dark">Find Your Rate</div>
     <h2 class="section-title light">What's your membership?</h2>
     <p class="section-intro light">Answer three quick questions and we'll show you every rate tier you may qualify for.</p>
 
-    <div class="wizard-card">
-      <div class="step-indicator">
-        <div class="step-dot active" id="dot-0"></div>
-        <div class="step-dot" id="dot-1"></div>
-        <div class="step-dot" id="dot-2"></div>
-        <div class="step-dot" id="dot-3"></div>
-      </div>
+```
+<div class="wizard-card">
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot-0"></div>
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+  </div>
 
-      <!-- Step 1 -->
-      <div class="wizard-step active" id="step-0">
-        <div class="wizard-question">What type of membership?</div>
-        <div class="wizard-sub">Select the option that best fits you.</div>
-        <div class="option-grid">
-          <button class="option-btn" onclick="selectOpt(0,'single')">Single<span class="opt-desc">Just you</span></button>
-          <button class="option-btn" onclick="selectOpt(0,'couple')">Couple<span class="opt-desc">Two adults</span></button>
-          <button class="option-btn" onclick="selectOpt(0,'family')">Family<span class="opt-desc">Up to 4 members</span></button>
-          <button class="option-btn" onclick="selectOpt(0,'student')">Student<span class="opt-desc">K&ndash;12th grade</span></button>
-        </div>
-        <div class="wizard-nav">
-          <button class="btn-next" id="next-0" disabled onclick="nextStep(0)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 2 -->
-      <div class="wizard-step" id="step-1">
-        <div class="wizard-question">How long would you like?</div>
-        <div class="wizard-sub">Longer commitments offer better monthly value.</div>
-        <div class="option-grid">
-          <button class="option-btn" onclick="selectOpt(1,'monthly')">Monthly<span class="opt-desc">Month-to-month</span></button>
-          <button class="option-btn" id="opt-6mo" onclick="selectOpt(1,'sixmonth')">6 Months<span class="opt-desc">Semi-annual</span></button>
-          <button class="option-btn" id="opt-annual" onclick="selectOpt(1,'annual')">Annual<span class="opt-desc">Best value</span></button>
-        </div>
-        <div class="wizard-nav">
-          <button class="btn-back" onclick="prevStep(1)">Back</button>
-          <button class="btn-next" id="next-1" disabled onclick="nextStep(1)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 3 -->
-      <div class="wizard-step" id="step-2">
-        <div class="wizard-question">Any of these apply to you?</div>
-        <div class="wizard-sub">We'll find the best rate you qualify for.</div>
-        <div class="option-grid" style="grid-template-columns:1fr;">
-          <button class="option-btn" onclick="selectOpt(2,'alumni')">I am a Somerset High School alumnus/a<span class="opt-desc">Graduated from Somerset High School</span></button>
-          <button class="option-btn" onclick="selectOpt(2,'city')">I pay Somerset City School taxes<span class="opt-desc">City school tax payer, not an alumnus/a</span></button>
-          <button class="option-btn" onclick="selectOpt(2,'senior')">I am 65 years of age or older<span class="opt-desc">Senior discount rate</span></button>
-          <button class="option-btn" onclick="selectOpt(2,'none')">None of the above apply<span class="opt-desc">Standard non-city-taxpayer rate</span></button>
-        </div>
-        <div class="wizard-nav">
-          <button class="btn-back" onclick="prevStep(2)">Back</button>
-          <button class="btn-next" id="next-2" disabled onclick="showResult()">See My Rates</button>
-        </div>
-      </div>
-
-      <!-- Result -->
-      <div class="wizard-step" id="step-3">
-        <div class="wizard-question">Your Membership Rates</div>
-        <div class="wizard-sub" id="result-subtitle"></div>
-        <div class="result-box" id="result-box"></div>
-        <button class="btn-restart" onclick="restart()">Start Over</button>
-      </div>
+  <div class="wizard-step active" id="step-0">
+    <div class="wizard-question">What type of membership?</div>
+    <div class="wizard-sub">Select the option that best fits you.</div>
+    <div class="option-grid">
+      <button class="option-btn" onclick="selectOpt(0,'single')">Single<span class="opt-desc">Just you</span></button>
+      <button class="option-btn" onclick="selectOpt(0,'couple')">Couple<span class="opt-desc">Two adults</span></button>
+      <button class="option-btn" onclick="selectOpt(0,'family')">Family<span class="opt-desc">Up to 4 members</span></button>
+      <button class="option-btn" onclick="selectOpt(0,'student')">Student<span class="opt-desc">K&ndash;12th grade</span></button>
     </div>
+    <div class="wizard-nav">
+      <button class="btn-next" id="next-0" disabled onclick="nextStep(0)">Continue</button>
+    </div>
+  </div>
+
+  <div class="wizard-step" id="step-1">
+    <div class="wizard-question">How long would you like?</div>
+    <div class="wizard-sub">Longer commitments offer better monthly value.</div>
+    <div class="option-grid">
+      <button class="option-btn" onclick="selectOpt(1,'monthly')">Monthly<span class="opt-desc">Month-to-month</span></button>
+      <button class="option-btn" id="opt-6mo" onclick="selectOpt(1,'sixmonth')">6 Months<span class="opt-desc">Semi-annual</span></button>
+      <button class="option-btn" id="opt-annual" onclick="selectOpt(1,'annual')">Annual<span class="opt-desc">Best value</span></button>
+    </div>
+    <div class="wizard-nav">
+      <button class="btn-back" onclick="prevStep(1)">Back</button>
+      <button class="btn-next" id="next-1" disabled onclick="nextStep(1)">Continue</button>
+    </div>
+  </div>
+
+  <div class="wizard-step" id="step-2">
+    <div class="wizard-question">Any of these apply to you?</div>
+    <div class="wizard-sub">We'll find the best rate you qualify for.</div>
+    <div class="option-grid" style="grid-template-columns:1fr;">
+      <button class="option-btn" onclick="selectOpt(2,'alumni')">I am a Somerset High School alumnus/a<span class="opt-desc">Graduated from Somerset High School</span></button>
+      <button class="option-btn" onclick="selectOpt(2,'city')">I pay Somerset City School taxes<span class="opt-desc">City school tax payer, not an alumnus/a</span></button>
+      <button class="option-btn" onclick="selectOpt(2,'senior')">I am 65 years of age or older<span class="opt-desc">Senior discount rate</span></button>
+      <button class="option-btn" onclick="selectOpt(2,'none')">None of the above apply<span class="opt-desc">Standard non-city-taxpayer rate</span></button>
+    </div>
+    <div class="wizard-nav">
+      <button class="btn-back" onclick="prevStep(2)">Back</button>
+      <button class="btn-next" id="next-2" disabled onclick="showResult()">See My Rates</button>
+    </div>
+  </div>
+
+  <div class="wizard-step" id="step-3">
+    <div class="wizard-question">Your Membership Rates</div>
+    <div class="wizard-sub" id="result-subtitle"></div>
+    <div class="result-box" id="result-box"></div>
+    <button class="btn-restart" onclick="restart()">Start Over</button>
+  </div>
+</div>
+```
+
   </div>
 </section>
 
 <!-- RATES TABLE -->
+
 <section id="rates">
   <div class="container">
     <div class="section-label">Full Rate Schedule</div>
     <h2 class="section-title">Membership Pricing</h2>
     <p class="section-intro">All membership types and durations at a glance. Discounts are available for alumni, city school tax payers, and seniors 65+.</p>
 
-    <div class="rates-grid">
-      <div class="rate-card">
-        <div class="rate-card-header">
-          <div class="rate-type">Standard</div>
-          <h3>Non-City School Tax Payer</h3>
-        </div>
-        <div class="rate-card-body">
-          <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$45</span></div>
-          <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$200</span></div>
-          <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$350</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$55</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$300</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$500</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$60</span></div>
-          <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$300</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$540</span></div>
-          <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-price">$25</span></div>
-        </div>
-      </div>
-
-      <div class="rate-card">
-        <div class="rate-card-header alumni">
-          <div class="rate-type">Best Discount</div>
-          <h3>Alumni</h3>
-        </div>
-        <div class="rate-card-body">
-          <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$10</span></div>
-          <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$50</span></div>
-          <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$90</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$20</span></div>
-          <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$90</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$140</span></div>
-          <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-na">N/A</span></div>
-        </div>
-      </div>
-
-      <div class="rate-card">
-        <div class="rate-card-header city">
-          <div class="rate-type">City Resident</div>
-          <h3>City School Tax Payer</h3>
-        </div>
-        <div class="rate-card-body">
-          <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$25</span></div>
-          <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$100</span></div>
-          <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$175</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$35</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$150</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$250</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$40</span></div>
-          <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$175</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$300</span></div>
-          <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-price">$15</span></div>
-        </div>
-      </div>
-
-      <div class="rate-card">
-        <div class="rate-card-header senior">
-          <div class="rate-type">65+ Years</div>
-          <h3>Senior</h3>
-        </div>
-        <div class="rate-card-body">
-          <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$15</span></div>
-          <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$75</span></div>
-          <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$135</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$25</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$125</span></div>
-          <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$225</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-na">N/A</span></div>
-          <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-na">N/A</span></div>
-        </div>
-      </div>
+```
+<div class="rates-grid">
+  <div class="rate-card">
+    <div class="rate-card-header">
+      <div class="rate-type">Standard</div>
+      <h3>Non-City School Tax Payer</h3>
     </div>
-
-    <div class="extras-grid">
-      <div class="extra-card"><h4>Silver Sneakers</h4><p>$3.00 / day with Silver Sneakers coverage. Without coverage: $30 / month.</p></div>
-      <div class="extra-card"><h4>Lockers</h4><p>$3.00 / month or $36 / year for a personal locker.</p></div>
-      <div class="extra-card"><h4>Day Passes</h4><p>Without a member: Adults $8, Kids $5. With a member: Adults $5, Kids $2.</p></div>
-      <div class="extra-card"><h4>Party Reservations</h4><p>Fri 5:30&ndash;7:30pm &amp; Sat 9:30&ndash;11:30am. $150 with lifeguards provided.</p></div>
+    <div class="rate-card-body">
+      <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$45</span></div>
+      <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$200</span></div>
+      <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$350</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$55</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$300</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$500</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$60</span></div>
+      <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$300</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$540</span></div>
+      <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-price">$25</span></div>
     </div>
+  </div>
 
-    <div class="party-banner">
-      <div>
-        <h3>Host Your Next Party Here</h3>
-        <p>Reserve the Alumni Center for your next celebration. Lifeguards are included. Available Fridays 5:30&ndash;7:30pm and Saturdays 9:30&ndash;11:30am for $150. Ask the front desk for further details.</p>
-      </div>
-      <a href="tel:(606) 679-7428" class="party-cta">Ask at the Front Desk</a>
+  <div class="rate-card">
+    <div class="rate-card-header alumni">
+      <div class="rate-type">Best Discount</div>
+      <h3>Alumni</h3>
     </div>
+    <div class="rate-card-body">
+      <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$10</span></div>
+      <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$50</span></div>
+      <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$90</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$20</span></div>
+      <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$90</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$140</span></div>
+      <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-na">N/A</span></div>
+    </div>
+  </div>
+
+  <div class="rate-card">
+    <div class="rate-card-header city">
+      <div class="rate-type">City Resident</div>
+      <h3>City School Tax Payer</h3>
+    </div>
+    <div class="rate-card-body">
+      <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$25</span></div>
+      <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$100</span></div>
+      <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$175</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$35</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$150</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$250</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-price">$40</span></div>
+      <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-price">$175</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-price">$300</span></div>
+      <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-price">$15</span></div>
+    </div>
+  </div>
+
+  <div class="rate-card">
+    <div class="rate-card-header senior">
+      <div class="rate-type">65+ Years</div>
+      <h3>Senior</h3>
+    </div>
+    <div class="rate-card-body">
+      <div class="rate-row"><span class="rate-label">Single / Month</span><span class="rate-price">$15</span></div>
+      <div class="rate-row"><span class="rate-label">Single / 6 Mo.</span><span class="rate-price">$75</span></div>
+      <div class="rate-row"><span class="rate-label">Single / Year</span><span class="rate-price">$135</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Month</span><span class="rate-price">$25</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / 6 Mo.</span><span class="rate-price">$125</span></div>
+      <div class="rate-row"><span class="rate-label">Couple / Year</span><span class="rate-price">$225</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Month</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Family / 6 Mo.</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Family / Year</span><span class="rate-na">N/A</span></div>
+      <div class="rate-row"><span class="rate-label">Student / Month</span><span class="rate-na">N/A</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="extras-grid">
+  <div class="extra-card"><h4>Silver Sneakers</h4><p>$3.00 / day with Silver Sneakers coverage. Without coverage: $30 / month.</p></div>
+  <div class="extra-card"><h4>Lockers</h4><p>$3.00 / month or $36 / year for a personal locker.</p></div>
+  <div class="extra-card"><h4>Day Passes</h4><p>Without a member: Adults $8, Kids $5. With a member: Adults $5, Kids $2.</p></div>
+  <div class="extra-card"><h4>Party Reservations</h4><p>Fri 5:30&ndash;7:30pm &amp; Sat 9:30&ndash;11:30am. $150 with lifeguards provided.</p></div>
+</div>
+
+<div class="party-banner">
+  <div>
+    <h3>Host Your Next Party Here</h3>
+    <p>Reserve the Alumni Center for your next celebration. Lifeguards are included. Available Fridays 5:30&ndash;7:30pm and Saturdays 9:30&ndash;11:30am for $150. Ask the front desk for further details.</p>
+  </div>
+  <a href="tel:(606) 679-7428" class="party-cta">Ask at the Front Desk</a>
+</div>
+```
+
   </div>
 </section>
 
 <!-- COMPLIMENTARY -->
+
 <section id="complimentary">
   <div class="container">
     <div class="section-label">No Charge</div>
@@ -849,6 +1044,7 @@
 </section>
 
 <!-- FOOTER -->
+
 <footer>
   <strong>Somerset Alumni &amp; Aquatic Center</strong><br>
   Somerset, Kentucky &middot; Somerset Independent Schools<br><br>
@@ -856,143 +1052,382 @@
   <span style="font-size:0.76rem;opacity:0.5;">Party reservations must be approved by Ed Davis in advance. School-related activities take priority scheduling.</span>
 </footer>
 
+<!-- ── OVERRIDE MODAL ──────────────────────────────────────────────────────── -->
+
+<div class="override-backdrop" id="override-backdrop" onclick="handleBackdropClick(event)">
+  <div class="override-modal" id="override-modal" role="dialog" aria-modal="true" aria-labelledby="override-modal-title">
+    <button class="override-modal-close" onclick="closeOverrideModal()" aria-label="Close">&times;</button>
+
+```
+<div class="override-facility-badge">
+  <span class="badge-dot" id="modal-badge-dot"></span>
+  <span id="modal-badge-label"></span>
+</div>
+
+<h3 id="override-modal-title">Facility Status Override</h3>
+<p class="override-desc" id="override-desc"></p>
+
+<div class="override-toggle-row">
+  <div>
+    <div class="override-toggle-label" id="toggle-label">Mark as temporarily closed</div>
+    <div class="override-toggle-sub" id="toggle-sub">Will reopen automatically at next scheduled open time</div>
+  </div>
+  <label class="toggle-switch" aria-label="Toggle override">
+    <input type="checkbox" id="override-toggle" onchange="handleToggleChange()">
+    <span class="toggle-track"></span>
+  </label>
+</div>
+
+<div class="override-pw-label">Password required</div>
+<input
+  type="password"
+  class="override-pw-input"
+  id="override-pw"
+  placeholder="Enter override password"
+  autocomplete="current-password"
+  onkeydown="handlePwKeydown(event)"
+>
+<div class="override-error-msg" id="override-error"></div>
+
+<button class="override-submit" id="override-submit" onclick="submitOverride()">Apply Override</button>
+
+<div class="override-success" id="override-success">
+  <div class="override-success-icon">✓</div>
+  <p id="override-success-msg">Override applied. <strong>Status updated.</strong></p>
+</div>
+```
+
+  </div>
+</div>
+<!-- ── END OVERRIDE MODAL ─────────────────────────────────────────────────── -->
+
 <script>
-  const answers = { type: null, duration: null, eligibility: null };
+// ── Membership Wizard ────────────────────────────────────────────────────────
+const answers = { type: null, duration: null, eligibility: null };
 
-  function selectOpt(step, val) {
-    const keys = ['type','duration','eligibility'];
-    answers[keys[step]] = val;
+function selectOpt(step, val) {
+  const keys = ['type','duration','eligibility'];
+  answers[keys[step]] = val;
+  if (step === 0 && val === 'student') {
+    ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = true; el.style.opacity = '0.3'; });
+  } else if (step === 0) {
+    ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = false; el.style.opacity = '1'; });
+  }
+  document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  document.getElementById(`next-${step}`).disabled = false;
+}
 
-    if (step === 0 && val === 'student') {
-      ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = true; el.style.opacity = '0.3'; });
-    } else if (step === 0) {
-      ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = false; el.style.opacity = '1'; });
+function nextStep(current) {
+  document.getElementById(`step-${current}`).classList.remove('active');
+  document.getElementById(`step-${current + 1}`).classList.add('active');
+  updateWizardDots(current + 1);
+}
+
+function prevStep(current) {
+  document.getElementById(`step-${current}`).classList.remove('active');
+  document.getElementById(`step-${current - 1}`).classList.add('active');
+  updateWizardDots(current - 1);
+}
+
+function updateWizardDots(active) {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById(`dot-${i}`);
+    d.classList.remove('active','done');
+    if (i < active) d.classList.add('done');
+    else if (i === active) d.classList.add('active');
+  }
+}
+
+const rates = {
+  single:  { alumni:{monthly:'$10 / mo',sixmonth:'$50 / 6 mo',annual:'$90 / yr'}, senior:{monthly:'$15 / mo',sixmonth:'$75 / 6 mo',annual:'$135 / yr'}, city:{monthly:'$25 / mo',sixmonth:'$100 / 6 mo',annual:'$175 / yr'}, none:{monthly:'$45 / mo',sixmonth:'$200 / 6 mo',annual:'$350 / yr'} },
+  couple:  { alumni:null, senior:{monthly:'$25 / mo',sixmonth:'$125 / 6 mo',annual:'$225 / yr'}, city:{monthly:'$35 / mo',sixmonth:'$150 / 6 mo',annual:'$250 / yr'}, none:{monthly:'$55 / mo',sixmonth:'$300 / 6 mo',annual:'$500 / yr'} },
+  family:  { alumni:{monthly:'$20 / mo',sixmonth:'$90 / 6 mo',annual:'$140 / yr'}, senior:null, city:{monthly:'$40 / mo',sixmonth:'$175 / 6 mo',annual:'$300 / yr'}, none:{monthly:'$60 / mo',sixmonth:'$300 / 6 mo',annual:'$540 / yr'} },
+  student: { alumni:null, senior:null, city:{monthly:'$15 / mo',sixmonth:null,annual:null}, none:{monthly:'$25 / mo',sixmonth:null,annual:null} }
+};
+
+const tierNames = { alumni:'Somerset Alumni', senior:'Senior (65+)', city:'City School Tax Payer', none:'Non-City Tax Payer (Standard)' };
+const tierOrder = ['alumni','senior','city','none'];
+
+function getPrice(type, tier, dur) { const t = rates[type][tier]; return t ? (t[dur] || null) : null; }
+
+function showResult() {
+  nextStep(2); updateWizardDots(3);
+  const { type, duration, eligibility } = answers;
+  const typeLabel = { single:'Single', couple:'Couple', family:'Family', student:'Student' }[type];
+  const durLabel  = { monthly:'Monthly', sixmonth:'6-Month', annual:'Annual' }[duration];
+  document.getElementById('result-subtitle').textContent = `${typeLabel} · ${durLabel} membership`;
+  const qualifyMap = { alumni: eligibility==='alumni', senior: eligibility==='senior', city: eligibility==='city'||eligibility==='alumni', none: true };
+  let bestTier = null;
+  for (const tier of tierOrder) { if (qualifyMap[tier] && getPrice(type, tier, duration)) { bestTier = tier; break; } }
+  let html = '<div class="result-tier">';
+  for (const tier of tierOrder) {
+    const price = getPrice(type, tier, duration);
+    if (!price) continue;
+    const isBest = tier === bestTier;
+    const qualifies = qualifyMap[tier];
+    html += `<div class="result-item ${isBest?'best':''}">
+      <span class="tier-name">${tierNames[tier]}
+        ${isBest ? '<span class="best-badge">Your best rate</span>' : ''}
+        ${qualifies && !isBest ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.32);margin-left:6px">you qualify</span>' : ''}
+        ${!qualifies ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.22);margin-left:6px">not eligible</span>' : ''}
+      </span>
+      <span class="tier-price">${price}</span>
+    </div>`;
+  }
+  html += '</div>';
+  if (!bestTier) {
+    html = '<p style="color:rgba(255,255,255,0.55)">This combination is not available. Please check with the front desk.</p>';
+  } else {
+    const note1 = type === 'student' ? ' Student memberships are monthly only.' : '';
+    const note2 = (type === 'couple' && eligibility === 'alumni') ? ' Alumni rates do not include a couple option — city rate shown as your best available.' : '';
+    html += `<p class="result-note">Your best available rate is highlighted above.${note1}${note2} Please contact the front desk to confirm eligibility and sign up.</p>`;
+  }
+  document.getElementById('result-box').innerHTML = `<h3>Here are your rates</h3>${html}`;
+}
+
+function restart() {
+  answers.type = null; answers.duration = null; answers.eligibility = null;
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-0').classList.add('active');
+  document.querySelectorAll('.option-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; b.style.opacity = '1'; });
+  document.querySelectorAll('.btn-next').forEach(b => b.disabled = true);
+  updateWizardDots(0);
+}
+
+// ── Facility Status + Override ───────────────────────────────────────────────
+
+// Server-side state fetched from status.php
+let serverOverrides = { gym: null, pool: null };
+
+// Which facility the modal is currently targeting
+let modalFacility = null;
+
+/**
+ * Returns true if the facility is currently within scheduled open hours (ET).
+ * Mon–Fri 08:00–13:00 and 17:00–20:00 | Sat 08:00–12:00
+ */
+function isScheduledOpen(d) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    weekday: 'long', hour: 'numeric', minute: 'numeric', hour12: false
+  }).formatToParts(d);
+  const weekday = parts.find(p => p.type === 'weekday').value;
+  const h = +parts.find(p => p.type === 'hour').value;
+  const m = +parts.find(p => p.type === 'minute').value;
+  const t = h * 60 + m;
+  if (weekday === 'Sunday') return false;
+  if (weekday === 'Saturday') return t >= 480 && t < 720;
+  return (t >= 480 && t < 780) || (t >= 1020 && t < 1200);
+}
+
+/**
+ * Applies current state to the DOM for one facility pill.
+ * Priority: server override > scheduled hours
+ */
+function applyFacilityUI(facility) {
+  const dot   = document.getElementById(`dot-${facility}`);
+  const label = document.getElementById(`label-${facility}`);
+  if (!dot || !label) return;
+
+  const override = serverOverrides[facility];
+  const nowTs    = Math.floor(Date.now() / 1000);
+
+  let isOpen, isOverride;
+
+  if (override && override.state === 'closed' && override.until > nowTs) {
+    // Active manual override
+    isOpen     = false;
+    isOverride = true;
+  } else {
+    // Fall back to schedule
+    isOpen     = isScheduledOpen(new Date());
+    isOverride = false;
+  }
+
+  dot.className = 'facility-status-dot ' + (isOverride ? 'is-override' : (isOpen ? 'is-open' : 'is-closed'));
+  dot.setAttribute('aria-label', isOpen ? 'Open' : 'Closed');
+  label.textContent = isOpen ? 'Open' : 'Closed';
+}
+
+function applyAllFacilities() {
+  applyFacilityUI('gym');
+  applyFacilityUI('pool');
+}
+
+/** Fetch the current override state from the server */
+async function fetchServerStatus() {
+  try {
+    const res = await fetch('/status.php', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    serverOverrides.gym  = data.gym  || null;
+    serverOverrides.pool = data.pool || null;
+  } catch (_) {
+    // Server unreachable — fall back to schedule only
+  }
+  applyAllFacilities();
+}
+
+// ── Override Modal ───────────────────────────────────────────────────────────
+
+function openOverrideModal(facility) {
+  modalFacility = facility;
+  const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
+
+  // Badge
+  const dot = document.getElementById('modal-badge-dot');
+  const override = serverOverrides[facility];
+  const nowTs = Math.floor(Date.now() / 1000);
+  const hasActiveOverride = override && override.state === 'closed' && override.until > nowTs;
+  const isOpen = hasActiveOverride ? false : isScheduledOpen(new Date());
+
+  dot.style.background = hasActiveOverride ? '#e07b3a' : (isOpen ? '#3ecf7a' : '#c4c0ce');
+  document.getElementById('modal-badge-label').textContent = facilityName;
+  document.getElementById('override-modal-title').textContent = facilityName + ' Status Override';
+
+  // Set toggle state and description
+  const toggle = document.getElementById('override-toggle');
+  if (hasActiveOverride) {
+    toggle.checked = true;
+    const untilDate = new Date(override.until * 1000);
+    const untilStr  = untilDate.toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    document.getElementById('override-desc').textContent =
+      `The ${facilityName.toLowerCase()} is currently overridden as closed. Toggle off to restore normal schedule.`;
+    document.getElementById('toggle-label').textContent  = 'Override active — marked as closed';
+    document.getElementById('toggle-sub').textContent    = `Reopens automatically at ${untilStr} ET`;
+  } else {
+    toggle.checked = false;
+    document.getElementById('override-desc').textContent =
+      `Toggle on to mark the ${facilityName.toLowerCase()} as temporarily closed. It will automatically reopen at the next scheduled open time.`;
+    document.getElementById('toggle-label').textContent  = 'Mark as temporarily closed';
+    document.getElementById('toggle-sub').textContent    = 'Will reopen automatically at next scheduled open time';
+  }
+
+  // Reset form state
+  const pw = document.getElementById('override-pw');
+  pw.value = '';
+  pw.classList.remove('error');
+  document.getElementById('override-error').classList.remove('visible');
+  document.getElementById('override-error').textContent = '';
+  document.getElementById('override-submit').disabled = false;
+  document.getElementById('override-submit').textContent = 'Apply Override';
+  document.getElementById('override-success').classList.remove('visible');
+
+  document.getElementById('override-backdrop').classList.add('visible');
+  setTimeout(() => pw.focus(), 120);
+}
+
+function closeOverrideModal() {
+  document.getElementById('override-backdrop').classList.remove('visible');
+  modalFacility = null;
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('override-backdrop')) closeOverrideModal();
+}
+
+function handleToggleChange() {
+  const toggle = document.getElementById('override-toggle');
+  const facility = modalFacility;
+  if (!facility) return;
+  const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
+  if (toggle.checked) {
+    document.getElementById('toggle-label').textContent = 'Mark as temporarily closed';
+    document.getElementById('toggle-sub').textContent   = 'Will reopen automatically at next scheduled open time';
+    document.getElementById('override-submit').textContent = 'Apply Override';
+  } else {
+    document.getElementById('toggle-label').textContent = 'Remove override — restore schedule';
+    document.getElementById('toggle-sub').textContent   = `${facilityName} will show status based on regular hours`;
+    document.getElementById('override-submit').textContent = 'Remove Override';
+  }
+}
+
+function handlePwKeydown(e) {
+  if (e.key === 'Enter') submitOverride();
+}
+
+async function submitOverride() {
+  const facility = modalFacility;
+  if (!facility) return;
+
+  const pw     = document.getElementById('override-pw');
+  const toggle = document.getElementById('override-toggle');
+  const btn    = document.getElementById('override-submit');
+  const errEl  = document.getElementById('override-error');
+
+  const password = pw.value.trim();
+  if (!password) {
+    showPwError('Please enter the override password.');
+    return;
+  }
+
+  const action = toggle.checked ? 'close' : 'open';
+
+  btn.disabled = true;
+  btn.textContent = 'Applying…';
+  errEl.classList.remove('visible');
+
+  try {
+    const res = await fetch('/status.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ facility, action, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showPwError(data.error || 'Something went wrong. Try again.');
+      btn.disabled = false;
+      btn.textContent = 'Apply Override';
+      return;
     }
 
-    document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => b.classList.remove('selected'));
-    event.currentTarget.classList.add('selected');
-    document.getElementById(`next-${step}`).disabled = false;
-  }
+    // Success — update local state and UI
+    await fetchServerStatus();
 
-  function nextStep(current) {
-    document.getElementById(`step-${current}`).classList.remove('active');
-    document.getElementById(`step-${current + 1}`).classList.add('active');
-    updateDots(current + 1);
-  }
-
-  function prevStep(current) {
-    document.getElementById(`step-${current}`).classList.remove('active');
-    document.getElementById(`step-${current - 1}`).classList.add('active');
-    updateDots(current - 1);
-  }
-
-  function updateDots(active) {
-    for (let i = 0; i < 4; i++) {
-      const d = document.getElementById(`dot-${i}`);
-      d.classList.remove('active','done');
-      if (i < active) d.classList.add('done');
-      else if (i === active) d.classList.add('active');
-    }
-  }
-
-  const rates = {
-    single:  { alumni:{monthly:'$10 / mo',sixmonth:'$50 / 6 mo',annual:'$90 / yr'}, senior:{monthly:'$15 / mo',sixmonth:'$75 / 6 mo',annual:'$135 / yr'}, city:{monthly:'$25 / mo',sixmonth:'$100 / 6 mo',annual:'$175 / yr'}, none:{monthly:'$45 / mo',sixmonth:'$200 / 6 mo',annual:'$350 / yr'} },
-    couple:  { alumni:null, senior:{monthly:'$25 / mo',sixmonth:'$125 / 6 mo',annual:'$225 / yr'}, city:{monthly:'$35 / mo',sixmonth:'$150 / 6 mo',annual:'$250 / yr'}, none:{monthly:'$55 / mo',sixmonth:'$300 / 6 mo',annual:'$500 / yr'} },
-    family:  { alumni:{monthly:'$20 / mo',sixmonth:'$90 / 6 mo',annual:'$140 / yr'}, senior:null, city:{monthly:'$40 / mo',sixmonth:'$175 / 6 mo',annual:'$300 / yr'}, none:{monthly:'$60 / mo',sixmonth:'$300 / 6 mo',annual:'$540 / yr'} },
-    student: { alumni:null, senior:null, city:{monthly:'$15 / mo',sixmonth:null,annual:null}, none:{monthly:'$25 / mo',sixmonth:null,annual:null} }
-  };
-
-  const tierNames = { alumni:'Somerset Alumni', senior:'Senior (65+)', city:'City School Tax Payer', none:'Non-City Tax Payer (Standard)' };
-  const tierOrder = ['alumni','senior','city','none'];
-
-  function getPrice(type, tier, dur) { const t = rates[type][tier]; return t ? (t[dur] || null) : null; }
-
-  function showResult() {
-    nextStep(2); updateDots(3);
-    const { type, duration, eligibility } = answers;
-    const typeLabel = { single:'Single', couple:'Couple', family:'Family', student:'Student' }[type];
-    const durLabel  = { monthly:'Monthly', sixmonth:'6-Month', annual:'Annual' }[duration];
-    document.getElementById('result-subtitle').textContent = `${typeLabel} · ${durLabel} membership`;
-
-    const qualifyMap = { alumni: eligibility==='alumni', senior: eligibility==='senior', city: eligibility==='city'||eligibility==='alumni', none: true };
-    let bestTier = null;
-    for (const tier of tierOrder) { if (qualifyMap[tier] && getPrice(type, tier, duration)) { bestTier = tier; break; } }
-
-    let html = '<div class="result-tier">';
-    for (const tier of tierOrder) {
-      const price = getPrice(type, tier, duration);
-      if (!price) continue;
-      const isBest = tier === bestTier;
-      const qualifies = qualifyMap[tier];
-      html += `<div class="result-item ${isBest?'best':''}">
-        <span class="tier-name">${tierNames[tier]}
-          ${isBest ? '<span class="best-badge">Your best rate</span>' : ''}
-          ${qualifies && !isBest ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.32);margin-left:6px">you qualify</span>' : ''}
-          ${!qualifies ? '<span style="font-size:0.7rem;color:rgba(255,255,255,0.22);margin-left:6px">not eligible</span>' : ''}
-        </span>
-        <span class="tier-price">${price}</span>
-      </div>`;
-    }
-    html += '</div>';
-
-    if (!bestTier) {
-      html = '<p style="color:rgba(255,255,255,0.55)">This combination is not available. Please check with the front desk.</p>';
+    const successMsg = document.getElementById('override-success-msg');
+    const facilityName = facility === 'gym' ? 'Gym' : 'Pool';
+    if (action === 'close') {
+      const untilDate = new Date(data.until * 1000);
+      const untilStr  = untilDate.toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+      successMsg.innerHTML = `<strong>${facilityName} marked closed.</strong> Will reopen automatically at ${untilStr} ET.`;
     } else {
-      const note1 = type === 'student' ? ' Student memberships are monthly only.' : '';
-      const note2 = (type === 'couple' && eligibility === 'alumni') ? ' Alumni rates do not include a couple option — city rate shown as your best available.' : '';
-      html += `<p class="result-note">Your best available rate is highlighted above.${note1}${note2} Please contact the front desk to confirm eligibility and sign up.</p>`;
+      successMsg.innerHTML = `<strong>Override cleared.</strong> ${facilityName} is back on its normal schedule.`;
     }
 
-    document.getElementById('result-box').innerHTML = `<h3>Here are your rates</h3>${html}`;
+    document.getElementById('override-success').classList.add('visible');
+    btn.textContent = 'Done';
+
+    setTimeout(closeOverrideModal, 2200);
+
+  } catch (_) {
+    showPwError('Could not reach the server. Check your connection.');
+    btn.disabled = false;
+    btn.textContent = 'Apply Override';
   }
+}
 
-  function restart() {
-    answers.type = null; answers.duration = null; answers.eligibility = null;
-    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step-0').classList.add('active');
-    document.querySelectorAll('.option-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; b.style.opacity = '1'; });
-    document.querySelectorAll('.btn-next').forEach(b => b.disabled = true);
-    updateDots(0);
-  }
+function showPwError(msg) {
+  const pw  = document.getElementById('override-pw');
+  const err = document.getElementById('override-error');
+  pw.classList.remove('error');
+  void pw.offsetWidth; // force reflow to re-trigger animation
+  pw.classList.add('error');
+  err.textContent = msg;
+  err.classList.add('visible');
+  pw.value = '';
+  setTimeout(() => pw.focus(), 50);
+}
 
-  (function () {
-    if (window.__facilityHoursStatus) return;
-    window.__facilityHoursStatus = true;
-    function isOpenEastern(d) {
-      var parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        weekday: 'long',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-      }).formatToParts(d);
-      var weekday = parts.find(function (p) { return p.type === 'weekday'; }).value;
-      var h = +parts.find(function (p) { return p.type === 'hour'; }).value;
-      var m = +parts.find(function (p) { return p.type === 'minute'; }).value;
-      var t = h * 60 + m;
-      if (weekday === 'Sunday') return false;
-      if (weekday === 'Saturday') return t >= 8 * 60 && t < 12 * 60;
-      if (weekday === 'Monday' || weekday === 'Tuesday' || weekday === 'Wednesday' ||
-          weekday === 'Thursday' || weekday === 'Friday') {
-        return (t >= 8 * 60 && t < 13 * 60) || (t >= 17 * 60 && t < 20 * 60);
-      }
-      return false;
-    }
-    function updateFacilityStatus() {
-      var open = isOpenEastern(new Date());
-      var word = open ? 'Open' : 'Closed';
-      document.querySelectorAll('.facility-status-dot').forEach(function (el) {
-        el.classList.toggle('is-open', open);
-        el.classList.toggle('is-closed', !open);
-        el.setAttribute('aria-label', word);
-      });
-      document.querySelectorAll('.facility-status-label').forEach(function (el) {
-        el.textContent = word;
-      });
-    }
-    updateFacilityStatus();
-    setInterval(updateFacilityStatus, 60000);
-  })();
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+fetchServerStatus();
+setInterval(fetchServerStatus, 60000); // re-check every minute (also purges expired overrides)
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverrideModal(); });
 </script>
+
 </body>
 </html>
