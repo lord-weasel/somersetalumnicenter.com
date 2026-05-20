@@ -8,6 +8,8 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html { height: 100%; overflow: hidden; }
+
   :root {
     --purple: #5E1771;
     --gold: #DDB92A;
@@ -15,7 +17,8 @@
   }
 
   body {
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background-color: var(--purple);
     background-image:
       radial-gradient(ellipse at 20% 50%, rgba(221,185,42,0.08) 0%, transparent 60%),
