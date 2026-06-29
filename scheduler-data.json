@@ -1,0 +1,40 @@
+{
+  "employees": [
+    "Gianni Anderson",
+    "Makenna Baker",
+    "Thomas Bradshaw",
+    "James Brown",
+    "Julian Carroll",
+    "Corban Cimala",
+    "Mattie Cooper",
+    "Jaycee Cothron",
+    "Jacob Estep",
+    "Keaton Goetz",
+    "Jordan Gragg",
+    "Charleston Girdler",
+    "Tristian Harrell",
+    "Hannah Haste",
+    "Hayden Hernandez",
+    "Tripp Hoseclaw",
+    "Ty Jacobs",
+    "Marcus Jones",
+    "Gavyn Kozak",
+    "Clark Litteral",
+    "Josh Lewis",
+    "Paisley Poore",
+    "Leah Quillen",
+    "Will Robinson",
+    "Adelyn White",
+    "Sarah White",
+    "Cameron Underwood"
+  ],
+  "schedules": {
+    "frontdesk": {},
+    "lifeguard": {}
+  },
+  "currentYear": 2026,
+  "currentMonth": 5,
+  "activeShift": "am",
+  "activeCalendar": "frontdesk",
+  "updatedAt": "2026-06-29T00:00:00+00:00"
+}
