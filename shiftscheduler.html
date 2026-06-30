@@ -443,13 +443,23 @@
     flex: 1;
     color: var(--text);
   }
-
   .card-shift-label {
     font-size: 10px;
     font-weight: 700;
     font-family: 'DM Mono', monospace;
     color: var(--purple);
   }
+  .staff-group-letter {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 4px 2px;
+    color: var(--purple);
+    opacity: 0.55;
+  }
+
+  .staff-group-letter.pm { color: var(--gold); }
 
 
   /* ── EMPLOYEE MANAGER ── */
@@ -1030,7 +1040,6 @@ function setActiveShift(type) {
   saveData();
   renderSidebar();
 }
-
 /* ── SIDEBAR ── */
 function renderSidebar() {
   const list = document.getElementById('staffList');
@@ -1039,7 +1048,18 @@ function renderSidebar() {
 
   employees = sortEmployees(employees);
 
+  let lastInitial = null;
+
   employees.forEach(name => {
+    const initial = getNameParts(name).last.charAt(0).toUpperCase();
+    if (initial !== lastInitial) {
+      lastInitial = initial;
+      const letterEl = document.createElement('div');
+      letterEl.className = `staff-group-letter ${activeShift}`;
+      letterEl.textContent = initial;
+      list.appendChild(letterEl);
+    }
+
     const card = document.createElement('div');
     card.className = `staff-card ${activeShift}`;
     card.draggable = true;
