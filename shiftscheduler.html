@@ -6,16 +6,15 @@
 <title>Somerset Alumni Center — Shift Scheduler</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
 
   :root {
     --purple:       #5E1771;
-    --purple-deep:  #42104F;
-    --purple-light: #7B3A8C;
+    --purple-deep:  #5E1771;
+    --purple-light: #5E1771;
     --purple-pale:  #F7F1F9;
     --purple-muted: #E7D7EC;
     --gold:         #DDB92A;
-    --gold-dark:    #8A6A00;
-    --gold-pale:    #FFF8D9;
     --white:        #ffffff;
     --bg:           #FBF8FC;
     --surface:      #ffffff;
@@ -24,9 +23,10 @@
     --border:       #DED1E5;
     --shift-am:     #5E1771;
     --shift-pm:     #DDB92A;
-    --shift-sat:    #7B3A8C;
+    --shift-sat:    #5E1771;
     --danger:       #B42318;
     --danger-pale:  #FFF1F0;
+    --focus-ring:   rgba(94,23,113,0.18);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,11 +64,12 @@
   }
 
   .logo {
+    font-family: 'Playfair Display', serif;
     font-size: 17px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
     color: var(--white);
-    line-height: 1.1;
+    line-height: 1.25;
   }
 
   .logo .gold { color: var(--gold); }
@@ -118,9 +119,9 @@
   }
 
   .nav-arrow {
-    background: rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.12);
     color: var(--white);
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.28);
     width: 30px;
     height: 30px;
     border-radius: 6px;
@@ -129,10 +130,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
     flex-shrink: 0;
   }
-  .nav-arrow:hover { background: var(--gold); color: var(--purple-deep); }
+  .nav-arrow:hover {
+    background: var(--white);
+    border-color: var(--white);
+    color: var(--purple-deep);
+  }
 
   .month-label {
     font-size: 15px;
@@ -143,9 +148,9 @@
   }
 
   .print-btn {
-    background: var(--white);
-    color: var(--purple);
-    border: none;
+    background: var(--gold);
+    color: var(--white);
+    border: 1px solid var(--gold);
     padding: 7px 16px;
     border-radius: 7px;
     font-family: inherit;
@@ -153,11 +158,16 @@
     font-weight: 700;
     cursor: pointer;
     margin-left: 8px;
-    transition: opacity 0.15s, box-shadow 0.15s;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
     box-shadow: none;
     letter-spacing: 0.2px;
   }
-  .print-btn:hover { opacity: 0.9; box-shadow: none; }
+  .print-btn:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+  }
 
   /* ── WORKSPACE ── */
   .workspace {
@@ -196,7 +206,7 @@
     grid-template-rows: 32px repeat(6, 1fr);
     gap: 0;
     flex: 1;
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border);
     border-radius: 12px;
     background: var(--border);
     overflow: hidden;
@@ -240,7 +250,7 @@
   .cal-cell.drag-over {
     border-color: var(--gold);
     box-shadow: 0 0 0 2px rgba(221,185,42,0.35);
-    background: var(--gold-pale);
+    background: var(--white);
   }
 
   .cal-cell.today { box-shadow: inset 0 0 0 2px var(--purple-light); }
@@ -293,11 +303,24 @@
   }
   .shift-chip .remove-btn:hover { color: white; }
 
+  .day-note {
+    border: 1px solid var(--purple);
+    border-left: 4px solid var(--purple);
+    border-radius: 4px;
+    padding: 5px 6px;
+    color: var(--purple);
+    background: var(--white);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
   /* ── SIDEBAR ── */
   .sidebar {
     width: 268px;
     background: var(--white);
-    border-left: 1.5px solid var(--border);
+    border-left: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -376,7 +399,7 @@
     border: 1px solid var(--border);
     background: var(--white);
     cursor: grab;
-    border-left: 5px solid var(--purple);
+    border-left: 4px solid var(--purple);
     transition: all 0.15s;
     user-select: none;
   }
@@ -405,14 +428,14 @@
     color: var(--text);
   }
   .staff-card.pm:hover {
-    background: var(--gold-pale);
+    background: var(--white);
     border-color: var(--gold);
     transform: translateX(-2px);
     box-shadow: 2px 2px 8px rgba(221,185,42,0.18);
   }
   .staff-card.pm .card-dot { background: var(--gold); }
   .staff-card.pm .card-name { color: var(--text); }
-  .staff-card.pm .card-shift-label { color: var(--gold-dark); }
+  .staff-card.pm .card-shift-label { color: var(--gold); }
 
   .card-name {
     font-size: 12px;
@@ -433,7 +456,7 @@
   .manage-employees-btn {
     width: 100%;
     margin-top: 8px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--purple-muted);
     border-radius: 7px;
     background: var(--white);
     color: var(--purple);
@@ -448,6 +471,7 @@
   .manage-employees-btn:hover {
     border-color: var(--purple);
     background: var(--purple-pale);
+    color: var(--purple-deep);
   }
 
   .employee-modal {
@@ -466,6 +490,12 @@
     grid-template-columns: 1fr auto;
     gap: 6px;
     margin: 0 0 10px;
+  }
+
+  .note-input {
+    min-height: 88px;
+    resize: vertical;
+    line-height: 1.45;
   }
 
   .employee-input {
@@ -497,7 +527,10 @@
     cursor: pointer;
   }
 
-  .employee-add-btn:hover { opacity: 0.9; }
+  .employee-add-btn:hover {
+    background: var(--purple-deep);
+    border-color: var(--purple-deep);
+  }
 
   .employee-manager-list {
     border: 1px solid var(--border);
@@ -595,7 +628,7 @@
     opacity: 0.92;
     display: none;
     box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-    border: 1.5px solid var(--gold);
+    border: 1px solid var(--gold);
   }
 
   /* ── MODAL ── */
@@ -643,24 +676,58 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
     text-align: left;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .modal-btn:hover { opacity: 0.85; }
+  .modal-btn:hover { transform: translateY(-1px); }
   .modal-btn.both {
     background: var(--purple);
     color: white;
     border: 1px solid var(--purple);
   }
+  .modal-btn.both:hover {
+    background: var(--purple-deep);
+    border-color: var(--purple-deep);
+  }
   .modal-btn.fd,
-  .modal-btn.lg,
+  .modal-btn.lg {
+    background: var(--purple-pale);
+    color: var(--purple-deep);
+    border: 1px solid var(--purple-muted);
+  }
+  .modal-btn.fd:hover,
+  .modal-btn.lg:hover {
+    background: var(--purple-muted);
+    border-color: var(--purple-light);
+  }
   .modal-btn.cancel {
     background: var(--white);
-    color: var(--purple);
+    color: var(--text-muted);
     border: 1px solid var(--border);
+  }
+  .modal-btn.cancel:hover {
+    background: #F8F4FA;
+    border-color: var(--purple-muted);
+    color: var(--purple-deep);
+  }
+
+  .modal-btn.done {
+    background: var(--purple);
+    color: var(--white);
+    border: 1px solid var(--purple);
+  }
+
+  .modal-btn.done:hover {
+    background: var(--purple-deep);
+    border-color: var(--purple-deep);
+  }
+
+  button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
 </style>
 </head>
@@ -737,21 +804,24 @@
       <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
     </div>
     <div class="employee-manager-list" id="employeeManagerList"></div>
-    <button class="modal-btn cancel" type="button" onclick="closeEmployeeModal()">Done</button>
+    <button class="modal-btn done" type="button" onclick="closeEmployeeModal()">Done</button>
+  </div>
+</div>
+
+<!-- Day Note Modal -->
+<div class="modal-overlay" id="dayNoteModal">
+  <div class="modal employee-modal">
+    <h2>Day Note</h2>
+    <p>Add a note for this empty day, such as closed dates or special events.</p>
+    <textarea class="employee-input note-input" id="dayNoteInput" placeholder="Closed for..."></textarea>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="modal-btn done" type="button" id="saveDayNoteBtn">Save Note</button>
+      <button class="modal-btn cancel" type="button" onclick="closeDayNoteModal()">Cancel</button>
+    </div>
   </div>
 </div>
 
 <script>
-const DEFAULT_EMPLOYEES = [
-  "Gianni Anderson","Makenna Baker","Thomas Bradshaw","James Brown",
-  "Julian Carroll","Corban Cimala","Mattie Cooper","Jaycee Cothron",
-  "Jacob Estep","Keaton Goetz","Jordan Gragg","Charleston Girdler",
-  "Tristian Harrell","Hannah Haste","Hayden Hernandez","Tripp Hoseclaw",
-  "Ty Jacobs","Marcus Jones","Gavyn Kozak","Clark Litteral",
-  "Josh Lewis","Paisley Poore","Leah Quillen","Will Robinson",
-  "Adelyn White","Sarah White","Cameron Underwood"
-];
-
 const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MONTHS = ["January","February","March","April","May","June",
                 "July","August","September","October","November","December"];
@@ -761,12 +831,15 @@ let currentMonth = new Date().getMonth();
 let activeShift  = 'am';
 let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard'
 
-// Two separate schedules keyed by dateKey
+// Data is loaded from scheduler-data.json or scheduler-api.php.
 let schedules = { frontdesk: {}, lifeguard: {} };
-let employees = sortEmployees([...DEFAULT_EMPLOYEES]);
+let dayNotes = { frontdesk: {}, lifeguard: {} };
+let employees = [];
+let activeNoteKey = null;
 
-const STORAGE_KEY = 'somersetAlumniCenterScheduler.v2';
+const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
 const API_URL = 'scheduler-api.php';
+const DATA_URL = 'scheduler-data.json';
 let saveTimer = null;
 
 function getNameParts(name) {
@@ -800,6 +873,7 @@ function getDataSnapshot() {
   return {
     employees: sortEmployees(employees),
     schedules: normalizeSchedules(schedules),
+    dayNotes: normalizeDayNotes(dayNotes),
     currentYear,
     currentMonth,
     activeShift,
@@ -814,10 +888,11 @@ function applySavedData(saved) {
   if (Array.isArray(saved.employees)) {
     employees = sortEmployees(saved.employees);
   }
-  if (!employees.length) employees = sortEmployees([...DEFAULT_EMPLOYEES]);
-
   if (saved.schedules && typeof saved.schedules === 'object') {
     schedules = normalizeSchedules(saved.schedules);
+  }
+  if (saved.dayNotes && typeof saved.dayNotes === 'object') {
+    dayNotes = normalizeDayNotes(saved.dayNotes);
   }
 
   if (Number.isInteger(saved.currentYear)) currentYear = saved.currentYear;
@@ -837,10 +912,14 @@ function saveLocalBackup(data) {
 function loadLocalBackup() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) applySavedData(JSON.parse(raw));
+    if (raw) {
+      applySavedData(JSON.parse(raw));
+      return true;
+    }
   } catch (err) {
     console.warn('Local backup could not be loaded.', err);
   }
+  return false;
 }
 
 function saveData() {
@@ -862,17 +941,27 @@ function saveData() {
 
 async function loadData() {
   try {
+    const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const saved = await response.json();
+    applySavedData(saved);
+    saveLocalBackup(getDataSnapshot());
+    return;
+  } catch (jsonErr) {
+    console.warn('Scheduler JSON could not be loaded. Trying shared server endpoint.', jsonErr);
+  }
+
+  try {
     const response = await fetch(`${API_URL}?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const saved = await response.json();
     applySavedData(saved);
     saveLocalBackup(getDataSnapshot());
-  } catch (err) {
-    console.warn('Shared server data could not be loaded. Falling back to this browser backup.', err);
+  } catch (apiErr) {
+    console.warn('Shared server data could not be loaded. Falling back to this browser backup.', apiErr);
     loadLocalBackup();
   }
 }
-
 function normalizeSchedules(savedSchedules) {
   const clean = { frontdesk: {}, lifeguard: {} };
   ['frontdesk', 'lifeguard'].forEach(calKey => {
@@ -886,6 +975,19 @@ function normalizeSchedules(savedSchedules) {
         }))
         .filter(entry => entry.name);
       if (entries.length) clean[calKey][key] = entries;
+    });
+  });
+  return clean;
+}
+
+function normalizeDayNotes(savedNotes) {
+  const clean = { frontdesk: {}, lifeguard: {} };
+  ['frontdesk', 'lifeguard'].forEach(calKey => {
+    const cal = savedNotes[calKey] || {};
+    Object.keys(cal).forEach(key => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+      const note = String(cal[key] || '').trim().replace(/\s+/g, ' ');
+      if (note) clean[calKey][key] = note.slice(0, 80);
     });
   });
   return clean;
@@ -905,6 +1007,7 @@ function dateKey(y, m, d) {
 }
 
 function getSchedule() { return schedules[activeCalendar]; }
+function getDayNotes() { return dayNotes[activeCalendar]; }
 
 /* ── CALENDAR SWITCH ── */
 function switchCalendar(cal) {
@@ -1080,6 +1183,12 @@ function renderCalendar() {
         addShift(key, e.dataTransfer.getData('name'), e.dataTransfer.getData('shift'), isSaturday);
       });
     }
+    cell.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const sched = getSchedule();
+      if ((sched[key] || []).length) return;
+      openDayNoteModal(key);
+    });
 
     const shiftsList = document.createElement('div');
     shiftsList.className = 'shifts-list';
@@ -1101,6 +1210,15 @@ function renderCellShifts(container, key, isSaturday) {
   container.innerHTML = '';
   const sched  = getSchedule();
   const shifts = sched[key] || [];
+  const note = getDayNotes()[key] || '';
+
+  if (!shifts.length && note) {
+    const noteEl = document.createElement('div');
+    noteEl.className = 'day-note';
+    noteEl.textContent = note;
+    container.appendChild(noteEl);
+    return;
+  }
 
   shifts.forEach((entry, idx) => {
     const chip = document.createElement('div');
@@ -1132,6 +1250,7 @@ function addShift(key, name, shift, isSaturday) {
   if (!sched[key]) sched[key] = [];
   if (sched[key].some(e => e.name === name)) return;
   sched[key].push({ name, shift: isSaturday ? 'sat' : shift });
+  delete getDayNotes()[key];
   saveData();
   refreshCell(key);
 }
@@ -1150,6 +1269,44 @@ function refreshCell(key) {
   if (!cell) return;
   const isSat = parseInt(cell.dataset.dow) === 6;
   renderCellShifts(cell.querySelector('.shifts-list'), key, isSat);
+}
+
+function openDayNoteModal(key) {
+  activeNoteKey = key;
+  document.getElementById('dayNoteInput').value = getDayNotes()[key] || '';
+  document.getElementById('dayNoteModal').classList.add('open');
+  setTimeout(() => document.getElementById('dayNoteInput').focus(), 0);
+}
+
+function closeDayNoteModal() {
+  document.getElementById('dayNoteModal').classList.remove('open');
+  activeNoteKey = null;
+}
+
+function saveDayNote() {
+  if (!activeNoteKey) return;
+  const sched = getSchedule();
+  if ((sched[activeNoteKey] || []).length) {
+    closeDayNoteModal();
+    return;
+  }
+  const note = document.getElementById('dayNoteInput').value.trim().replace(/\s+/g, ' ').slice(0, 80);
+  const notes = getDayNotes();
+  if (note) notes[activeNoteKey] = note;
+  else delete notes[activeNoteKey];
+  const key = activeNoteKey;
+  saveData();
+  closeDayNoteModal();
+  refreshCell(key);
+}
+
+function clearDayNote() {
+  if (!activeNoteKey) return;
+  const key = activeNoteKey;
+  delete getDayNotes()[key];
+  saveData();
+  closeDayNoteModal();
+  refreshCell(key);
 }
 
 /* ── NAV ── */
@@ -1176,10 +1333,18 @@ document.getElementById('printModal').addEventListener('click', e => {
 document.getElementById('employeeModal').addEventListener('click', e => {
   if (e.target === document.getElementById('employeeModal')) closeEmployeeModal();
 });
+document.getElementById('dayNoteModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('dayNoteModal')) closeDayNoteModal();
+});
+document.getElementById('saveDayNoteBtn').addEventListener('click', saveDayNote);
+document.getElementById('dayNoteInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveDayNote();
+});
 
 /* ── PRINT ── */
 function getPrintCalendarCells(calKey, monthName, year) {
   const sched       = schedules[calKey];
+  const notes       = dayNotes[calKey] || {};
   const mIdx        = MONTHS.indexOf(monthName);
   const daysInMonth = new Date(year, mIdx + 1, 0).getDate();
   const firstDay    = new Date(year, mIdx, 1).getDay();
@@ -1189,7 +1354,7 @@ function getPrintCalendarCells(calKey, monthName, year) {
   for (let d = 1; d <= daysInMonth; d++) {
     const dow = new Date(year, mIdx, d).getDay();
     const key = dateKey(year, mIdx, d);
-    cells.push({ empty: false, d, dow, shifts: sched[key] || [] });
+    cells.push({ empty: false, d, dow, shifts: sched[key] || [], note: notes[key] || '' });
   }
   while (cells.length < 42) cells.push({ empty: true });
   return cells;
@@ -1230,16 +1395,16 @@ function buildPrintSheet(calKey, monthName, year) {
   const gridW = colW * 7;
   const gridH = rowH * 6;
   const shellH = topH + daysH + gridH;
-  // Monochrome print palette so the printed page is designed for black-and-white printers
-  // instead of relying on purple/yellow color conversion.
-  const bar = '#111111';
-  const grid = '#222222';
-  const headerLine = '#555555';
-  const assignmentFill = '#FFFFFF';
-  const assignmentEdge = '#111111';
-  const assignmentStroke = '#333333';
-  const text = '#111111';
-  const mutedText = '#777777';
+  // Color print palette: follows the UI brand colors, with dark borders and labels
+  // so the page still reads well when printed in grayscale.
+  const purple = '#5E1771';
+  const gold = '#DDB92A';
+  const bar = purple;
+  const dayBar = purple;
+  const grid = '#6F5D76';
+  const headerLine = gold;
+  const text = '#221428';
+  const mutedText = '#8B7B93';
 
   let out = `<section class="sheet"><svg class="print-svg" viewBox="0 0 ${pageW} ${pageH}" xmlns="http://www.w3.org/2000/svg" aria-label="${svgEscape(calLabel)} ${svgEscape(monthName)} ${year}" shape-rendering="crispEdges">`;
 
@@ -1247,11 +1412,13 @@ function buildPrintSheet(calKey, monthName, year) {
   out += `<rect x="0" y="0" width="${pageW}" height="${pageH}" fill="#fff"/>`;
   out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" fill="#fff"/>`;
   out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${topH}" fill="${bar}"/>`;
-  out += `<rect x="${shellX}" y="${shellY + topH}" width="${shellW}" height="${daysH}" fill="${bar}"/>`;
+  out += `<rect x="${shellX}" y="${shellY + topH}" width="${shellW}" height="${daysH}" fill="${dayBar}"/>`;
+  out += `<rect x="${shellX}" y="${shellY + topH - 3}" width="${shellW}" height="3" fill="${gold}"/>`;
   out += `<rect x="${shellX}" y="${gridY}" width="${gridW}" height="${gridH}" fill="#fff"/>`;
 
   // Top bar text.
-  out += `<text x="${shellX + 18}" y="${shellY + 36}" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="800" fill="#fff" shape-rendering="geometricPrecision">Somerset Alumni Center</text>`;
+  out += `<text x="${shellX + 18}" y="${shellY + 24}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="#fff" shape-rendering="geometricPrecision">Somerset</text>`;
+  out += `<text x="${shellX + 18}" y="${shellY + 43}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="${gold}" shape-rendering="geometricPrecision">Alumni Center</text>`;
   out += `<text x="${shellX + shellW - 14}" y="${shellY + 24}" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(calLabel)}</text>`;
   out += `<text x="${shellX + shellW - 14}" y="${shellY + 42}" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(monthName)} ${year}</text>`;
 
@@ -1264,7 +1431,7 @@ function buildPrintSheet(calKey, monthName, year) {
     out += `<text x="${x + colW / 2}" y="${shellY + topH + 20}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="middle" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(dayName.toUpperCase())}</text>`;
   });
 
-  // Calendar entries. The cells stay plain white; the grid is drawn afterward so all
+  // Calendar entries. The grid is drawn afterward so all
   // borders land perfectly on top and remain connected.
   for (let r = 0; r < 6; r++) {
     for (let c = 0; c < 7; c++) {
@@ -1274,7 +1441,8 @@ function buildPrintSheet(calKey, monthName, year) {
       const y = gridY + r * rowH;
       if (!day || day.empty) continue;
 
-      out += `<text x="${x + colW - 8}" y="${y + 15}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="end" fill="#111" shape-rendering="geometricPrecision">${day.d}</text>`;
+      out += `<rect x="${x}" y="${y}" width="${colW}" height="${rowH}" fill="#FFFFFF"/>`;
+      out += `<text x="${x + colW - 8}" y="${y + 15}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="end" fill="${purple}" shape-rendering="geometricPrecision">${day.d}</text>`;
 
       if (day.dow === 0) {
         out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">–</text>`;
@@ -1283,6 +1451,15 @@ function buildPrintSheet(calKey, monthName, year) {
 
       const shifts = day.shifts || [];
       if (!shifts.length) {
+        if (day.note) {
+          const noteX = x + 14;
+          const noteY = y + 45;
+          const noteW = colW - 28;
+          out += `<rect x="${noteX}" y="${noteY}" width="${noteW}" height="32" rx="4" fill="#FFFFFF" stroke="${purple}" stroke-width="1"/>`;
+          out += `<rect x="${noteX}" y="${noteY}" width="4" height="32" rx="2" fill="${purple}"/>`;
+          out += `<text x="${noteX + 10}" y="${noteY + 20}" font-family="Inter, Arial, sans-serif" font-size="8.5" font-weight="800" fill="${text}" shape-rendering="geometricPrecision">${svgEscape(fitSvgText(day.note, 24))}</text>`;
+          continue;
+        }
         out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">–</text>`;
         continue;
       }
@@ -1292,21 +1469,30 @@ function buildPrintSheet(calKey, monthName, year) {
         return (order[a.shift] || 9) - (order[b.shift] || 9) || a.name.localeCompare(b.name);
       });
 
-      ordered.slice(0, 5).forEach((s, n) => {
+      const entryCount = ordered.length;
+      const availableH = rowH - 28;
+      const chipGap = entryCount <= 6 ? 2 : 0.5;
+      const chipH = entryCount <= 6 ? 13 : Math.max(1.8, Math.min(13, (availableH - Math.max(0, entryCount - 1) * chipGap) / entryCount));
+      const stepY = chipH + chipGap;
+      const nameSize = entryCount <= 6 ? 7.8 : Math.max(4.2, Math.min(7.8, chipH * 0.6));
+      const labelSize = entryCount <= 6 ? 7.2 : Math.max(3.9, Math.min(7.2, chipH * 0.55));
+      const textY = chipH * 0.72;
+
+      ordered.forEach((s, n) => {
         const isSat = day.dow === 6 || s.shift === 'sat';
         const label = isSat ? '8–12' : (s.shift === 'pm' ? '5–8' : '8–1');
-        const ay = y + 24 + n * 18;
+        const isPM = s.shift === 'pm' && !isSat;
+        const fill = '#FFFFFF';
+        const edge = isPM ? gold : purple;
+        const stroke = isPM ? gold : purple;
+        const ay = y + 23 + n * stepY;
         const ax = x + 7;
         const aw = colW - 14;
-        out += `<rect x="${ax}" y="${ay}" width="${aw}" height="15" rx="3" fill="${assignmentFill}" stroke="${assignmentStroke}" stroke-width="0.8"/>`;
-        out += `<rect x="${ax}" y="${ay}" width="4" height="15" rx="2" fill="${assignmentEdge}"/>`;
-        out += `<text x="${ax + 9}" y="${ay + 10.8}" font-family="Inter, Arial, sans-serif" font-size="8.4" font-weight="800" fill="${text}" shape-rendering="geometricPrecision">${svgEscape(fitSvgText(s.name, 20))}</text>`;
-        out += `<text x="${ax + aw - 5}" y="${ay + 10.8}" font-family="Inter, Arial, sans-serif" font-size="7.8" font-weight="800" text-anchor="end" fill="${text}" shape-rendering="geometricPrecision">${label}</text>`;
+        out += `<rect x="${ax}" y="${ay}" width="${aw}" height="${chipH}" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+        out += `<rect x="${ax}" y="${ay}" width="4" height="${chipH}" rx="2" fill="${edge}"/>`;
+        out += `<text x="${ax + 9}" y="${ay + textY}" font-family="Inter, Arial, sans-serif" font-size="${nameSize}" font-weight="800" fill="${text}" shape-rendering="geometricPrecision">${svgEscape(fitSvgText(s.name, 20))}</text>`;
+        out += `<text x="${ax + aw - 5}" y="${ay + textY}" font-family="Inter, Arial, sans-serif" font-size="${labelSize}" font-weight="800" text-anchor="end" fill="${text}" shape-rendering="geometricPrecision">${label}</text>`;
       });
-
-      if (ordered.length > 5) {
-        out += `<text x="${x + 8}" y="${y + 116}" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="800" fill="${mutedText}" shape-rendering="geometricPrecision">+${ordered.length - 5} more</text>`;
-      }
     }
   }
 
@@ -1316,11 +1502,11 @@ function buildPrintSheet(calKey, monthName, year) {
   out += `<line x1="${shellX}" y1="${shellY + topH + daysH}" x2="${shellX + shellW}" y2="${shellY + topH + daysH}" stroke="${grid}" stroke-width="2"/>`;
   for (let c = 0; c <= 7; c++) {
     const x = shellX + c * colW;
-    out += `<line x1="${x}" y1="${gridY}" x2="${x}" y2="${gridY + gridH}" stroke="${grid}" stroke-width="1.5"/>`;
+    out += `<line x1="${x}" y1="${gridY}" x2="${x}" y2="${gridY + gridH}" stroke="${grid}" stroke-width="1"/>`;
   }
   for (let r = 0; r <= 6; r++) {
     const y = gridY + r * rowH;
-    out += `<line x1="${shellX}" y1="${y}" x2="${shellX + gridW}" y2="${y}" stroke="${grid}" stroke-width="1.5"/>`;
+    out += `<line x1="${shellX}" y1="${y}" x2="${shellX + gridW}" y2="${y}" stroke="${grid}" stroke-width="1"/>`;
   }
   out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" fill="none" stroke="${grid}" stroke-width="2"/>`;
 
