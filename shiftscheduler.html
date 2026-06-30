@@ -16,8 +16,6 @@
     --purple-muted: #E7D7EC;
     --gold:         #DDB92A;
     --white:        #ffffff;
-    --bg:           #FBF8FC;
-    --surface:      #ffffff;
     --text:         #221428;
     --text-muted:   #6F5D76;
     --border:       #DED1E5;
@@ -483,6 +481,43 @@
     color: var(--purple-deep);
   }
 
+  .staff-search-wrap {
+    padding: 0 14px 8px;
+    flex-shrink: 0;
+    background: var(--white);
+  }
+
+  .staff-search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--white);
+  }
+
+  .staff-search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .staff-search-input:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.12);
+  }
+
+  .staff-search-empty {
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
   .employee-modal {
     width: 460px;
     max-height: 82vh;
@@ -565,22 +600,60 @@
   .employee-manager-row:last-child { border-bottom: 0; }
 
   .employee-manager-name {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .employee-manager-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .employee-edit,
   .employee-remove {
     border: 1px solid var(--border);
     border-radius: 6px;
     background: var(--white);
-    color: var(--danger);
     font-size: 11px;
     font-weight: 800;
     line-height: 1;
     padding: 6px 8px;
     cursor: pointer;
     flex-shrink: 0;
+  }
+
+  .employee-edit {
+    color: var(--purple);
+  }
+
+  .employee-edit:hover {
+    background: var(--purple-pale);
+    border-color: #D4C4E8;
+  }
+
+  .employee-rename-input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--purple);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text);
+  }
+
+  .employee-rename-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.15);
+  }
+
+  .employee-remove {
+    color: var(--danger);
   }
 
   .employee-remove:hover {
@@ -780,6 +853,9 @@
       </div>
       <button class="manage-employees-btn" id="openEmployeeManager" type="button">Manage Employees</button>
     </div>
+    <div class="staff-search-wrap">
+      <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
+    </div>
     <div class="staff-list" id="staffList"></div>
     <div class="legend">
       <div class="legend-label">Shift Key</div>
@@ -834,6 +910,11 @@
 const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MONTHS = ["January","February","March","April","May","June",
                 "July","August","September","October","November","December"];
+const CAL_KEYS = ['frontdesk', 'lifeguard'];
+const CAL_LABELS = {
+  frontdesk: { bar: 'Front Desk Schedule', sidebar: 'Front Desk', print: 'Front Desk' },
+  lifeguard: { bar: 'Lifeguard Schedule', sidebar: 'Lifeguards', print: 'Lifeguards' }
+};
 
 let currentYear  = new Date().getFullYear();
 let currentMonth = new Date().getMonth();
@@ -851,8 +932,12 @@ const API_URL = 'scheduler-api.php';
 const DATA_URL = 'scheduler-data.json';
 let saveTimer = null;
 
+function normalizeName(name) {
+  return String(name).trim().replace(/\s+/g, ' ');
+}
+
 function getNameParts(name) {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  const parts = normalizeName(name).split(/\s+/).filter(Boolean);
   const last = parts.length > 1 ? parts[parts.length - 1] : parts[0] || '';
   const first = parts.length > 1 ? parts.slice(0, -1).join(' ') : '';
   return { first: first.toLowerCase(), last: last.toLowerCase(), full: parts.join(' ').toLowerCase() };
@@ -867,7 +952,7 @@ function compareEmployees(a, b) {
 function sortEmployees(list) {
   const seen = new Set();
   return list
-    .map(name => String(name).trim().replace(/\s+/g, ' '))
+    .map(normalizeName)
     .filter(Boolean)
     .filter(name => {
       const key = name.toLowerCase();
@@ -876,6 +961,21 @@ function sortEmployees(list) {
       return true;
     })
     .sort(compareEmployees);
+}
+
+function employeeNameTaken(name, except = null) {
+  const key = normalizeName(name).toLowerCase();
+  return employees.some(existing => existing.toLowerCase() === key && existing !== except);
+}
+
+function compareShiftEntries(a, b) {
+  const order = { am: 1, pm: 2, sat: 3 };
+  const shiftOrder = (order[a.shift] || 9) - (order[b.shift] || 9);
+  return shiftOrder || compareEmployees(a.name, b.name);
+}
+
+function sortDayShifts(shifts) {
+  return shifts.slice().sort(compareShiftEntries);
 }
 
 function getDataSnapshot() {
@@ -973,17 +1073,24 @@ async function loadData() {
 }
 function normalizeSchedules(savedSchedules) {
   const clean = { frontdesk: {}, lifeguard: {} };
-  ['frontdesk', 'lifeguard'].forEach(calKey => {
+  CAL_KEYS.forEach(calKey => {
     const cal = savedSchedules[calKey] || {};
     Object.keys(cal).forEach(key => {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(key) || !Array.isArray(cal[key])) return;
+      const seen = new Set();
       const entries = cal[key]
         .map(entry => ({
           name: String(entry.name || '').trim(),
           shift: ['am', 'pm', 'sat'].includes(entry.shift) ? entry.shift : 'am'
         }))
-        .filter(entry => entry.name);
-      if (entries.length) clean[calKey][key] = entries;
+        .filter(entry => entry.name)
+        .filter(entry => {
+          const dedupeKey = `${entry.name.toLowerCase()}|${entry.shift}`;
+          if (seen.has(dedupeKey)) return false;
+          seen.add(dedupeKey);
+          return true;
+        });
+      if (entries.length) clean[calKey][key] = sortDayShifts(entries);
     });
   });
   return clean;
@@ -991,7 +1098,7 @@ function normalizeSchedules(savedSchedules) {
 
 function normalizeDayNotes(savedNotes) {
   const clean = { frontdesk: {}, lifeguard: {} };
-  ['frontdesk', 'lifeguard'].forEach(calKey => {
+  CAL_KEYS.forEach(calKey => {
     const cal = savedNotes[calKey] || {};
     Object.keys(cal).forEach(key => {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
@@ -1002,13 +1109,17 @@ function normalizeDayNotes(savedNotes) {
   return clean;
 }
 
-function escapeHTML(value) {
+function escapeHTML(value, forSvg = false) {
   return String(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/'/g, forSvg ? '&apos;' : '&#039;');
+}
+
+function svgEscape(value) {
+  return escapeHTML(value, true);
 }
 
 function dateKey(y, m, d) {
@@ -1018,15 +1129,22 @@ function dateKey(y, m, d) {
 function getSchedule() { return schedules[activeCalendar]; }
 function getDayNotes() { return dayNotes[activeCalendar]; }
 
+function syncCalendarUI() {
+  document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
+  document.getElementById('toggleLG').classList.toggle('active', activeCalendar === 'lifeguard');
+  document.getElementById('calTypeBar').textContent = CAL_LABELS[activeCalendar].bar;
+  document.getElementById('sidebarCalName').textContent = CAL_LABELS[activeCalendar].sidebar;
+}
+
+function syncShiftTabsUI() {
+  document.getElementById('tabAM').classList.toggle('active', activeShift === 'am');
+  document.getElementById('tabPM').classList.toggle('active', activeShift === 'pm');
+}
+
 /* ── CALENDAR SWITCH ── */
 function switchCalendar(cal) {
   activeCalendar = cal;
-  document.getElementById('toggleFD').classList.toggle('active', cal === 'frontdesk');
-  document.getElementById('toggleLG').classList.toggle('active', cal === 'lifeguard');
-  document.getElementById('calTypeBar').textContent =
-    cal === 'frontdesk' ? 'Front Desk Schedule' : 'Lifeguard Schedule';
-  document.getElementById('sidebarCalName').textContent =
-    cal === 'frontdesk' ? 'Front Desk' : 'Lifeguards';
+  syncCalendarUI();
   saveData();
   renderCalendar();
 }
@@ -1034,22 +1152,35 @@ function switchCalendar(cal) {
 /* ── SHIFT TYPE TABS ── */
 function setActiveShift(type) {
   activeShift = type;
-  document.getElementById('tabAM').classList.toggle('active', type === 'am');
-  document.getElementById('tabPM').classList.toggle('active', type === 'pm');
+  syncShiftTabsUI();
   saveData();
   renderSidebar();
 }
 /* ── SIDEBAR ── */
 function renderSidebar() {
   const list = document.getElementById('staffList');
+  const searchInput = document.getElementById('staffSearchInput');
+  const query = (searchInput?.value || '').trim().toLowerCase();
   list.innerHTML = '';
   const label = activeShift === 'am' ? '8–1' : '5–8';
 
-  employees = sortEmployees(employees);
+  const filtered = query
+    ? employees.filter(name => name.toLowerCase().includes(query))
+    : employees;
+
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'staff-search-empty';
+    empty.textContent = query
+      ? 'No employees match your search.'
+      : 'No employees yet. Use Manage Employees to add some.';
+    list.appendChild(empty);
+    return;
+  }
 
   let lastInitial = null;
 
-  employees.forEach(name => {
+  filtered.forEach(name => {
     const initial = getNameParts(name).last.charAt(0).toUpperCase();
     if (initial !== lastInitial) {
       lastInitial = initial;
@@ -1083,16 +1214,113 @@ function renderSidebar() {
 function renderEmployeeManager() {
   const list = document.getElementById('employeeManagerList');
   if (!list) return;
-  employees = sortEmployees(employees);
   list.innerHTML = '';
 
   employees.forEach(name => {
     const row = document.createElement('div');
     row.className = 'employee-manager-row';
-    row.innerHTML = `<div class="employee-manager-name">${escapeHTML(name)}</div><button class="employee-remove" type="button">Remove</button>`;
-    row.querySelector('.employee-remove').addEventListener('click', () => removeEmployee(name));
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'employee-manager-name';
+    nameEl.textContent = name;
+
+    const actions = document.createElement('div');
+    actions.className = 'employee-manager-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'employee-edit';
+    editBtn.type = 'button';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => beginEmployeeRename(name, row));
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'employee-remove';
+    removeBtn.type = 'button';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', () => removeEmployee(name));
+
+    actions.append(editBtn, removeBtn);
+    row.append(nameEl, actions);
     list.appendChild(row);
   });
+}
+
+function beginEmployeeRename(oldName, row) {
+  if (row.dataset.editing === '1') return;
+  row.dataset.editing = '1';
+
+  const nameEl = row.querySelector('.employee-manager-name');
+  const actions = row.querySelector('.employee-manager-actions');
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'employee-rename-input';
+  input.value = oldName;
+  input.autocomplete = 'off';
+
+  nameEl.replaceWith(input);
+  actions.innerHTML = '';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'employee-edit';
+  saveBtn.type = 'button';
+  saveBtn.textContent = 'Save';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'employee-remove';
+  cancelBtn.type = 'button';
+  cancelBtn.textContent = 'Cancel';
+
+  actions.append(saveBtn, cancelBtn);
+  input.focus();
+  input.select();
+
+  const finish = saved => {
+    if (saved) {
+      const newName = normalizeName(input.value);
+      if (!newName) {
+        input.focus();
+        return;
+      }
+      if (newName !== oldName && employeeNameTaken(newName, oldName)) {
+        alert('An employee with that name already exists.');
+        input.focus();
+        input.select();
+        return;
+      }
+      if (newName !== oldName) renameEmployee(oldName, newName);
+      else renderEmployeeManager();
+      return;
+    }
+    renderEmployeeManager();
+  };
+
+  saveBtn.addEventListener('click', () => finish(true));
+  cancelBtn.addEventListener('click', () => finish(false));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') finish(true);
+    if (e.key === 'Escape') finish(false);
+  });
+}
+
+function renameEmployee(oldName, newName) {
+  newName = normalizeName(newName);
+  if (!newName || newName === oldName) return;
+
+  employees = sortEmployees(employees.map(employee => (employee === oldName ? newName : employee)));
+
+  CAL_KEYS.forEach(calKey => {
+    Object.keys(schedules[calKey]).forEach(key => {
+      schedules[calKey][key] = schedules[calKey][key].map(entry =>
+        entry.name === oldName ? { ...entry, name: newName } : entry
+      );
+    });
+  });
+
+  schedules = normalizeSchedules(schedules);
+  saveData();
+  renderSidebar();
+  renderEmployeeManager();
+  renderCalendar();
 }
 
 function openEmployeeModal() {
@@ -1107,17 +1335,13 @@ function closeEmployeeModal() {
 
 function addEmployeeFromInput() {
   const input = document.getElementById('employeeNameInput');
-  const name = input.value.trim().replace(/\s+/g, ' ');
-  if (!name) return;
-
-  const exists = employees.some(existing => existing.toLowerCase() === name.toLowerCase());
-  if (exists) {
+  const name = normalizeName(input.value);
+  if (!name || employeeNameTaken(name)) {
     input.value = '';
     return;
   }
 
-  employees.push(name);
-  employees = sortEmployees(employees);
+  employees = sortEmployees([...employees, name]);
   input.value = '';
   saveData();
   renderSidebar();
@@ -1125,28 +1349,19 @@ function addEmployeeFromInput() {
 }
 
 function removeEmployee(name) {
-  const hasAssignments = ['frontdesk', 'lifeguard'].some(calKey =>
+  const hasAssignments = CAL_KEYS.some(calKey =>
     Object.values(schedules[calKey] || {}).some(entries => entries.some(entry => entry.name === name))
   );
 
   const message = hasAssignments
-    ? `Remove ${name} from the employee list and all scheduled shifts?`
+    ? `Remove ${name} from the employee list? Their scheduled shifts will stay on the calendar.`
     : `Remove ${name} from the employee list?`;
   if (!confirm(message)) return;
 
-  employees = employees.filter(employee => employee !== name);
-  ['frontdesk', 'lifeguard'].forEach(calKey => {
-    Object.keys(schedules[calKey]).forEach(key => {
-      schedules[calKey][key] = schedules[calKey][key].filter(entry => entry.name !== name);
-      if (!schedules[calKey][key].length) delete schedules[calKey][key];
-    });
-  });
-
-  employees = sortEmployees(employees);
+  employees = sortEmployees(employees.filter(employee => employee !== name));
   saveData();
   renderSidebar();
   renderEmployeeManager();
-  renderCalendar();
 }
 
 /* ── CALENDAR ── */
@@ -1155,7 +1370,7 @@ function renderCalendar() {
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
-DAYS.forEach(d => {
+  DAYS.forEach(d => {
     const h = document.createElement('div');
     h.className = 'cal-header-cell';
     h.textContent = d;
@@ -1267,8 +1482,9 @@ function addShift(key, name, shift, isSaturday) {
 
   const sched = getSchedule();
   if (!sched[key]) sched[key] = [];
-  if (sched[key].some(e => e.name === name)) return;
-  sched[key].push({ name, shift: isSaturday ? 'sat' : shift });
+  const effectiveShift = isSaturday ? 'sat' : shift;
+  if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return;
+  sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift }]);
   delete getDayNotes()[key];
   saveData();
   refreshCell(key);
@@ -1314,15 +1530,6 @@ function saveDayNote() {
   if (note) notes[activeNoteKey] = note;
   else delete notes[activeNoteKey];
   const key = activeNoteKey;
-  saveData();
-  closeDayNoteModal();
-  refreshCell(key);
-}
-
-function clearDayNote() {
-  if (!activeNoteKey) return;
-  const key = activeNoteKey;
-  delete getDayNotes()[key];
   saveData();
   closeDayNoteModal();
   refreshCell(key);
@@ -1379,22 +1586,13 @@ function getPrintCalendarCells(calKey, monthName, year) {
   return cells;
 }
 
-function svgEscape(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
 function fitSvgText(value, maxChars = 22) {
   const text = String(value);
   return text.length <= maxChars ? text : text.slice(0, maxChars - 1) + '…';
 }
 
 function buildPrintSheet(calKey, monthName, year) {
-  const calLabel = calKey === 'frontdesk' ? 'Front Desk' : 'Lifeguards';
+  const calLabel = CAL_LABELS[calKey].print;
   const cells = getPrintCalendarCells(calKey, monthName, year);
 
   // SVG print workaround:
@@ -1444,7 +1642,7 @@ function buildPrintSheet(calKey, monthName, year) {
   // Header separators and weekday labels.
   const rightPanelX = shellX + shellW - 185;
   out += `<line x1="${rightPanelX}" y1="${shellY}" x2="${rightPanelX}" y2="${shellY + topH}" stroke="${headerLine}" stroke-width="1"/>`;
-DAYS.forEach((dayName, i) => {
+  DAYS.forEach((dayName, i) => {
     const x = shellX + i * colW;
     if (i > 0) out += `<line x1="${x}" y1="${shellY + topH}" x2="${x}" y2="${shellY + topH + daysH}" stroke="${headerLine}" stroke-width="2"/>`;
     out += `<text x="${x + colW / 2}" y="${shellY + topH + 20}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="middle" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(dayName.toUpperCase())}</text>`;
@@ -1483,10 +1681,7 @@ DAYS.forEach((dayName, i) => {
         continue;
       }
 
-      const ordered = [...shifts].sort((a, b) => {
-        const order = { am: 1, pm: 2, sat: 3 };
-        return (order[a.shift] || 9) - (order[b.shift] || 9) || a.name.localeCompare(b.name);
-      });
+      const ordered = sortDayShifts(shifts);
 
       const entryCount = ordered.length;
       const availableH = rowH - 28;
@@ -1515,7 +1710,7 @@ DAYS.forEach((dayName, i) => {
     }
   }
 
- // Shared grid lines: single strokes only, aligned to integer coordinates.
+  // Shared grid lines: single strokes only, aligned to integer coordinates.
   out += `<line x1="${shellX}" y1="${shellY}" x2="${shellX + shellW}" y2="${shellY}" stroke="${grid}" stroke-width="2"/>`;
   out += `<line x1="${shellX}" y1="${shellY + topH}" x2="${shellX + shellW}" y2="${shellY + topH}" stroke="${headerLine}" stroke-width="1"/>`;
   out += `<line x1="${shellX}" y1="${shellY + topH + daysH}" x2="${shellX + shellW}" y2="${shellY + topH + daysH}" stroke="${grid}" stroke-width="2"/>`;
@@ -1534,7 +1729,9 @@ DAYS.forEach((dayName, i) => {
 }
 
 function buildScheduleHTML(which, monthName, year) {
-  const title = which === 'both' ? `Schedules — ${monthName} ${year}` : `${which === 'frontdesk' ? 'Front Desk' : 'Lifeguards'} — ${monthName} ${year}`;
+  const title = which === 'both'
+    ? `Schedules — ${monthName} ${year}`
+    : `${CAL_LABELS[which].print} — ${monthName} ${year}`;
   const sheets = which === 'both'
     ? buildPrintSheet('frontdesk', monthName, year) + buildPrintSheet('lifeguard', monthName, year)
     : buildPrintSheet(which, monthName, year);
@@ -1591,14 +1788,9 @@ async function initScheduler() {
   document.getElementById('employeeNameInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') addEmployeeFromInput();
   });
-  document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
-  document.getElementById('toggleLG').classList.toggle('active', activeCalendar === 'lifeguard');
-  document.getElementById('tabAM').classList.toggle('active', activeShift === 'am');
-  document.getElementById('tabPM').classList.toggle('active', activeShift === 'pm');
-  document.getElementById('calTypeBar').textContent =
-    activeCalendar === 'frontdesk' ? 'Front Desk Schedule' : 'Lifeguard Schedule';
-  document.getElementById('sidebarCalName').textContent =
-    activeCalendar === 'frontdesk' ? 'Front Desk' : 'Lifeguards';
+  document.getElementById('staffSearchInput').addEventListener('input', renderSidebar);
+  syncCalendarUI();
+  syncShiftTabsUI();
   renderSidebar();
   renderCalendar();
 }
