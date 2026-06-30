@@ -1446,7 +1446,7 @@ function buildPrintSheet(calKey, monthName, year) {
   out += `<line x1="${rightPanelX}" y1="${shellY}" x2="${rightPanelX}" y2="${shellY + topH}" stroke="${headerLine}" stroke-width="1"/>`;
   DAYS.forEach((dayName, i) => {
     const x = shellX + i * colW;
-    if (i > 0) out += `<line x1="${x}" y1="${shellY + topH}" x2="${x}" y2="${shellY + topH + daysH}" stroke="${headerLine}" stroke-width="1"/>`;
+    if (i > 0) out += `<line x1="${x}" y1="${shellY + topH}" x2="${x}" y2="${shellY + topH + daysH}" stroke="${headerLine}" stroke-width="2"/>`;
     out += `<text x="${x + colW / 2}" y="${shellY + topH + 20}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="middle" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(dayName.toUpperCase())}</text>`;
   });
 
