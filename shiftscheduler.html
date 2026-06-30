@@ -137,6 +137,14 @@
     color: var(--purple-deep);
   }
 
+  .today-btn {
+    width: auto;
+    padding: 0 11px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
   .month-label {
     font-size: 15px;
     font-weight: 700;
@@ -166,6 +174,19 @@
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0,0,0,0.16);
   }
+
+  .save-status {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.72);
+    margin-left: 10px;
+    min-width: 72px;
+    text-align: right;
+    transition: color 0.2s;
+  }
+
+  .save-status.saving { color: rgba(255,255,255,0.9); }
+  .save-status.offline { color: var(--gold); }
 
   /* ── WORKSPACE ── */
   .workspace {
@@ -251,6 +272,16 @@
     background: var(--white);
   }
 
+  .cal-cell.assign-ready {
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(94, 23, 113, 0.18);
+  }
+
+  .cal-cell.assign-ready:hover {
+    border-color: var(--purple-light);
+    box-shadow: inset 0 0 0 2px rgba(94, 23, 113, 0.14);
+  }
+
   .cal-cell.today { box-shadow: inset 0 0 0 2px var(--purple-light); }
   .cal-cell.today .day-num { color: var(--purple); font-weight: 800; }
 
@@ -301,17 +332,21 @@
   }
   .shift-chip .remove-btn:hover { color: white; }
 
-  .day-note {
-    border: 1px solid var(--purple);
-    border-left: 4px solid var(--purple);
-    border-radius: 4px;
-    padding: 5px 6px;
-    color: var(--purple);
+  .shift-chip.note-chip {
     background: var(--white);
-    font-size: 10px;
-    font-weight: 800;
-    line-height: 1.25;
-    overflow-wrap: anywhere;
+    color: var(--purple);
+    border: 1px solid var(--purple);
+    cursor: pointer;
+  }
+
+  .shift-chip.note-chip .remove-btn {
+    color: var(--purple);
+    opacity: 0.55;
+  }
+
+  .shift-chip.note-chip .remove-btn:hover {
+    opacity: 1;
+    color: var(--purple-deep);
   }
 
   /* ── SIDEBAR ── */
@@ -410,6 +445,30 @@
   }
 
   .staff-card:active { cursor: grabbing; opacity: 0.6; }
+
+  .staff-card.selected {
+    border-color: var(--purple);
+    background: var(--purple-pale);
+    box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.18);
+  }
+
+  .staff-card.pm.selected {
+    border-color: var(--gold);
+    background: #fffdf5;
+    box-shadow: 0 0 0 2px rgba(221, 185, 42, 0.28);
+  }
+
+  .assign-hint {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--purple);
+    padding: 0 14px 6px;
+    line-height: 1.35;
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .assign-hint.hidden { display: none; }
 
   .card-dot {
     width: 7px;
@@ -525,15 +584,57 @@
     flex-direction: column;
   }
 
-  .employee-modal h2 {
-    margin-bottom: 14px;
+  .employee-modal-header {
+    margin-bottom: 12px;
   }
 
-  .employee-manager {
+  .employee-modal h2 {
+    margin-bottom: 4px;
+  }
+
+  .employee-modal-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .employee-search-wrap {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+
+  .employee-search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 10px 9px 32px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Ccircle cx='6' cy='6' r='4.25' stroke='%236F5D76' stroke-width='1.5'/%3E%3Cpath d='M9.5 9.5L12 12' stroke='%236F5D76' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 10px center;
+  }
+
+  .employee-search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .employee-search-input:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.12);
+  }
+
+  .employee-add-row {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 6px;
-    margin: 0 0 10px;
+    margin: 10px 0 12px;
+    flex-shrink: 0;
+  }
+
+  .employee-add-row .employee-input {
+    width: 100%;
   }
 
   .note-input {
@@ -589,15 +690,29 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 9px 11px;
+    gap: 8px;
+    padding: 8px 10px;
     border-bottom: 1px solid var(--border);
     font-size: 12px;
     font-weight: 600;
     color: var(--text);
+    transition: background 0.12s;
   }
 
   .employee-manager-row:last-child { border-bottom: 0; }
+
+  .employee-manager-row:hover {
+    background: var(--purple-pale);
+  }
+
+  .employee-list-empty {
+    padding: 28px 16px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
 
   .employee-manager-name {
     flex: 1;
@@ -613,26 +728,36 @@
     flex-shrink: 0;
   }
 
-  .employee-edit,
-  .employee-remove {
-    border: 1px solid var(--border);
+  .employee-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid transparent;
     border-radius: 6px;
-    background: var(--white);
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1;
-    padding: 6px 8px;
+    background: transparent;
     cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1;
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+
+  .employee-icon-btn svg {
+    display: block;
     flex-shrink: 0;
   }
 
-  .employee-edit {
+  .employee-edit-btn {
     color: var(--purple);
   }
 
-  .employee-edit:hover {
-    background: var(--purple-pale);
+  .employee-edit-btn:hover {
+    background: var(--white);
     border-color: #D4C4E8;
+    color: var(--purple-deep);
   }
 
   .employee-rename-input {
@@ -652,13 +777,38 @@
     box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.15);
   }
 
-  .employee-remove {
+  .employee-remove-btn {
     color: var(--danger);
+    font-size: 18px;
+    font-weight: 500;
+    padding-bottom: 1px;
   }
 
-  .employee-remove:hover {
+  .employee-remove-btn:hover {
     background: var(--danger-pale);
     border-color: #F2B8B5;
+  }
+
+  .employee-cancel-btn {
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 500;
+    padding-bottom: 1px;
+  }
+
+  .employee-cancel-btn:hover {
+    background: #f5f2f7;
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .employee-save-btn {
+    color: #15803d;
+  }
+
+  .employee-save-btn:hover {
+    background: #ecfdf3;
+    border-color: #86efac;
   }
 
   /* ── LEGEND ── */
@@ -699,18 +849,60 @@
   /* ── DRAG GHOST ── */
   .drag-ghost {
     position: fixed;
+    left: -9999px;
+    top: -9999px;
     pointer-events: none;
-    z-index: 1000;
-    background: var(--purple-deep);
-    color: white;
-    padding: 6px 12px;
+    z-index: -1;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  }
+
+  .drag-ghost.am {
+    background: var(--shift-am);
+    color: var(--white);
+    border: 1px solid var(--shift-am);
+  }
+
+  .drag-ghost.pm {
+    background: var(--shift-pm);
+    color: var(--white);
+    border: 1px solid var(--shift-pm);
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--text);
+    color: var(--white);
+    padding: 10px 16px;
     border-radius: 8px;
     font-size: 12px;
-    font-weight: 700;
-    opacity: 0.92;
-    display: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-    border: 1px solid var(--gold);
+    font-weight: 600;
+    line-height: 1.35;
+    max-width: min(420px, calc(100vw - 32px));
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 600;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.warn {
+    background: #7a2710;
   }
 
   /* ── MODAL ── */
@@ -815,7 +1007,8 @@
 </head>
 <body>
 
-<div class="drag-ghost" id="dragGhost"></div>
+<div class="drag-ghost am" id="dragGhost" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <header>
   <div class="header-left">
@@ -828,10 +1021,12 @@
   </div>
 
   <div class="header-nav">
-    <button class="nav-arrow" id="prevMonth">&#8592;</button>
+    <button class="nav-arrow" id="prevMonth" type="button" title="Previous month">&#8592;</button>
     <div class="month-label" id="monthLabel"></div>
-    <button class="nav-arrow" id="nextMonth">&#8594;</button>
-    <button class="print-btn" id="openPrintModal">Print Schedule</button>
+    <button class="nav-arrow" id="nextMonth" type="button" title="Next month">&#8594;</button>
+    <button class="nav-arrow today-btn" id="todayBtn" type="button" title="Go to current month">Today</button>
+    <span class="save-status" id="saveStatus" aria-live="polite">Saved</span>
+    <button class="print-btn" id="openPrintModal" type="button">Print Schedule</button>
   </div>
 </header>
 
@@ -846,7 +1041,7 @@
 
   <div class="sidebar">
     <div class="sidebar-top">
-      <h3>Employees — Drag to <span id="sidebarCalName">Front Desk</span></h3>
+      <h3>Employees — Drag or click <span id="sidebarCalName">Front Desk</span></h3>
       <div class="shift-type-tabs">
         <button class="tab-btn active" id="tabAM" onclick="setActiveShift('am')">8–1 AM</button>
         <button class="tab-btn" id="tabPM" onclick="setActiveShift('pm')">5–8 PM</button>
@@ -856,6 +1051,7 @@
     <div class="staff-search-wrap">
       <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
     </div>
+    <div class="assign-hint hidden" id="assignHint"></div>
     <div class="staff-list" id="staffList"></div>
     <div class="legend">
       <div class="legend-label">Shift Key</div>
@@ -883,12 +1079,18 @@
 <!-- Employee Manager Modal -->
 <div class="modal-overlay" id="employeeModal">
   <div class="modal employee-modal">
-    <h2>Manage Employees</h2>
-    <div class="employee-manager">
-      <input class="employee-input" id="employeeNameInput" type="text" placeholder="New employee name" autocomplete="off">
-      <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
+    <div class="employee-modal-header">
+      <h2>Manage Employees</h2>
+      <p class="employee-modal-count" id="employeeManagerCount"></p>
+    </div>
+    <div class="employee-search-wrap">
+      <input class="employee-search-input" id="employeeSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
     </div>
     <div class="employee-manager-list" id="employeeManagerList"></div>
+    <div class="employee-add-row">
+      <input class="employee-input" id="employeeNameInput" type="text" placeholder="Add new employee..." autocomplete="off">
+      <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
+    </div>
     <button class="modal-btn done" type="button" onclick="closeEmployeeModal()">Done</button>
   </div>
 </div>
@@ -897,7 +1099,7 @@
 <div class="modal-overlay" id="dayNoteModal">
   <div class="modal employee-modal">
     <h2>Day Note</h2>
-    <p>Add a note for this empty day, such as closed dates or special events.</p>
+    <p>Add or edit a note for this day, such as closed dates or special events.</p>
     <textarea class="employee-input note-input" id="dayNoteInput" placeholder="Closed for..."></textarea>
     <div class="modal-btns" style="margin-top:12px">
       <button class="modal-btn done" type="button" id="saveDayNoteBtn">Save Note</button>
@@ -926,6 +1128,9 @@ let schedules = { frontdesk: {}, lifeguard: {} };
 let dayNotes = { frontdesk: {}, lifeguard: {} };
 let employees = [];
 let activeNoteKey = null;
+let selectedEmployee = null;
+let toastTimer = null;
+let suppressCardClick = false;
 
 const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
 const API_URL = 'scheduler-api.php';
@@ -1010,6 +1215,32 @@ function applySavedData(saved) {
   if (saved.activeCalendar === 'frontdesk' || saved.activeCalendar === 'lifeguard') activeCalendar = saved.activeCalendar;
 }
 
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.className = 'toast show' + (type === 'warn' ? ' warn' : '');
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
+
+function setSaveStatus(status) {
+  const el = document.getElementById('saveStatus');
+  if (!el) return;
+  el.classList.remove('saving', 'offline');
+  if (status === 'saving') {
+    el.textContent = 'Saving…';
+    el.classList.add('saving');
+  } else if (status === 'offline') {
+    el.textContent = 'Saved locally';
+    el.classList.add('offline');
+  } else {
+    el.textContent = 'Saved';
+  }
+}
+
 function saveLocalBackup(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -1034,6 +1265,7 @@ function loadLocalBackup() {
 function saveData() {
   const data = getDataSnapshot();
   saveLocalBackup(data);
+  setSaveStatus('saving');
 
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
@@ -1042,9 +1274,15 @@ function saveData() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       cache: 'no-store'
-    }).catch(err => {
-      console.warn('Shared server data could not be saved.', err);
-    });
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        setSaveStatus('saved');
+      })
+      .catch(err => {
+        console.warn('Shared server data could not be saved.', err);
+        setSaveStatus('offline');
+      });
   }, 150);
 }
 
@@ -1141,18 +1379,64 @@ function syncShiftTabsUI() {
   document.getElementById('tabPM').classList.toggle('active', activeShift === 'pm');
 }
 
+function syncAssignUI() {
+  const hint = document.getElementById('assignHint');
+  if (hint) {
+    if (selectedEmployee) {
+      const label = selectedEmployee.shift === 'am' ? '8–1' : '5–8';
+      hint.textContent = `${selectedEmployee.name} selected (${label}) — click a day to assign, or click again to deselect.`;
+      hint.classList.remove('hidden');
+    } else {
+      hint.textContent = '';
+      hint.classList.add('hidden');
+    }
+  }
+
+  document.querySelectorAll('.cal-cell.assign-ready').forEach(cell => {
+    cell.classList.remove('assign-ready');
+  });
+  if (selectedEmployee) {
+    document.querySelectorAll('.cal-cell[data-key]').forEach(cell => {
+      if (parseInt(cell.dataset.dow, 10) !== 0) cell.classList.add('assign-ready');
+    });
+  }
+}
+
+function toggleSelectedEmployee(name, shift) {
+  if (selectedEmployee?.name === name && selectedEmployee?.shift === shift) {
+    selectedEmployee = null;
+  } else {
+    selectedEmployee = { name, shift };
+  }
+  syncAssignUI();
+  renderSidebar();
+}
+
+function goToToday() {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  saveData();
+  renderCalendar();
+}
+
 /* ── CALENDAR SWITCH ── */
 function switchCalendar(cal) {
   activeCalendar = cal;
+  selectedEmployee = null;
   syncCalendarUI();
+  syncAssignUI();
   saveData();
   renderCalendar();
+  renderSidebar();
 }
 
 /* ── SHIFT TYPE TABS ── */
 function setActiveShift(type) {
   activeShift = type;
+  if (selectedEmployee) selectedEmployee.shift = type;
   syncShiftTabsUI();
+  syncAssignUI();
   saveData();
   renderSidebar();
 }
@@ -1192,19 +1476,32 @@ function renderSidebar() {
 
     const card = document.createElement('div');
     card.className = `staff-card ${activeShift}`;
+    if (selectedEmployee?.name === name && selectedEmployee?.shift === activeShift) {
+      card.classList.add('selected');
+    }
     card.draggable = true;
     card.innerHTML = `<div class="card-dot"></div><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div>`;
 
+    card.addEventListener('click', () => {
+      if (suppressCardClick) {
+        suppressCardClick = false;
+        return;
+      }
+      toggleSelectedEmployee(name, activeShift);
+    });
+
     card.addEventListener('dragstart', e => {
+      suppressCardClick = true;
+      selectedEmployee = null;
+      syncAssignUI();
+      card.classList.remove('selected');
+
       e.dataTransfer.setData('name', name);
       e.dataTransfer.setData('shift', activeShift);
       const ghost = document.getElementById('dragGhost');
+      ghost.className = `drag-ghost ${activeShift}`;
       ghost.textContent = `${name} · ${label}`;
-      ghost.style.display = 'block';
-      e.dataTransfer.setDragImage(ghost, 0, 0);
-    });
-    card.addEventListener('dragend', () => {
-      document.getElementById('dragGhost').style.display = 'none';
+      e.dataTransfer.setDragImage(ghost, 12, 12);
     });
 
     list.appendChild(card);
@@ -1213,10 +1510,39 @@ function renderSidebar() {
 
 function renderEmployeeManager() {
   const list = document.getElementById('employeeManagerList');
+  const searchInput = document.getElementById('employeeSearchInput');
+  const countEl = document.getElementById('employeeManagerCount');
   if (!list) return;
+
+  const query = (searchInput?.value || '').trim().toLowerCase();
+  const filtered = query
+    ? employees.filter(name => name.toLowerCase().includes(query))
+    : employees;
+
+  if (countEl) {
+    const total = employees.length;
+    if (query) {
+      countEl.textContent = filtered.length
+        ? `${filtered.length} of ${total} employee${total === 1 ? '' : 's'}`
+        : `No matches among ${total} employee${total === 1 ? '' : 's'}`;
+    } else {
+      countEl.textContent = total === 1 ? '1 employee' : `${total} employees`;
+    }
+  }
+
   list.innerHTML = '';
 
-  employees.forEach(name => {
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'employee-list-empty';
+    empty.textContent = query
+      ? 'No employees match your search.'
+      : 'No employees yet. Add one below.';
+    list.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(name => {
     const row = document.createElement('div');
     row.className = 'employee-manager-row';
 
@@ -1228,15 +1554,19 @@ function renderEmployeeManager() {
     actions.className = 'employee-manager-actions';
 
     const editBtn = document.createElement('button');
-    editBtn.className = 'employee-edit';
+    editBtn.className = 'employee-icon-btn employee-edit-btn';
     editBtn.type = 'button';
-    editBtn.textContent = 'Edit';
+    editBtn.setAttribute('aria-label', `Edit ${name}`);
+    editBtn.title = 'Edit name';
+    editBtn.innerHTML = ICON_EDIT;
     editBtn.addEventListener('click', () => beginEmployeeRename(name, row));
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'employee-remove';
+    removeBtn.className = 'employee-icon-btn employee-remove-btn';
     removeBtn.type = 'button';
-    removeBtn.textContent = 'Remove';
+    removeBtn.setAttribute('aria-label', `Remove ${name}`);
+    removeBtn.title = 'Remove';
+    removeBtn.textContent = '×';
     removeBtn.addEventListener('click', () => removeEmployee(name));
 
     actions.append(editBtn, removeBtn);
@@ -1261,14 +1591,18 @@ function beginEmployeeRename(oldName, row) {
   actions.innerHTML = '';
 
   const saveBtn = document.createElement('button');
-  saveBtn.className = 'employee-edit';
+  saveBtn.className = 'employee-icon-btn employee-save-btn';
   saveBtn.type = 'button';
-  saveBtn.textContent = 'Save';
+  saveBtn.setAttribute('aria-label', 'Save name');
+  saveBtn.title = 'Save';
+  saveBtn.innerHTML = ICON_SAVE;
 
   const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'employee-remove';
+  cancelBtn.className = 'employee-icon-btn employee-cancel-btn';
   cancelBtn.type = 'button';
-  cancelBtn.textContent = 'Cancel';
+  cancelBtn.setAttribute('aria-label', 'Cancel edit');
+  cancelBtn.title = 'Cancel';
+  cancelBtn.textContent = '×';
 
   actions.append(saveBtn, cancelBtn);
   input.focus();
@@ -1324,9 +1658,11 @@ function renameEmployee(oldName, newName) {
 }
 
 function openEmployeeModal() {
+  const searchInput = document.getElementById('employeeSearchInput');
+  if (searchInput) searchInput.value = '';
   renderEmployeeManager();
   document.getElementById('employeeModal').classList.add('open');
-  setTimeout(() => document.getElementById('employeeNameInput').focus(), 0);
+  setTimeout(() => searchInput?.focus(), 0);
 }
 
 function closeEmployeeModal() {
@@ -1336,8 +1672,11 @@ function closeEmployeeModal() {
 function addEmployeeFromInput() {
   const input = document.getElementById('employeeNameInput');
   const name = normalizeName(input.value);
-  if (!name || employeeNameTaken(name)) {
-    input.value = '';
+  if (!name) return;
+  if (employeeNameTaken(name)) {
+    alert('An employee with that name already exists.');
+    input.focus();
+    input.select();
     return;
   }
 
@@ -1346,6 +1685,7 @@ function addEmployeeFromInput() {
   saveData();
   renderSidebar();
   renderEmployeeManager();
+  input.focus();
 }
 
 function removeEmployee(name) {
@@ -1414,14 +1754,25 @@ function renderCalendar() {
       cell.addEventListener('drop', e => {
         e.preventDefault();
         cell.classList.remove('drag-over');
-        addShift(key, e.dataTransfer.getData('name'), e.dataTransfer.getData('shift'), isSaturday);
+        const name = e.dataTransfer.getData('name');
+        const shift = e.dataTransfer.getData('shift');
+        const result = addShift(key, name, shift, isSaturday);
+        if (result === 'duplicate') {
+          showToast(`${name} is already scheduled for this shift.`, 'warn');
+        }
       });
     }
     cell.addEventListener('click', e => {
       if (e.target.closest('button')) return;
-      const sched = getSchedule();
-      if ((sched[key] || []).length) return;
-      openDayNoteModal(key);
+      if (e.target.closest('.note-chip')) return;
+      if (selectedEmployee && !isSunday) {
+        const result = addShift(key, selectedEmployee.name, selectedEmployee.shift, isSaturday);
+        if (result === 'duplicate') {
+          showToast(`${selectedEmployee.name} is already scheduled for this shift.`, 'warn');
+        }
+        return;
+      }
+      if (!isSunday) openDayNoteModal(key);
     });
 
     const shiftsList = document.createElement('div');
@@ -1438,6 +1789,8 @@ function renderCalendar() {
     grid.appendChild(cell);
     visibleCells++;
   }
+
+  syncAssignUI();
 }
 
 function renderCellShifts(container, key, isSaturday) {
@@ -1445,14 +1798,6 @@ function renderCellShifts(container, key, isSaturday) {
   const sched  = getSchedule();
   const shifts = sched[key] || [];
   const note = getDayNotes()[key] || '';
-
-  if (!shifts.length && note) {
-    const noteEl = document.createElement('div');
-    noteEl.className = 'day-note';
-    noteEl.textContent = note;
-    container.appendChild(noteEl);
-    return;
-  }
 
   shifts.forEach((entry, idx) => {
     const chip = document.createElement('div');
@@ -1475,19 +1820,47 @@ function renderCellShifts(container, key, isSaturday) {
     chip.appendChild(removeBtn);
     container.appendChild(chip);
   });
+
+  if (note) {
+    const noteChip = document.createElement('div');
+    noteChip.className = 'shift-chip note-chip';
+
+    const noteSpan = document.createElement('span');
+    noteSpan.textContent = note;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.type = 'button';
+    removeBtn.title = 'Remove note';
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      removeDayNote(key);
+    });
+
+    noteChip.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      openDayNoteModal(key);
+    });
+
+    noteChip.appendChild(noteSpan);
+    noteChip.appendChild(removeBtn);
+    container.appendChild(noteChip);
+  }
 }
 
 function addShift(key, name, shift, isSaturday) {
-  if (!name || !['am', 'pm'].includes(shift)) return;
+  if (!name || !['am', 'pm'].includes(shift)) return 'invalid';
 
   const sched = getSchedule();
   if (!sched[key]) sched[key] = [];
   const effectiveShift = isSaturday ? 'sat' : shift;
-  if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return;
+  if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return 'duplicate';
   sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift }]);
   delete getDayNotes()[key];
   saveData();
   refreshCell(key);
+  return 'added';
 }
 
 function removeShift(key, idx) {
@@ -1506,6 +1879,14 @@ function refreshCell(key) {
   renderCellShifts(cell.querySelector('.shifts-list'), key, isSat);
 }
 
+function removeDayNote(key) {
+  const notes = getDayNotes();
+  if (!notes[key]) return;
+  delete notes[key];
+  saveData();
+  refreshCell(key);
+}
+
 function openDayNoteModal(key) {
   activeNoteKey = key;
   document.getElementById('dayNoteInput').value = getDayNotes()[key] || '';
@@ -1520,11 +1901,6 @@ function closeDayNoteModal() {
 
 function saveDayNote() {
   if (!activeNoteKey) return;
-  const sched = getSchedule();
-  if ((sched[activeNoteKey] || []).length) {
-    closeDayNoteModal();
-    return;
-  }
   const note = document.getElementById('dayNoteInput').value.trim().replace(/\s+/g, ' ').slice(0, 80);
   const notes = getDayNotes();
   if (note) notes[activeNoteKey] = note;
@@ -1545,6 +1921,28 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
   saveData();
   renderCalendar();
+});
+document.getElementById('todayBtn').addEventListener('click', goToToday);
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('employeeModal').classList.contains('open')) {
+    closeEmployeeModal();
+    return;
+  }
+  if (document.getElementById('dayNoteModal').classList.contains('open')) {
+    closeDayNoteModal();
+    return;
+  }
+  if (document.getElementById('printModal').classList.contains('open')) {
+    closePrintModal();
+    return;
+  }
+  if (selectedEmployee) {
+    selectedEmployee = null;
+    syncAssignUI();
+    renderSidebar();
+  }
 });
 
 /* ── PRINT MODAL ── */
@@ -1779,6 +2177,9 @@ function printSchedule(which) {
   win.document.close();
 }
 
+const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9.2 2.3l2.5 2.5-6.7 6.7H2.5V8.9L9.2 2.3z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>';
+const ICON_SAVE = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 // Init
 async function initScheduler() {
   await loadData();
@@ -1788,9 +2189,12 @@ async function initScheduler() {
   document.getElementById('employeeNameInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') addEmployeeFromInput();
   });
+  document.getElementById('employeeSearchInput').addEventListener('input', renderEmployeeManager);
   document.getElementById('staffSearchInput').addEventListener('input', renderSidebar);
   syncCalendarUI();
   syncShiftTabsUI();
+  syncAssignUI();
+  setSaveStatus('saved');
   renderSidebar();
   renderCalendar();
 }
