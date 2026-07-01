@@ -1972,9 +1972,10 @@ function refreshCell(key) {
 }
 
 function removeDayNote(key) {
-  const notes = getDayNotes();
-  if (!notes[key]) return;
-  delete notes[key];
+  if (!CAL_KEYS.some(calKey => dayNotes[calKey] && dayNotes[calKey][key])) return;
+  CAL_KEYS.forEach(calKey => {
+    if (dayNotes[calKey]) delete dayNotes[calKey][key];
+  });
   saveData();
   refreshCell(key);
 }
@@ -1994,9 +1995,10 @@ function closeDayNoteModal() {
 function saveDayNote() {
   if (!activeNoteKey) return;
   const note = document.getElementById('dayNoteInput').value.trim().replace(/\s+/g, ' ').slice(0, 80);
-  const notes = getDayNotes();
-  if (note) notes[activeNoteKey] = note;
-  else delete notes[activeNoteKey];
+  CAL_KEYS.forEach(calKey => {
+    if (note) dayNotes[calKey][activeNoteKey] = note;
+    else delete dayNotes[calKey][activeNoteKey];
+  });
   const key = activeNoteKey;
   saveData();
   closeDayNoteModal();
