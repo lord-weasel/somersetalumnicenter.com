@@ -340,53 +340,24 @@
     border: none;
     color: rgba(255,255,255,0.65);
     cursor: pointer;
-    font-size: 9px;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    line-height: 0;
     flex-shrink: 0;
-    position: relative;
   }
+
   .shift-chip .remove-btn:hover { color: var(--white); }
-
-  .shift-chip .remove-btn::before,
-  .shift-chip .remove-btn::after,
-  .employee-remove-btn::before,
-  .employee-remove-btn::after,
-  .employee-cancel-btn::before,
-  .employee-cancel-btn::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 10px;
-    height: 1.5px;
-    border-radius: 0.75px;
-    background: currentColor;
-    transform-origin: center;
-  }
-
-  .shift-chip .remove-btn::before,
-  .employee-remove-btn::before,
-  .employee-cancel-btn::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  .shift-chip .remove-btn::after,
-  .employee-remove-btn::after,
-  .employee-cancel-btn::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
 
   .shift-chip.note-chip {
     background: var(--white);
     color: var(--purple);
     border: 1px solid var(--purple);
     cursor: pointer;
+    font-weight: 800;
   }
 
   .shift-chip.note-chip .remove-btn {
@@ -397,6 +368,42 @@
   .shift-chip.note-chip .remove-btn:hover {
     opacity: 1;
     color: var(--purple);
+  }
+
+  .icon-x {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon-x::before,
+  .icon-x::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 2px;
+    margin-left: -4px;
+    margin-top: -1px;
+    background: currentColor;
+    border-radius: 0;
+    transform-origin: center center;
+  }
+
+  .icon-x::before { transform: rotate(45deg); }
+  .icon-x::after { transform: rotate(-45deg); }
+
+  .shift-chip .remove-btn.icon-x {
+    width: 14px;
+    height: 14px;
+  }
+
+  .employee-icon-btn.icon-x {
+    width: 28px;
+    height: 28px;
   }
 
   /* -- SIDEBAR -- */
@@ -485,7 +492,7 @@
     border: 0;
     background: var(--purple);
     cursor: grab;
-    transition: all 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s;
     user-select: none;
     min-height: 30px;
     overflow: hidden;
@@ -502,65 +509,48 @@
     box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.18);
   }
 
-  .staff-card.pm.selected {
-    box-shadow: 0 0 0 2px rgba(221, 185, 42, 0.28);
-  }
-
-  .assign-hint {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--purple);
-    padding: 0 14px 6px;
-    line-height: 1.35;
-    background: var(--white);
-    flex-shrink: 0;
-  }
-
-  .assign-hint.hidden { display: none; }
-
-  .card-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .staff-card.am .card-dot { background: var(--purple); }
   .staff-card.pm {
     background: var(--gold);
-    color: var(--text);
   }
+
   .staff-card.pm:hover {
     transform: translateX(-2px);
     box-shadow: 2px 2px 8px rgba(221,185,42,0.18);
   }
-  .staff-card.pm .card-dot { background: var(--gold); }
-  .staff-card.pm .card-name { color: var(--text); }
-  .staff-card.pm .card-shift-label { color: var(--gold); }
+
+  .staff-card.pm.selected {
+    box-shadow: 0 0 0 2px rgba(221, 185, 42, 0.28);
+  }
 
   .staff-card-front {
     position: absolute;
-    inset: 0 0 0 4px;
+    left: 6px;
+    right: 0;
+    top: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     gap: 8px;
     min-width: 0;
     padding: 7px 10px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--purple);
     border-radius: var(--radius-pill);
     background: var(--white);
+    transition: background 0.15s;
+  }
+
+  .staff-card.pm .staff-card-front {
+    border-color: var(--gold);
   }
 
   .staff-card:hover .staff-card-front,
   .staff-card.selected .staff-card-front {
-    border-color: var(--purple);
     background: var(--purple-pale);
   }
 
   .staff-card.pm:hover .staff-card-front,
   .staff-card.pm.selected .staff-card-front {
-    border-color: var(--gold);
-    background: var(--white);
+    background: var(--gold-pale);
   }
 
   .card-name {
@@ -574,7 +564,22 @@
     font-weight: 700;
     font-family: 'DM Mono', monospace;
     color: var(--purple);
+    flex-shrink: 0;
   }
+
+  .staff-card.pm .card-shift-label { color: var(--gold); }
+
+  .assign-hint {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--purple);
+    padding: 0 14px 6px;
+    line-height: 1.35;
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .assign-hint.hidden { display: none; }
   .staff-group-letter {
     font-size: 9px;
     font-weight: 800;
@@ -859,9 +864,6 @@
 
   .employee-remove-btn {
     color: var(--danger);
-    font-size: 18px;
-    font-weight: 500;
-    position: relative;
   }
 
   .employee-remove-btn:hover {
@@ -871,9 +873,6 @@
 
   .employee-cancel-btn {
     color: var(--text-muted);
-    font-size: 18px;
-    font-weight: 500;
-    position: relative;
   }
 
   .employee-cancel-btn:hover {
@@ -1209,7 +1208,7 @@ let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard'
 
 // Data is loaded from scheduler-data.json or scheduler-api.php.
 let schedules = { frontdesk: {}, lifeguard: {} };
-let dayNotes = {};
+let dayNotes = { frontdesk: {}, lifeguard: {} };
 let employees = [];
 let activeNoteKey = null;
 let selectedEmployee = null;
@@ -1352,27 +1351,40 @@ function saveData() {
 }
 
 async function loadData() {
-  try {
-    const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const saved = await response.json();
-    applySavedData(saved);
-    saveLocalBackup(getDataSnapshot());
-    return;
-  } catch (jsonErr) {
-    console.warn('Scheduler JSON could not be loaded. Trying shared server endpoint.', jsonErr);
-  }
+  let apiData = null;
+  let jsonData = null;
 
   try {
     const response = await fetch(`${API_URL}?t=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const saved = await response.json();
+    if (response.ok) apiData = await response.json();
+  } catch (apiErr) {
+    console.warn('Shared server data could not be loaded.', apiErr);
+  }
+
+  try {
+    const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+    if (response.ok) jsonData = await response.json();
+  } catch (jsonErr) {
+    console.warn('Scheduler JSON could not be loaded.', jsonErr);
+  }
+
+  const pickNewest = (a, b) => {
+    if (!a) return b;
+    if (!b) return a;
+    const aTime = Date.parse(a.updatedAt || 0) || 0;
+    const bTime = Date.parse(b.updatedAt || 0) || 0;
+    if (aTime !== bTime) return aTime >= bTime ? a : b;
+    return a;
+  };
+
+  const saved = pickNewest(apiData, jsonData);
+  if (saved) {
     applySavedData(saved);
     saveLocalBackup(getDataSnapshot());
-  } catch (apiErr) {
-    console.warn('Shared server data could not be loaded. Falling back to this browser backup.', apiErr);
-    loadLocalBackup();
+    return;
   }
+
+  if (loadLocalBackup()) return;
 }
 function normalizeSchedules(savedSchedules) {
   const clean = { frontdesk: {}, lifeguard: {} };
@@ -1400,21 +1412,43 @@ function normalizeSchedules(savedSchedules) {
 }
 
 function normalizeDayNotes(savedNotes) {
-  const clean = {};
-  const addNote = (key, value) => {
+  const clean = { frontdesk: {}, lifeguard: {} };
+  const addNote = (calKey, key, value) => {
+    if (!CAL_KEYS.includes(calKey)) return;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
     const note = String(value || '').trim().replace(/\s+/g, ' ');
-    if (note) clean[key] = note.slice(0, 80);
+    if (note) clean[calKey][key] = note.slice(0, 80);
   };
+
+  if (!savedNotes || typeof savedNotes !== 'object') return clean;
+
+  const hasCalendarKeys = CAL_KEYS.some(calKey =>
+    Object.prototype.hasOwnProperty.call(savedNotes, calKey)
+    && savedNotes[calKey]
+    && typeof savedNotes[calKey] === 'object'
+    && !Array.isArray(savedNotes[calKey])
+  );
+
+  if (hasCalendarKeys) {
+    CAL_KEYS.forEach(calKey => {
+      Object.keys(savedNotes[calKey] || {}).forEach(key => {
+        addNote(calKey, key, savedNotes[calKey][key]);
+      });
+    });
+    return clean;
+  }
 
   Object.keys(savedNotes).forEach(key => {
     const value = savedNotes[key];
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      Object.keys(value).forEach(noteKey => addNote(noteKey, value[noteKey]));
+    if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+      addNote('frontdesk', key, value);
       return;
     }
-    addNote(key, value);
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.keys(value).forEach(noteKey => addNote(key, noteKey, value[noteKey]));
+    }
   });
+
   return clean;
 }
 
@@ -1440,7 +1474,7 @@ function cssColor(name) {
 }
 
 function getSchedule() { return schedules[activeCalendar]; }
-function getDayNotes() { return dayNotes; }
+function getDayNotes() { return dayNotes[activeCalendar]; }
 
 function syncCalendarUI() {
   document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
@@ -1543,7 +1577,7 @@ function renderSidebar() {
       card.classList.add('selected');
     }
     card.draggable = true;
-    card.innerHTML = `<div class="staff-card-front"><div class="card-dot"></div><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div></div>`;
+    card.innerHTML = `<div class="staff-card-front"><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div></div>`;
 
     card.addEventListener('click', () => {
       if (suppressCardClick) {
@@ -1625,11 +1659,10 @@ function renderEmployeeManager() {
     editBtn.addEventListener('click', () => beginEmployeeRename(name, row));
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'employee-icon-btn employee-remove-btn';
+    removeBtn.className = 'employee-icon-btn employee-remove-btn icon-x';
     removeBtn.type = 'button';
     removeBtn.setAttribute('aria-label', `Remove ${name}`);
     removeBtn.title = 'Remove';
-    removeBtn.textContent = '';
     removeBtn.addEventListener('click', () => removeEmployee(name));
 
     actions.append(editBtn, removeBtn);
@@ -1661,11 +1694,10 @@ function beginEmployeeRename(oldName, row) {
   saveBtn.innerHTML = ICON_SAVE;
 
   const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'employee-icon-btn employee-cancel-btn';
+  cancelBtn.className = 'employee-icon-btn employee-cancel-btn icon-x';
   cancelBtn.type = 'button';
   cancelBtn.setAttribute('aria-label', 'Cancel edit');
   cancelBtn.title = 'Cancel';
-  cancelBtn.textContent = '';
 
   actions.append(saveBtn, cancelBtn);
   input.focus();
@@ -1870,10 +1902,9 @@ function renderCellShifts(container, key, isSaturday) {
     nameSpan.textContent = entry.name;
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'remove-btn';
+    removeBtn.className = 'remove-btn icon-x';
     removeBtn.type = 'button';
     removeBtn.title = 'Remove';
-    removeBtn.textContent = '';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
       removeShift(key, idx);
@@ -1892,10 +1923,9 @@ function renderCellShifts(container, key, isSaturday) {
     noteSpan.textContent = note;
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'remove-btn';
+    removeBtn.className = 'remove-btn icon-x';
     removeBtn.type = 'button';
     removeBtn.title = 'Remove note';
-    removeBtn.textContent = '';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
       removeDayNote(key);
@@ -2039,7 +2069,7 @@ document.getElementById('dayNoteInput').addEventListener('keydown', e => {
 /* -- PRINT -- */
 function getPrintCalendarCells(calKey, monthName, year) {
   const sched       = schedules[calKey];
-  const notes       = dayNotes;
+  const notes       = dayNotes[calKey] || {};
   const mIdx        = MONTHS.indexOf(monthName);
   const daysInMonth = new Date(year, mIdx + 1, 0).getDate();
   const firstDay    = new Date(year, mIdx, 1).getDay();
