@@ -3,28 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Somerset Alumni Center — Shift Scheduler</title>
+<title>Somerset Alumni Center - Shift Scheduler</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
 
   :root {
-    --purple:       #5E1771;
-    --purple-deep:  #5E1771;
-    --purple-light: #5E1771;
-    --purple-pale:  #F7F1F9;
-    --purple-muted: #E7D7EC;
-    --gold:         #DDB92A;
-    --white:        #ffffff;
-    --text:         #221428;
-    --text-muted:   #6F5D76;
-    --border:       #DED1E5;
-    --shift-am:     #5E1771;
-    --shift-pm:     #DDB92A;
-    --shift-sat:    #5E1771;
-    --danger:       #B42318;
-    --danger-pale:  #FFF1F0;
-    --focus-ring:   rgba(94,23,113,0.18);
+    --purple:        #5E1771;
+    --purple-pale:   #F7F1F9;
+    --purple-muted:  #E7D7EC;
+    --gold:          #DDB92A;
+    --white:         #ffffff;
+    --text:          #221428;
+    --text-muted:    #6F5D76;
+    --print-muted:   #8B7B93;
+    --border:        #DED1E5;
+    --surface-muted: #F8F4FA;
+    --sunday-muted:  #c9b8d4;
+    --gold-pale:     #fffdf5;
+    --warning:       #7a2710;
+    --edit-border:   #D4C4E8;
+    --danger:        #B42318;
+    --danger-pale:   #FFF1F0;
+    --danger-border: #F2B8B5;
+    --success:       #15803d;
+    --success-pale:  #ecfdf3;
+    --success-border:#86efac;
+    --focus-ring:    rgba(94,23,113,0.18);
+    --radius-pill:   999px;
+    --radius-large:  24px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,9 +46,9 @@
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
+  /* -- HEADER -- */
   header {
-    background: linear-gradient(90deg, var(--purple) 0%, var(--purple-deep) 100%);
+    background: var(--purple);
     color: var(--white);
     padding: 0 20px;
     display: flex;
@@ -72,13 +79,13 @@
 
   .logo .gold { color: var(--gold); }
 
-  /* ── CAL TOGGLE ── */
+  /* -- CAL TOGGLE -- */
   .cal-toggle {
     display: flex;
     align-items: center;
     background: rgba(255,255,255,0.14);
     border: 1px solid rgba(255,255,255,0.24);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 3px;
     gap: 2px;
     margin: auto 0;
@@ -86,12 +93,16 @@
 
   .cal-toggle-btn {
     padding: 6px 16px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: none;
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     transition: all 0.18s;
     color: rgba(255,255,255,0.78);
     background: transparent;
@@ -112,7 +123,7 @@
   .header-nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     margin-left: auto;
   }
 
@@ -122,19 +133,28 @@
     border: 1px solid rgba(255,255,255,0.28);
     width: 30px;
     height: 30px;
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
+    padding: 0;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
     flex-shrink: 0;
+  }
+
+  .nav-arrow svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+    stroke: currentColor;
   }
   .nav-arrow:hover {
     background: var(--white);
     border-color: var(--white);
-    color: var(--purple-deep);
+    color: var(--purple);
   }
 
   .today-btn {
@@ -158,12 +178,15 @@
     color: var(--white);
     border: 1px solid var(--gold);
     padding: 7px 16px;
-    border-radius: 7px;
+    border-radius: var(--radius-pill);
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
     box-shadow: none;
     letter-spacing: 0.2px;
@@ -175,30 +198,17 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.16);
   }
 
-  .save-status {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.72);
-    margin-left: 10px;
-    min-width: 72px;
-    text-align: right;
-    transition: color 0.2s;
-  }
-
-  .save-status.saving { color: rgba(255,255,255,0.9); }
-  .save-status.offline { color: var(--gold); }
-
-  /* ── WORKSPACE ── */
+  /* -- WORKSPACE -- */
   .workspace {
     display: flex;
     flex: 1;
     overflow: hidden;
   }
 
-  /* ── CAL TYPE INDICATOR ── */
+  /* -- CAL TYPE INDICATOR -- */
   .cal-type-bar {
     background: var(--purple-pale);
-    color: var(--purple-deep);
+    color: var(--purple);
     text-align: center;
     font-size: 11px;
     font-weight: 700;
@@ -209,7 +219,7 @@
     opacity: 0.92;
   }
 
-  /* ── CALENDAR PANEL ── */
+  /* -- CALENDAR PANEL -- */
   .calendar-panel {
     flex: 1;
     display: flex;
@@ -226,7 +236,7 @@
     gap: 0;
     flex: 1;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-large);
     background: var(--border);
     overflow: hidden;
   }
@@ -251,6 +261,7 @@
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     padding: 6px;
+    position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -258,13 +269,13 @@
     transition: border-color 0.15s, box-shadow 0.15s;
   }
 
-  .cal-cell.empty { background: #F8F4FA; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .cal-cell.empty { background: var(--surface-muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
   .cal-cell.sunday {
-    background: #FFFFFF;
+    background: var(--white);
     border-color: var(--border);
   }
-  .cal-cell.sunday .day-num { color: #c9b8d4; }
+  .cal-cell.sunday .day-num { color: var(--sunday-muted); }
 
   .cal-cell.drag-over {
     border-color: var(--gold);
@@ -274,15 +285,19 @@
 
   .cal-cell.assign-ready {
     cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(94, 23, 113, 0.18);
   }
 
   .cal-cell.assign-ready:hover {
-    border-color: var(--purple-light);
-    box-shadow: inset 0 0 0 2px rgba(94, 23, 113, 0.14);
+    outline: 2px solid var(--purple);
+    outline-offset: -1px;
+    z-index: 3;
   }
 
-  .cal-cell.today { box-shadow: inset 0 0 0 2px var(--purple-light); }
+  .cal-cell.today {
+    outline: 2px solid var(--purple);
+    outline-offset: -1px;
+    z-index: 3;
+  }
   .cal-cell.today .day-num { color: var(--purple); font-weight: 800; }
 
   .day-num {
@@ -305,8 +320,8 @@
     font-size: 9.5px;
     font-weight: 700;
     padding: 3px 5px;
-    border-radius: 4px;
-    color: white;
+    border-radius: var(--radius-pill);
+    color: var(--white);
     display: flex;
     justify-content: space-between;
     gap: 4px;
@@ -316,9 +331,9 @@
 
   .shift-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .shift-chip.am  { background: var(--shift-am); }
-  .shift-chip.pm  { background: var(--shift-pm); color: var(--white); }
-  .shift-chip.sat { background: var(--shift-sat); }
+  .shift-chip.am  { background: var(--purple); }
+  .shift-chip.pm  { background: var(--gold); color: var(--white); }
+  .shift-chip.sat { background: var(--purple); }
 
   .shift-chip .remove-btn {
     background: none;
@@ -326,11 +341,46 @@
     color: rgba(255,255,255,0.65);
     cursor: pointer;
     font-size: 9px;
-    padding: 0 0 0 3px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
     flex-shrink: 0;
+    position: relative;
   }
-  .shift-chip .remove-btn:hover { color: white; }
+  .shift-chip .remove-btn:hover { color: var(--white); }
+
+  .shift-chip .remove-btn::before,
+  .shift-chip .remove-btn::after,
+  .employee-remove-btn::before,
+  .employee-remove-btn::after,
+  .employee-cancel-btn::before,
+  .employee-cancel-btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 1.5px;
+    border-radius: 0.75px;
+    background: currentColor;
+    transform-origin: center;
+  }
+
+  .shift-chip .remove-btn::before,
+  .employee-remove-btn::before,
+  .employee-cancel-btn::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .shift-chip .remove-btn::after,
+  .employee-remove-btn::after,
+  .employee-cancel-btn::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 
   .shift-chip.note-chip {
     background: var(--white);
@@ -346,10 +396,10 @@
 
   .shift-chip.note-chip .remove-btn:hover {
     opacity: 1;
-    color: var(--purple-deep);
+    color: var(--purple);
   }
 
-  /* ── SIDEBAR ── */
+  /* -- SIDEBAR -- */
   .sidebar {
     width: 268px;
     background: var(--white);
@@ -383,13 +433,17 @@
   .tab-btn {
     flex: 1;
     padding: 7px 4px;
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     background: var(--white);
     font-family: inherit;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     color: var(--text-muted);
     transition: all 0.15s;
     letter-spacing: 0.2px;
@@ -424,22 +478,20 @@
   }
 
   .staff-card {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
-    border-radius: 7px;
-    border: 1px solid var(--border);
-    background: var(--white);
+    position: relative;
+    display: block;
+    padding: 0;
+    border-radius: var(--radius-pill);
+    border: 0;
+    background: var(--purple);
     cursor: grab;
-    border-left: 4px solid var(--purple);
     transition: all 0.15s;
     user-select: none;
+    min-height: 30px;
+    overflow: hidden;
   }
 
   .staff-card:hover {
-    border-color: var(--purple-light);
-    background: var(--purple-pale);
     transform: translateX(-2px);
     box-shadow: 2px 2px 8px rgba(94,23,113,0.12);
   }
@@ -447,14 +499,10 @@
   .staff-card:active { cursor: grabbing; opacity: 0.6; }
 
   .staff-card.selected {
-    border-color: var(--purple);
-    background: var(--purple-pale);
     box-shadow: 0 0 0 2px rgba(94, 23, 113, 0.18);
   }
 
   .staff-card.pm.selected {
-    border-color: var(--gold);
-    background: #fffdf5;
     box-shadow: 0 0 0 2px rgba(221, 185, 42, 0.28);
   }
 
@@ -477,22 +525,43 @@
     flex-shrink: 0;
   }
 
-  .staff-card.am .card-dot { background: var(--shift-am); }
+  .staff-card.am .card-dot { background: var(--purple); }
   .staff-card.pm {
-    background: var(--white);
-    border-color: var(--border);
-    border-left-color: var(--gold);
+    background: var(--gold);
     color: var(--text);
   }
   .staff-card.pm:hover {
-    background: var(--white);
-    border-color: var(--gold);
     transform: translateX(-2px);
     box-shadow: 2px 2px 8px rgba(221,185,42,0.18);
   }
   .staff-card.pm .card-dot { background: var(--gold); }
   .staff-card.pm .card-name { color: var(--text); }
   .staff-card.pm .card-shift-label { color: var(--gold); }
+
+  .staff-card-front {
+    position: absolute;
+    inset: 0 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--white);
+  }
+
+  .staff-card:hover .staff-card-front,
+  .staff-card.selected .staff-card-front {
+    border-color: var(--purple);
+    background: var(--purple-pale);
+  }
+
+  .staff-card.pm:hover .staff-card-front,
+  .staff-card.pm.selected .staff-card-front {
+    border-color: var(--gold);
+    background: var(--white);
+  }
 
   .card-name {
     font-size: 12px;
@@ -518,12 +587,12 @@
   .staff-group-letter.pm { color: var(--gold); }
 
 
-  /* ── EMPLOYEE MANAGER ── */
+  /* -- EMPLOYEE MANAGER -- */
   .manage-employees-btn {
     width: 100%;
     margin-top: 8px;
     border: 1px solid var(--purple-muted);
-    border-radius: 7px;
+    border-radius: var(--radius-pill);
     background: var(--white);
     color: var(--purple);
     font-family: inherit;
@@ -531,13 +600,17 @@
     font-weight: 800;
     padding: 8px 10px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     text-align: center;
   }
 
   .manage-employees-btn:hover {
     border-color: var(--purple);
     background: var(--purple-pale);
-    color: var(--purple-deep);
+    color: var(--purple);
   }
 
   .staff-search-wrap {
@@ -549,7 +622,7 @@
   .staff-search-input {
     width: 100%;
     border: 1px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius-pill);
     padding: 7px 10px;
     font-family: inherit;
     font-size: 12px;
@@ -606,7 +679,7 @@
   .employee-search-input {
     width: 100%;
     border: 1px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius-pill);
     padding: 9px 10px 9px 32px;
     font-family: inherit;
     font-size: 12px;
@@ -637,16 +710,10 @@
     width: 100%;
   }
 
-  .note-input {
-    min-height: 88px;
-    resize: vertical;
-    line-height: 1.45;
-  }
-
   .employee-input {
     min-width: 0;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     padding: 9px 10px;
     font-family: inherit;
     font-size: 12px;
@@ -655,14 +722,22 @@
     outline: none;
   }
 
+  .employee-input.note-input {
+    min-height: 88px;
+    resize: vertical;
+    line-height: 1.45;
+    border-radius: 16px;
+    padding: 12px 14px;
+  }
+
   .employee-input:focus {
-    border-color: var(--purple-light);
+    border-color: var(--purple);
     box-shadow: 0 0 0 2px rgba(94,23,113,0.10);
   }
 
   .employee-add-btn {
     border: 1px solid var(--purple);
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     background: var(--purple);
     color: var(--white);
     font-family: inherit;
@@ -670,16 +745,20 @@
     font-weight: 800;
     padding: 9px 12px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 
   .employee-add-btn:hover {
-    background: var(--purple-deep);
-    border-color: var(--purple-deep);
+    background: var(--purple);
+    border-color: var(--purple);
   }
 
   .employee-manager-list {
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius-large);
     overflow-y: auto;
     max-height: 360px;
     background: var(--white);
@@ -736,7 +815,7 @@
     height: 28px;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     background: transparent;
     cursor: pointer;
     flex-shrink: 0;
@@ -748,6 +827,7 @@
   .employee-icon-btn svg {
     display: block;
     flex-shrink: 0;
+    overflow: visible;
   }
 
   .employee-edit-btn {
@@ -756,15 +836,15 @@
 
   .employee-edit-btn:hover {
     background: var(--white);
-    border-color: #D4C4E8;
-    color: var(--purple-deep);
+    border-color: var(--edit-border);
+    color: var(--purple);
   }
 
   .employee-rename-input {
     flex: 1;
     min-width: 0;
     border: 1px solid var(--purple);
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     padding: 5px 8px;
     font-size: 12px;
     font-weight: 600;
@@ -781,37 +861,37 @@
     color: var(--danger);
     font-size: 18px;
     font-weight: 500;
-    padding-bottom: 1px;
+    position: relative;
   }
 
   .employee-remove-btn:hover {
     background: var(--danger-pale);
-    border-color: #F2B8B5;
+    border-color: var(--danger-border);
   }
 
   .employee-cancel-btn {
     color: var(--text-muted);
     font-size: 18px;
     font-weight: 500;
-    padding-bottom: 1px;
+    position: relative;
   }
 
   .employee-cancel-btn:hover {
-    background: #f5f2f7;
+    background: var(--surface-muted);
     border-color: var(--border);
     color: var(--text);
   }
 
   .employee-save-btn {
-    color: #15803d;
+    color: var(--success);
   }
 
   .employee-save-btn:hover {
-    background: #ecfdf3;
-    border-color: #86efac;
+    background: var(--success-pale);
+    border-color: var(--success-border);
   }
 
-  /* ── LEGEND ── */
+  /* -- LEGEND -- */
   .legend {
     padding: 8px 14px;
     border-top: 1px solid var(--border);
@@ -819,7 +899,7 @@
     flex-direction: column;
     gap: 4px;
     flex-shrink: 0;
-    background: white;
+    background: var(--white);
   }
 
   .legend-label {
@@ -842,11 +922,11 @@
   .legend-dot {
     width: 8px;
     height: 8px;
-    border-radius: 3px;
+    border-radius: var(--radius-pill);
     flex-shrink: 0;
   }
 
-  /* ── DRAG GHOST ── */
+  /* -- DRAG GHOST -- */
   .drag-ghost {
     position: fixed;
     left: -9999px;
@@ -854,7 +934,7 @@
     pointer-events: none;
     z-index: -1;
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-pill);
     font-size: 9.5px;
     font-weight: 700;
     line-height: 1.25;
@@ -863,18 +943,18 @@
   }
 
   .drag-ghost.am {
-    background: var(--shift-am);
+    background: var(--purple);
     color: var(--white);
-    border: 1px solid var(--shift-am);
+    border: 1px solid var(--purple);
   }
 
   .drag-ghost.pm {
-    background: var(--shift-pm);
+    background: var(--gold);
     color: var(--white);
-    border: 1px solid var(--shift-pm);
+    border: 1px solid var(--gold);
   }
 
-  /* ── TOAST ── */
+  /* -- TOAST -- */
   .toast {
     position: fixed;
     bottom: 22px;
@@ -883,7 +963,7 @@
     background: var(--text);
     color: var(--white);
     padding: 10px 16px;
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
     font-size: 12px;
     font-weight: 600;
     line-height: 1.35;
@@ -902,10 +982,10 @@
   }
 
   .toast.warn {
-    background: #7a2710;
+    background: var(--warning);
   }
 
-  /* ── MODAL ── */
+  /* -- MODAL -- */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -919,8 +999,8 @@
   .modal-overlay.open { display: flex; }
 
   .modal {
-    background: white;
-    border-radius: 14px;
+    background: var(--white);
+    border-radius: var(--radius-large);
     padding: 28px;
     width: 400px;
     box-shadow: 0 24px 64px rgba(94,23,113,0.25);
@@ -931,7 +1011,7 @@
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 4px;
-    color: var(--purple-deep);
+    color: var(--purple);
   }
 
   .modal p {
@@ -944,7 +1024,7 @@
 
   .modal-btn {
     padding: 12px 16px;
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
     border: none;
     font-family: inherit;
     font-size: 13px;
@@ -955,27 +1035,29 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: center;
+    line-height: 1;
   }
   .modal-btn:hover { transform: translateY(-1px); }
   .modal-btn.both {
     background: var(--purple);
-    color: white;
+    color: var(--white);
     border: 1px solid var(--purple);
   }
   .modal-btn.both:hover {
-    background: var(--purple-deep);
-    border-color: var(--purple-deep);
+    background: var(--purple);
+    border-color: var(--purple);
   }
   .modal-btn.fd,
   .modal-btn.lg {
     background: var(--purple-pale);
-    color: var(--purple-deep);
+    color: var(--purple);
     border: 1px solid var(--purple-muted);
   }
   .modal-btn.fd:hover,
   .modal-btn.lg:hover {
     background: var(--purple-muted);
-    border-color: var(--purple-light);
+    border-color: var(--purple);
   }
   .modal-btn.cancel {
     background: var(--white);
@@ -983,9 +1065,9 @@
     border: 1px solid var(--border);
   }
   .modal-btn.cancel:hover {
-    background: #F8F4FA;
+    background: var(--surface-muted);
     border-color: var(--purple-muted);
-    color: var(--purple-deep);
+    color: var(--purple);
   }
 
   .modal-btn.done {
@@ -995,8 +1077,8 @@
   }
 
   .modal-btn.done:hover {
-    background: var(--purple-deep);
-    border-color: var(--purple-deep);
+    background: var(--purple);
+    border-color: var(--purple);
   }
 
   button:focus-visible {
@@ -1021,11 +1103,14 @@
   </div>
 
   <div class="header-nav">
-    <button class="nav-arrow" id="prevMonth" type="button" title="Previous month">&#8592;</button>
+    <button class="nav-arrow" id="prevMonth" type="button" title="Previous month" aria-label="Previous month">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
     <div class="month-label" id="monthLabel"></div>
-    <button class="nav-arrow" id="nextMonth" type="button" title="Next month">&#8594;</button>
+    <button class="nav-arrow" id="nextMonth" type="button" title="Next month" aria-label="Next month">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
     <button class="nav-arrow today-btn" id="todayBtn" type="button" title="Go to current month">Today</button>
-    <span class="save-status" id="saveStatus" aria-live="polite">Saved</span>
     <button class="print-btn" id="openPrintModal" type="button">Print Schedule</button>
   </div>
 </header>
@@ -1041,23 +1126,22 @@
 
   <div class="sidebar">
     <div class="sidebar-top">
-      <h3>Employees — Drag or click <span id="sidebarCalName">Front Desk</span></h3>
+      <h3>Employees - Drag or click <span id="sidebarCalName">Front Desk</span></h3>
       <div class="shift-type-tabs">
-        <button class="tab-btn active" id="tabAM" onclick="setActiveShift('am')">8–1 AM</button>
-        <button class="tab-btn" id="tabPM" onclick="setActiveShift('pm')">5–8 PM</button>
+        <button class="tab-btn active" id="tabAM" onclick="setActiveShift('am')">8-1 AM</button>
+        <button class="tab-btn" id="tabPM" onclick="setActiveShift('pm')">5-8 PM</button>
       </div>
       <button class="manage-employees-btn" id="openEmployeeManager" type="button">Manage Employees</button>
     </div>
     <div class="staff-search-wrap">
       <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
     </div>
-    <div class="assign-hint hidden" id="assignHint"></div>
     <div class="staff-list" id="staffList"></div>
     <div class="legend">
       <div class="legend-label">Shift Key</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--shift-am)"></div>8:00 AM – 1:00 PM (weekdays)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--shift-pm)"></div>5:00 PM – 8:00 PM (weekdays)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--shift-sat)"></div>8:00 AM – 12:00 PM (Saturday)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>8:00 AM - 1:00 PM (weekdays)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>5:00 PM - 8:00 PM (weekdays)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>8:00 AM - 12:00 PM (Saturday)</div>
     </div>
   </div>
 </div>
@@ -1125,7 +1209,7 @@ let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard'
 
 // Data is loaded from scheduler-data.json or scheduler-api.php.
 let schedules = { frontdesk: {}, lifeguard: {} };
-let dayNotes = { frontdesk: {}, lifeguard: {} };
+let dayNotes = {};
 let employees = [];
 let activeNoteKey = null;
 let selectedEmployee = null;
@@ -1226,21 +1310,6 @@ function showToast(message, type = 'info') {
   }, 3200);
 }
 
-function setSaveStatus(status) {
-  const el = document.getElementById('saveStatus');
-  if (!el) return;
-  el.classList.remove('saving', 'offline');
-  if (status === 'saving') {
-    el.textContent = 'Saving…';
-    el.classList.add('saving');
-  } else if (status === 'offline') {
-    el.textContent = 'Saved locally';
-    el.classList.add('offline');
-  } else {
-    el.textContent = 'Saved';
-  }
-}
-
 function saveLocalBackup(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -1265,8 +1334,6 @@ function loadLocalBackup() {
 function saveData() {
   const data = getDataSnapshot();
   saveLocalBackup(data);
-  setSaveStatus('saving');
-
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     fetch(API_URL, {
@@ -1277,11 +1344,9 @@ function saveData() {
     })
       .then(response => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        setSaveStatus('saved');
       })
       .catch(err => {
         console.warn('Shared server data could not be saved.', err);
-        setSaveStatus('offline');
       });
   }, 150);
 }
@@ -1335,14 +1400,20 @@ function normalizeSchedules(savedSchedules) {
 }
 
 function normalizeDayNotes(savedNotes) {
-  const clean = { frontdesk: {}, lifeguard: {} };
-  CAL_KEYS.forEach(calKey => {
-    const cal = savedNotes[calKey] || {};
-    Object.keys(cal).forEach(key => {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
-      const note = String(cal[key] || '').trim().replace(/\s+/g, ' ');
-      if (note) clean[calKey][key] = note.slice(0, 80);
-    });
+  const clean = {};
+  const addNote = (key, value) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+    const note = String(value || '').trim().replace(/\s+/g, ' ');
+    if (note) clean[key] = note.slice(0, 80);
+  };
+
+  Object.keys(savedNotes).forEach(key => {
+    const value = savedNotes[key];
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.keys(value).forEach(noteKey => addNote(noteKey, value[noteKey]));
+      return;
+    }
+    addNote(key, value);
   });
   return clean;
 }
@@ -1364,8 +1435,12 @@ function dateKey(y, m, d) {
   return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
 
+function cssColor(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
 function getSchedule() { return schedules[activeCalendar]; }
-function getDayNotes() { return dayNotes[activeCalendar]; }
+function getDayNotes() { return dayNotes; }
 
 function syncCalendarUI() {
   document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
@@ -1380,18 +1455,6 @@ function syncShiftTabsUI() {
 }
 
 function syncAssignUI() {
-  const hint = document.getElementById('assignHint');
-  if (hint) {
-    if (selectedEmployee) {
-      const label = selectedEmployee.shift === 'am' ? '8–1' : '5–8';
-      hint.textContent = `${selectedEmployee.name} selected (${label}) — click a day to assign, or click again to deselect.`;
-      hint.classList.remove('hidden');
-    } else {
-      hint.textContent = '';
-      hint.classList.add('hidden');
-    }
-  }
-
   document.querySelectorAll('.cal-cell.assign-ready').forEach(cell => {
     cell.classList.remove('assign-ready');
   });
@@ -1420,7 +1483,7 @@ function goToToday() {
   renderCalendar();
 }
 
-/* ── CALENDAR SWITCH ── */
+/* -- CALENDAR SWITCH -- */
 function switchCalendar(cal) {
   activeCalendar = cal;
   selectedEmployee = null;
@@ -1431,7 +1494,7 @@ function switchCalendar(cal) {
   renderSidebar();
 }
 
-/* ── SHIFT TYPE TABS ── */
+/* -- SHIFT TYPE TABS -- */
 function setActiveShift(type) {
   activeShift = type;
   if (selectedEmployee) selectedEmployee.shift = type;
@@ -1440,13 +1503,13 @@ function setActiveShift(type) {
   saveData();
   renderSidebar();
 }
-/* ── SIDEBAR ── */
+/* -- SIDEBAR -- */
 function renderSidebar() {
   const list = document.getElementById('staffList');
   const searchInput = document.getElementById('staffSearchInput');
   const query = (searchInput?.value || '').trim().toLowerCase();
   list.innerHTML = '';
-  const label = activeShift === 'am' ? '8–1' : '5–8';
+  const label = activeShift === 'am' ? '8-1' : '5-8';
 
   const filtered = query
     ? employees.filter(name => name.toLowerCase().includes(query))
@@ -1480,7 +1543,7 @@ function renderSidebar() {
       card.classList.add('selected');
     }
     card.draggable = true;
-    card.innerHTML = `<div class="card-dot"></div><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div>`;
+    card.innerHTML = `<div class="staff-card-front"><div class="card-dot"></div><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div></div>`;
 
     card.addEventListener('click', () => {
       if (suppressCardClick) {
@@ -1500,7 +1563,7 @@ function renderSidebar() {
       e.dataTransfer.setData('shift', activeShift);
       const ghost = document.getElementById('dragGhost');
       ghost.className = `drag-ghost ${activeShift}`;
-      ghost.textContent = `${name} · ${label}`;
+      ghost.textContent = `${name} - ${label}`;
       e.dataTransfer.setDragImage(ghost, 12, 12);
     });
 
@@ -1566,7 +1629,7 @@ function renderEmployeeManager() {
     removeBtn.type = 'button';
     removeBtn.setAttribute('aria-label', `Remove ${name}`);
     removeBtn.title = 'Remove';
-    removeBtn.textContent = '×';
+    removeBtn.textContent = '';
     removeBtn.addEventListener('click', () => removeEmployee(name));
 
     actions.append(editBtn, removeBtn);
@@ -1602,7 +1665,7 @@ function beginEmployeeRename(oldName, row) {
   cancelBtn.type = 'button';
   cancelBtn.setAttribute('aria-label', 'Cancel edit');
   cancelBtn.title = 'Cancel';
-  cancelBtn.textContent = '×';
+  cancelBtn.textContent = '';
 
   actions.append(saveBtn, cancelBtn);
   input.focus();
@@ -1704,7 +1767,7 @@ function removeEmployee(name) {
   renderEmployeeManager();
 }
 
-/* ── CALENDAR ── */
+/* -- CALENDAR -- */
 function renderCalendar() {
   document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
   const grid = document.getElementById('calGrid');
@@ -1810,7 +1873,7 @@ function renderCellShifts(container, key, isSaturday) {
     removeBtn.className = 'remove-btn';
     removeBtn.type = 'button';
     removeBtn.title = 'Remove';
-    removeBtn.textContent = '✕';
+    removeBtn.textContent = '';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
       removeShift(key, idx);
@@ -1832,7 +1895,7 @@ function renderCellShifts(container, key, isSaturday) {
     removeBtn.className = 'remove-btn';
     removeBtn.type = 'button';
     removeBtn.title = 'Remove note';
-    removeBtn.textContent = '✕';
+    removeBtn.textContent = '';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
       removeDayNote(key);
@@ -1857,7 +1920,6 @@ function addShift(key, name, shift, isSaturday) {
   const effectiveShift = isSaturday ? 'sat' : shift;
   if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return 'duplicate';
   sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift }]);
-  delete getDayNotes()[key];
   saveData();
   refreshCell(key);
   return 'added';
@@ -1911,7 +1973,7 @@ function saveDayNote() {
   refreshCell(key);
 }
 
-/* ── NAV ── */
+/* -- NAV -- */
 document.getElementById('prevMonth').addEventListener('click', () => {
   if (--currentMonth < 0) { currentMonth = 11; currentYear--; }
   saveData();
@@ -1923,6 +1985,15 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   renderCalendar();
 });
 document.getElementById('todayBtn').addEventListener('click', goToToday);
+
+document.addEventListener('click', e => {
+  if (!selectedEmployee) return;
+  if (e.target.closest('.cal-cell[data-key]')) return;
+  if (e.target.closest('.staff-card')) return;
+  selectedEmployee = null;
+  syncAssignUI();
+  renderSidebar();
+});
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
@@ -1945,7 +2016,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ── PRINT MODAL ── */
+/* -- PRINT MODAL -- */
 document.getElementById('openPrintModal').addEventListener('click', () => {
   document.getElementById('modalMonth').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
   document.getElementById('printModal').classList.add('open');
@@ -1965,10 +2036,10 @@ document.getElementById('dayNoteInput').addEventListener('keydown', e => {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveDayNote();
 });
 
-/* ── PRINT ── */
+/* -- PRINT -- */
 function getPrintCalendarCells(calKey, monthName, year) {
   const sched       = schedules[calKey];
-  const notes       = dayNotes[calKey] || {};
+  const notes       = dayNotes;
   const mIdx        = MONTHS.indexOf(monthName);
   const daysInMonth = new Date(year, mIdx + 1, 0).getDate();
   const firstDay    = new Date(year, mIdx, 1).getDay();
@@ -1986,7 +2057,7 @@ function getPrintCalendarCells(calKey, monthName, year) {
 
 function fitSvgText(value, maxChars = 22) {
   const text = String(value);
-  return text.length <= maxChars ? text : text.slice(0, maxChars - 1) + '…';
+  return text.length <= maxChars ? text : text.slice(0, maxChars - 1) + '...';
 }
 
 function buildPrintSheet(calKey, monthName, year) {
@@ -2001,7 +2072,7 @@ function buildPrintSheet(calKey, monthName, year) {
   const pageH = 850;
   const shellX = 25;
   const shellY = 24;
-  const shellW = 1050;        // 7 columns × 150
+  const shellW = 1050;        // 7 columns x 150
   const topH = 55;
   const daysH = 30;
   const gridY = shellY + topH + daysH;
@@ -2010,21 +2081,26 @@ function buildPrintSheet(calKey, monthName, year) {
   const gridW = colW * 7;
   const gridH = rowH * 6;
   const shellH = topH + daysH + gridH;
+  const sheetRadius = 24;
+  const noteRadius = 16;
   // Color print palette: follows the UI brand colors, with dark borders and labels
   // so the page still reads well when printed in grayscale.
-  const purple = '#5E1771';
-  const gold = '#DDB92A';
+  const purple = cssColor('--purple');
+  const gold = cssColor('--gold');
   const bar = purple;
   const dayBar = purple;
-  const grid = '#6F5D76';
+  const grid = cssColor('--text-muted');
   const headerLine = gold;
-  const text = '#221428';
-  const mutedText = '#8B7B93';
+  const text = cssColor('--text');
+  const mutedText = cssColor('--print-muted');
+  const clipId = `print-shell-${calKey}`;
 
   let out = `<section class="sheet"><svg class="print-svg" viewBox="0 0 ${pageW} ${pageH}" xmlns="http://www.w3.org/2000/svg" aria-label="${svgEscape(calLabel)} ${svgEscape(monthName)} ${year}" shape-rendering="crispEdges">`;
+  out += `<defs><clipPath id="${clipId}"><rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" rx="${sheetRadius}" ry="${sheetRadius}"/></clipPath></defs>`;
 
   // Solid, flush background blocks. Borders are drawn separately as shared lines.
   out += `<rect x="0" y="0" width="${pageW}" height="${pageH}" fill="#fff"/>`;
+  out += `<g clip-path="url(#${clipId})">`;
   out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" fill="#fff"/>`;
   out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${topH}" fill="${bar}"/>`;
   out += `<rect x="${shellX}" y="${shellY + topH}" width="${shellW}" height="${daysH}" fill="${dayBar}"/>`;
@@ -2060,7 +2136,7 @@ function buildPrintSheet(calKey, monthName, year) {
       out += `<text x="${x + colW - 8}" y="${y + 15}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="end" fill="${purple}" shape-rendering="geometricPrecision">${day.d}</text>`;
 
       if (day.dow === 0) {
-        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">–</text>`;
+        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">-</text>`;
         continue;
       }
 
@@ -2070,12 +2146,16 @@ function buildPrintSheet(calKey, monthName, year) {
           const noteX = x + 14;
           const noteY = y + 45;
           const noteW = colW - 28;
-          out += `<rect x="${noteX}" y="${noteY}" width="${noteW}" height="32" rx="4" fill="#FFFFFF" stroke="${purple}" stroke-width="1"/>`;
-          out += `<rect x="${noteX}" y="${noteY}" width="4" height="32" rx="2" fill="${purple}"/>`;
-          out += `<text x="${noteX + 10}" y="${noteY + 20}" font-family="Inter, Arial, sans-serif" font-size="8.5" font-weight="800" fill="${text}" shape-rendering="geometricPrecision">${svgEscape(fitSvgText(day.note, 24))}</text>`;
+          const noteOffset = 4;
+          out += `<foreignObject x="${noteX}" y="${noteY}" width="${noteW}" height="32">`;
+          out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;font-family:Inter,Arial,sans-serif;font-size:8.5px;font-weight:800;color:${text};line-height:1;">`;
+          out += `<div style="position:absolute;inset:0;border-radius:999px;background:${purple};"></div>`;
+          out += `<div style="position:absolute;left:${noteOffset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${purple};border-radius:999px;background:#fff;display:flex;align-items:center;padding:0 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(fitSvgText(day.note, 24))}</div>`;
+          out += `</div>`;
+          out += `</foreignObject>`;
           continue;
         }
-        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">–</text>`;
+        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">-</text>`;
         continue;
       }
 
@@ -2088,22 +2168,25 @@ function buildPrintSheet(calKey, monthName, year) {
       const stepY = chipH + chipGap;
       const nameSize = entryCount <= 6 ? 7.8 : Math.max(4.2, Math.min(7.8, chipH * 0.6));
       const labelSize = entryCount <= 6 ? 7.2 : Math.max(3.9, Math.min(7.2, chipH * 0.55));
-      const textY = chipH * 0.72;
 
       ordered.forEach((s, n) => {
         const isSat = day.dow === 6 || s.shift === 'sat';
-        const label = isSat ? '8–12' : (s.shift === 'pm' ? '5–8' : '8–1');
+        const label = isSat ? '8-12' : (s.shift === 'pm' ? '5-8' : '8-1');
         const isPM = s.shift === 'pm' && !isSat;
         const fill = '#FFFFFF';
         const edge = isPM ? gold : purple;
         const stroke = isPM ? gold : purple;
         const ay = y + 23 + n * stepY;
-        const ax = x + 7;
+        const offset = 4;
+        const ax = x + 7 - offset / 2;
         const aw = colW - 14;
-        out += `<rect x="${ax}" y="${ay}" width="${aw}" height="${chipH}" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
-        out += `<rect x="${ax}" y="${ay}" width="4" height="${chipH}" rx="2" fill="${edge}"/>`;
-        out += `<text x="${ax + 9}" y="${ay + textY}" font-family="Inter, Arial, sans-serif" font-size="${nameSize}" font-weight="800" fill="${text}" shape-rendering="geometricPrecision">${svgEscape(fitSvgText(s.name, 20))}</text>`;
-        out += `<text x="${ax + aw - 5}" y="${ay + textY}" font-family="Inter, Arial, sans-serif" font-size="${labelSize}" font-weight="800" text-anchor="end" fill="${text}" shape-rendering="geometricPrecision">${label}</text>`;
+        out += `<foreignObject x="${ax}" y="${ay}" width="${aw}" height="${chipH}">`;
+        out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;font-family:Inter,Arial,sans-serif;font-weight:800;color:${text};line-height:1;white-space:nowrap;overflow:hidden;">`;
+        out += `<div style="position:absolute;inset:0;border-radius:999px;background:${edge};"></div>`;
+        out += `<div style="position:absolute;left:${offset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${stroke};border-radius:999px;background:${fill};display:flex;align-items:center;gap:4px;padding:0 5px 0 6px;overflow:hidden;">`;
+        out += `<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:${nameSize}px;">${escapeHTML(fitSvgText(s.name, 20))}</span>`;
+        out += `<span style="flex:0 0 auto;font-size:${labelSize}px;">${label}</span>`;
+        out += `</div></div></foreignObject>`;
       });
     }
   }
@@ -2120,7 +2203,8 @@ function buildPrintSheet(calKey, monthName, year) {
     const y = gridY + r * rowH;
     out += `<line x1="${shellX}" y1="${y}" x2="${shellX + gridW}" y2="${y}" stroke="${grid}" stroke-width="2"/>`;
   }
-  out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" fill="none" stroke="${grid}" stroke-width="2"/>`;
+  out += `</g>`;
+  out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" rx="${sheetRadius}" ry="${sheetRadius}" fill="none" stroke="${grid}" stroke-width="2"/>`;
 
   out += `</svg></section>`;
   return out;
@@ -2128,8 +2212,8 @@ function buildPrintSheet(calKey, monthName, year) {
 
 function buildScheduleHTML(which, monthName, year) {
   const title = which === 'both'
-    ? `Schedules — ${monthName} ${year}`
-    : `${CAL_LABELS[which].print} — ${monthName} ${year}`;
+    ? `Schedules - ${monthName} ${year}`
+    : `${CAL_LABELS[which].print} - ${monthName} ${year}`;
   const sheets = which === 'both'
     ? buildPrintSheet('frontdesk', monthName, year) + buildPrintSheet('lifeguard', monthName, year)
     : buildPrintSheet(which, monthName, year);
@@ -2194,7 +2278,6 @@ async function initScheduler() {
   syncCalendarUI();
   syncShiftTabsUI();
   syncAssignUI();
-  setSaveStatus('saved');
   renderSidebar();
   renderCalendar();
 }
@@ -2203,3 +2286,4 @@ initScheduler();
 </script>
 </body>
 </html>
+
