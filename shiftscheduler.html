@@ -10,9 +10,11 @@
 
   :root {
     --purple:        #5E1771;
+    --purple-hover:  #4F1260;
     --purple-pale:   #F7F1F9;
     --purple-muted:  #E7D7EC;
     --gold:          #DDB92A;
+    --gold-hover:    #C9A51F;
     --white:         #ffffff;
     --text:          #221428;
     --text-muted:    #6F5D76;
@@ -32,6 +34,9 @@
     --focus-ring:    rgba(94,23,113,0.18);
     --radius-pill:   999px;
     --radius-large:  24px;
+    --motion-fast:   150ms;
+    --motion-ease:   cubic-bezier(0.2, 0, 0.2, 1);
+    --button-lift:   -1px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -103,7 +108,9 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
-    transition: all 0.18s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
     color: rgba(255,255,255,0.78);
     background: transparent;
     letter-spacing: 0.2px;
@@ -141,7 +148,10 @@
     justify-content: center;
     line-height: 1;
     padding: 0;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
     flex-shrink: 0;
   }
 
@@ -187,15 +197,15 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease);
     box-shadow: none;
     letter-spacing: 0.2px;
   }
   .print-btn:hover {
-    background: var(--gold);
-    border-color: var(--gold);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+    background: var(--gold-hover);
+    border-color: var(--gold-hover);
   }
 
   /* -- WORKSPACE -- */
@@ -266,7 +276,9 @@
     flex-direction: column;
     overflow: hidden;
     min-height: 0;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition:
+      border-color var(--motion-fast) var(--motion-ease),
+      box-shadow var(--motion-fast) var(--motion-ease);
   }
 
   .cal-cell.empty { background: var(--surface-muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -338,7 +350,7 @@
   .shift-chip .remove-btn {
     background: none;
     border: none;
-    color: rgba(255,255,255,0.65);
+    color: var(--white);
     cursor: pointer;
     width: 14px;
     height: 14px;
@@ -362,11 +374,9 @@
 
   .shift-chip.note-chip .remove-btn {
     color: var(--purple);
-    opacity: 0.55;
   }
 
   .shift-chip.note-chip .remove-btn:hover {
-    opacity: 1;
     color: var(--purple);
   }
 
@@ -423,15 +433,6 @@
     flex-shrink: 0;
   }
 
-  .sidebar-top h3 {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.7px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-  }
-
   .shift-type-tabs {
     display: flex;
     gap: 4px;
@@ -452,7 +453,10 @@
     justify-content: center;
     line-height: 1;
     color: var(--text-muted);
-    transition: all 0.15s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
     letter-spacing: 0.2px;
   }
 
@@ -481,7 +485,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    background: linear-gradient(180deg, var(--white), var(--purple-pale));
+    background: var(--purple-pale);
   }
 
   .staff-card {
@@ -492,7 +496,9 @@
     border: 0;
     background: var(--purple);
     cursor: grab;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition:
+      box-shadow var(--motion-fast) var(--motion-ease),
+      transform var(--motion-fast) var(--motion-ease);
     user-select: none;
     min-height: 30px;
     overflow: hidden;
@@ -524,7 +530,7 @@
 
   .staff-card-front {
     position: absolute;
-    left: 6px;
+    left: 9.231px;
     right: 0;
     top: 0;
     bottom: 0;
@@ -536,7 +542,7 @@
     border: 1px solid var(--purple);
     border-radius: var(--radius-pill);
     background: var(--white);
-    transition: background 0.15s;
+    transition: background var(--motion-fast) var(--motion-ease);
   }
 
   .staff-card.pm .staff-card-front {
@@ -610,6 +616,10 @@
     justify-content: center;
     line-height: 1;
     text-align: center;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
   }
 
   .manage-employees-btn:hover {
@@ -754,11 +764,14 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease);
   }
 
   .employee-add-btn:hover {
-    background: var(--purple);
-    border-color: var(--purple);
+    background: var(--purple-hover);
+    border-color: var(--purple-hover);
   }
 
   .employee-manager-list {
@@ -780,7 +793,7 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--text);
-    transition: background 0.12s;
+    transition: background var(--motion-fast) var(--motion-ease);
   }
 
   .employee-manager-row:last-child { border-bottom: 0; }
@@ -826,7 +839,10 @@
     flex-shrink: 0;
     line-height: 1;
     font-family: inherit;
-    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
   }
 
   .employee-icon-btn svg {
@@ -890,41 +906,6 @@
     border-color: var(--success-border);
   }
 
-  /* -- LEGEND -- */
-  .legend {
-    padding: 8px 14px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex-shrink: 0;
-    background: var(--white);
-  }
-
-  .legend-label {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--purple);
-    margin-bottom: 2px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    color: var(--purple);
-  }
-
-  .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: var(--radius-pill);
-    flex-shrink: 0;
-  }
-
   /* -- DRAG GHOST -- */
   .drag-ghost {
     position: fixed;
@@ -972,7 +953,9 @@
     opacity: 0;
     pointer-events: none;
     z-index: 600;
-    transition: opacity 0.2s, transform 0.2s;
+    transition:
+      opacity 200ms var(--motion-ease),
+      transform 200ms var(--motion-ease);
   }
 
   .toast.show {
@@ -1021,6 +1004,8 @@
 
   .modal-btns { display: flex; gap: 8px; flex-direction: column; }
 
+  .day-note-actions { margin-top: 12px; }
+
   .modal-btn {
     padding: 12px 16px;
     border-radius: var(--radius-pill);
@@ -1029,7 +1014,11 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    transition:
+      background var(--motion-fast) var(--motion-ease),
+      border-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease),
+      transform var(--motion-fast) var(--motion-ease);
     text-align: left;
     display: flex;
     align-items: center;
@@ -1037,15 +1026,15 @@
     justify-content: center;
     line-height: 1;
   }
-  .modal-btn:hover { transform: translateY(-1px); }
+  .modal-btn.done:hover { transform: translateY(var(--button-lift)); }
   .modal-btn.both {
     background: var(--purple);
     color: var(--white);
     border: 1px solid var(--purple);
   }
   .modal-btn.both:hover {
-    background: var(--purple);
-    border-color: var(--purple);
+    background: var(--purple-hover);
+    border-color: var(--purple-hover);
   }
   .modal-btn.fd,
   .modal-btn.lg {
@@ -1076,8 +1065,8 @@
   }
 
   .modal-btn.done:hover {
-    background: var(--purple);
-    border-color: var(--purple);
+    background: var(--purple-hover);
+    border-color: var(--purple-hover);
   }
 
   button:focus-visible {
@@ -1097,8 +1086,8 @@
   </div>
 
   <div class="cal-toggle">
-    <button class="cal-toggle-btn active" id="toggleFD" onclick="switchCalendar('frontdesk')">Front Desk</button>
-    <button class="cal-toggle-btn" id="toggleLG" onclick="switchCalendar('lifeguard')">Lifeguards</button>
+    <button class="cal-toggle-btn active" id="toggleFD" type="button">Front Desk</button>
+    <button class="cal-toggle-btn" id="toggleLG" type="button">Lifeguards</button>
   </div>
 
   <div class="header-nav">
@@ -1125,10 +1114,9 @@
 
   <div class="sidebar">
     <div class="sidebar-top">
-      <h3>Employees - Drag or click <span id="sidebarCalName">Front Desk</span></h3>
       <div class="shift-type-tabs">
-        <button class="tab-btn active" id="tabAM" onclick="setActiveShift('am')">8-1 AM</button>
-        <button class="tab-btn" id="tabPM" onclick="setActiveShift('pm')">5-8 PM</button>
+        <button class="tab-btn active" id="tabAM" type="button">8-1 AM</button>
+        <button class="tab-btn" id="tabPM" type="button">5-8 PM</button>
       </div>
       <button class="manage-employees-btn" id="openEmployeeManager" type="button">Manage Employees</button>
     </div>
@@ -1136,12 +1124,6 @@
       <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
     </div>
     <div class="staff-list" id="staffList"></div>
-    <div class="legend">
-      <div class="legend-label">Shift Key</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>8:00 AM - 1:00 PM (weekdays)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>5:00 PM - 8:00 PM (weekdays)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>8:00 AM - 12:00 PM (Saturday)</div>
-    </div>
   </div>
 </div>
 
@@ -1151,10 +1133,10 @@
     <h2>Print Schedule</h2>
     <p>Choose which schedule to send to the printer for <span id="modalMonth"></span>.</p>
     <div class="modal-btns">
-      <button class="modal-btn both" onclick="printSchedule('both')">Print Both</button>
-      <button class="modal-btn fd" onclick="printSchedule('frontdesk')">Front Desk Schedule</button>
-      <button class="modal-btn lg" onclick="printSchedule('lifeguard')">Lifeguard Schedule</button>
-      <button class="modal-btn cancel" onclick="closePrintModal()">Cancel</button>
+      <button class="modal-btn both" type="button" data-print-target="both">Print Both</button>
+      <button class="modal-btn fd" type="button" data-print-target="frontdesk">Front Desk Schedule</button>
+      <button class="modal-btn lg" type="button" data-print-target="lifeguard">Lifeguard Schedule</button>
+      <button class="modal-btn cancel" type="button" id="cancelPrintBtn">Cancel</button>
     </div>
   </div>
 </div>
@@ -1174,7 +1156,7 @@
       <input class="employee-input" id="employeeNameInput" type="text" placeholder="Add new employee..." autocomplete="off">
       <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
     </div>
-    <button class="modal-btn done" type="button" onclick="closeEmployeeModal()">Done</button>
+    <button class="modal-btn done" type="button" id="closeEmployeeBtn">Done</button>
   </div>
 </div>
 
@@ -1184,9 +1166,9 @@
     <h2>Day Note</h2>
     <p>Add or edit a note for this day, such as closed dates or special events.</p>
     <textarea class="employee-input note-input" id="dayNoteInput" placeholder="Closed for..."></textarea>
-    <div class="modal-btns" style="margin-top:12px">
+    <div class="modal-btns day-note-actions">
       <button class="modal-btn done" type="button" id="saveDayNoteBtn">Save Note</button>
-      <button class="modal-btn cancel" type="button" onclick="closeDayNoteModal()">Cancel</button>
+      <button class="modal-btn cancel" type="button" id="cancelDayNoteBtn">Cancel</button>
     </div>
   </div>
 </div>
@@ -1197,8 +1179,8 @@ const MONTHS = ["January","February","March","April","May","June",
                 "July","August","September","October","November","December"];
 const CAL_KEYS = ['frontdesk', 'lifeguard'];
 const CAL_LABELS = {
-  frontdesk: { bar: 'Front Desk Schedule', sidebar: 'Front Desk', print: 'Front Desk' },
-  lifeguard: { bar: 'Lifeguard Schedule', sidebar: 'Lifeguards', print: 'Lifeguards' }
+  frontdesk: { bar: 'Front Desk Schedule', print: 'Front Desk' },
+  lifeguard: { bar: 'Lifeguard Schedule', print: 'Lifeguards' }
 };
 
 let currentYear  = new Date().getFullYear();
@@ -1441,7 +1423,7 @@ function normalizeDayNotes(savedNotes) {
   Object.keys(savedNotes).forEach(key => {
     const value = savedNotes[key];
     if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
-      addNote('frontdesk', key, value);
+      CAL_KEYS.forEach(calKey => addNote(calKey, key, value));
       return;
     }
     if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -1480,7 +1462,6 @@ function syncCalendarUI() {
   document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
   document.getElementById('toggleLG').classList.toggle('active', activeCalendar === 'lifeguard');
   document.getElementById('calTypeBar').textContent = CAL_LABELS[activeCalendar].bar;
-  document.getElementById('sidebarCalName').textContent = CAL_LABELS[activeCalendar].sidebar;
 }
 
 function syncShiftTabsUI() {
@@ -1832,7 +1813,6 @@ function renderCalendar() {
 
     const cell = document.createElement('div');
     cell.className = 'cal-cell' + (isSunday ? ' sunday' : '');
-    if (!isSunday) cell.style.cursor = 'default';
     if (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear())
       cell.classList.add('today');
     cell.dataset.key = key;
@@ -1904,6 +1884,7 @@ function renderCellShifts(container, key, isSaturday) {
     const removeBtn = document.createElement('button');
     removeBtn.className = 'remove-btn icon-x';
     removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', `Remove ${entry.name}`);
     removeBtn.title = 'Remove';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
@@ -1925,6 +1906,7 @@ function renderCellShifts(container, key, isSaturday) {
     const removeBtn = document.createElement('button');
     removeBtn.className = 'remove-btn icon-x';
     removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', 'Remove note');
     removeBtn.title = 'Remove note';
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
@@ -2298,15 +2280,26 @@ const ICON_SAVE = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="
 
 // Init
 async function initScheduler() {
-  await loadData();
-  employees = sortEmployees(employees);
+  document.getElementById('toggleFD').addEventListener('click', () => switchCalendar('frontdesk'));
+  document.getElementById('toggleLG').addEventListener('click', () => switchCalendar('lifeguard'));
+  document.getElementById('tabAM').addEventListener('click', () => setActiveShift('am'));
+  document.getElementById('tabPM').addEventListener('click', () => setActiveShift('pm'));
   document.getElementById('openEmployeeManager').addEventListener('click', openEmployeeModal);
   document.getElementById('addEmployeeBtn').addEventListener('click', addEmployeeFromInput);
+  document.getElementById('closeEmployeeBtn').addEventListener('click', closeEmployeeModal);
+  document.getElementById('cancelPrintBtn').addEventListener('click', closePrintModal);
+  document.getElementById('cancelDayNoteBtn').addEventListener('click', closeDayNoteModal);
+  document.querySelectorAll('[data-print-target]').forEach(button => {
+    button.addEventListener('click', () => printSchedule(button.dataset.printTarget));
+  });
   document.getElementById('employeeNameInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') addEmployeeFromInput();
   });
   document.getElementById('employeeSearchInput').addEventListener('input', renderEmployeeManager);
   document.getElementById('staffSearchInput').addEventListener('input', renderSidebar);
+
+  await loadData();
+  employees = sortEmployees(employees);
   syncCalendarUI();
   syncShiftTabsUI();
   syncAssignUI();
