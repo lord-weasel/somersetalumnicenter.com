@@ -243,7 +243,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 32px repeat(6, 1fr);
-    gap: 0;
+    gap: 1px;
     flex: 1;
     border: 1px solid var(--border);
     border-radius: var(--radius-large);
@@ -259,17 +259,13 @@
     padding: 8px 0;
     background: var(--purple);
     color: var(--white);
-    border-right: 1px solid rgba(255,255,255,0.16);
     text-transform: uppercase;
   }
-  .cal-header-cell:nth-child(7) { border-right: 0; }
 
   .cal-cell {
     background: var(--white);
     border-radius: 0;
     border: 0;
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
     padding: 6px;
     position: relative;
     display: flex;
@@ -277,20 +273,17 @@
     overflow: hidden;
     min-height: 0;
     transition:
-      border-color var(--motion-fast) var(--motion-ease),
       box-shadow var(--motion-fast) var(--motion-ease);
   }
 
-  .cal-cell.empty { background: var(--surface-muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .cal-cell.empty { background: var(--surface-muted); }
 
   .cal-cell.sunday {
     background: var(--white);
-    border-color: var(--border);
   }
   .cal-cell.sunday .day-num { color: var(--sunday-muted); }
 
   .cal-cell.drag-over {
-    border-color: var(--gold);
     box-shadow: 0 0 0 2px rgba(221,185,42,0.35);
     background: var(--white);
   }
@@ -331,12 +324,12 @@
   .shift-chip {
     font-size: 9.5px;
     font-weight: 700;
-    padding: 3px 5px;
+    padding: 3px 6px;
     border-radius: var(--radius-pill);
     color: var(--white);
     display: flex;
     justify-content: space-between;
-    gap: 4px;
+    gap: 5px;
     align-items: center;
     line-height: 1.25;
   }
@@ -536,9 +529,9 @@
     bottom: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     min-width: 0;
-    padding: 7px 10px;
+    padding: 7px 12px 7px 14px;
     border: 1px solid var(--purple);
     border-radius: var(--radius-pill);
     background: var(--white);
@@ -2108,6 +2101,7 @@ function buildPrintSheet(calKey, monthName, year) {
   const text = cssColor('--text');
   const mutedText = cssColor('--print-muted');
   const clipId = `print-shell-${calKey}`;
+  const headerInset = 18;
 
   let out = `<section class="sheet"><svg class="print-svg" viewBox="0 0 ${pageW} ${pageH}" xmlns="http://www.w3.org/2000/svg" aria-label="${svgEscape(calLabel)} ${svgEscape(monthName)} ${year}" shape-rendering="crispEdges">`;
   out += `<defs><clipPath id="${clipId}"><rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" rx="${sheetRadius}" ry="${sheetRadius}"/></clipPath></defs>`;
@@ -2122,10 +2116,10 @@ function buildPrintSheet(calKey, monthName, year) {
   out += `<rect x="${shellX}" y="${gridY}" width="${gridW}" height="${gridH}" fill="#fff"/>`;
 
   // Top bar text.
-  out += `<text x="${shellX + 18}" y="${shellY + 24}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="#fff" shape-rendering="geometricPrecision">Somerset</text>`;
-  out += `<text x="${shellX + 18}" y="${shellY + 43}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="${gold}" shape-rendering="geometricPrecision">Alumni Center</text>`;
-  out += `<text x="${shellX + shellW - 14}" y="${shellY + 24}" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(calLabel)}</text>`;
-  out += `<text x="${shellX + shellW - 14}" y="${shellY + 42}" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(monthName)} ${year}</text>`;
+  out += `<text x="${shellX + headerInset}" y="${shellY + 24}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="#fff" shape-rendering="geometricPrecision">Somerset</text>`;
+  out += `<text x="${shellX + headerInset}" y="${shellY + 43}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="${gold}" shape-rendering="geometricPrecision">Alumni Center</text>`;
+  out += `<text x="${shellX + shellW - headerInset}" y="${shellY + 24}" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(calLabel)}</text>`;
+  out += `<text x="${shellX + shellW - headerInset}" y="${shellY + 42}" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="end" fill="#fff" shape-rendering="geometricPrecision">${svgEscape(monthName)} ${year}</text>`;
 
   // Header separators and weekday labels.
   const rightPanelX = shellX + shellW - 185;
@@ -2161,10 +2155,11 @@ function buildPrintSheet(calKey, monthName, year) {
           const noteY = y + 45;
           const noteW = colW - 28;
           const noteOffset = 4;
+          const notePadX = 6;
           out += `<foreignObject x="${noteX}" y="${noteY}" width="${noteW}" height="32">`;
           out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;font-family:Inter,Arial,sans-serif;font-size:8.5px;font-weight:800;color:${text};line-height:1;">`;
           out += `<div style="position:absolute;inset:0;border-radius:999px;background:${purple};"></div>`;
-          out += `<div style="position:absolute;left:${noteOffset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${purple};border-radius:999px;background:#fff;display:flex;align-items:center;padding:0 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(fitSvgText(day.note, 24))}</div>`;
+          out += `<div style="position:absolute;left:${noteOffset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${purple};border-radius:999px;background:#fff;display:flex;align-items:center;padding:0 ${notePadX}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(fitSvgText(day.note, 24))}</div>`;
           out += `</div>`;
           out += `</foreignObject>`;
           continue;
@@ -2192,12 +2187,15 @@ function buildPrintSheet(calKey, monthName, year) {
         const stroke = isPM ? gold : purple;
         const ay = y + 23 + n * stepY;
         const offset = 4;
+        const chipPadLeft = 6;
+        const chipPadRight = 5;
+        const chipGapX = 4;
         const ax = x + 7 - offset / 2;
         const aw = colW - 14;
         out += `<foreignObject x="${ax}" y="${ay}" width="${aw}" height="${chipH}">`;
         out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;font-family:Inter,Arial,sans-serif;font-weight:800;color:${text};line-height:1;white-space:nowrap;overflow:hidden;">`;
         out += `<div style="position:absolute;inset:0;border-radius:999px;background:${edge};"></div>`;
-        out += `<div style="position:absolute;left:${offset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${stroke};border-radius:999px;background:${fill};display:flex;align-items:center;gap:4px;padding:0 5px 0 6px;overflow:hidden;">`;
+        out += `<div style="position:absolute;left:${offset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${stroke};border-radius:999px;background:${fill};display:flex;align-items:center;gap:${chipGapX}px;padding:0 ${chipPadRight}px 0 ${chipPadLeft}px;overflow:hidden;">`;
         out += `<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:${nameSize}px;">${escapeHTML(fitSvgText(s.name, 20))}</span>`;
         out += `<span style="flex:0 0 auto;font-size:${labelSize}px;">${label}</span>`;
         out += `</div></div></foreignObject>`;
