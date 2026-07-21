@@ -6,7 +6,7 @@
 <title>Somerset Alumni Center - Shift Scheduler</title>
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260721-shift-editor">
 
 </head>
 <body class="scheduler-page">
@@ -876,15 +876,19 @@ function renderCellShifts(container, key, isSaturday) {
     const nameSpan = document.createElement('span');
     nameSpan.className = 'shift-name';
     nameSpan.textContent = `${entry.name} ${formatShiftRange(entry)}`;
-    nameSpan.title = `Edit ${entry.name}'s hours`;
-    nameSpan.setAttribute('role', 'button');
-    nameSpan.setAttribute('tabindex', '0');
     const openEditor = e => {
       e.stopPropagation();
       openShiftTimeModal(key, idx);
     };
-    nameSpan.addEventListener('click', openEditor);
-    nameSpan.addEventListener('keydown', e => {
+    chip.title = `Edit ${entry.name}'s hours`;
+    chip.setAttribute('role', 'button');
+    chip.setAttribute('tabindex', '0');
+    chip.addEventListener('click', e => {
+      if (e.target.closest('.remove-btn')) return;
+      openEditor(e);
+    });
+    chip.addEventListener('keydown', e => {
+      if (e.target.closest('.remove-btn')) return;
       if (e.key === 'Enter' || e.key === ' ') openEditor(e);
     });
 
