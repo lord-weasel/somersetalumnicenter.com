@@ -109,6 +109,34 @@
   </div>
 </div>
 
+<!-- Shift Time Modal -->
+<div class="modal-overlay" id="shiftTimeModal">
+  <div class="modal shift-time-modal" role="dialog" aria-modal="true" aria-labelledby="shiftTimeTitle">
+    <h2 id="shiftTimeTitle">Edit shift</h2>
+    <p>Use ↑ and ↓ to change a time. Use ← and → to move between start and end.</p>
+    <div class="time-picker-row">
+      <div class="time-picker" id="startTimePicker" tabindex="0" role="spinbutton" aria-label="Start time">
+        <span class="time-picker-label">Starts</span>
+        <button class="time-arrow" type="button" data-time="start" data-step="1" aria-label="Move start time later">▲</button>
+        <strong id="startTimeValue"></strong>
+        <button class="time-arrow" type="button" data-time="start" data-step="-1" aria-label="Move start time earlier">▼</button>
+      </div>
+      <span class="time-separator" aria-hidden="true">→</span>
+      <div class="time-picker" id="endTimePicker" tabindex="0" role="spinbutton" aria-label="End time">
+        <span class="time-picker-label">Ends</span>
+        <button class="time-arrow" type="button" data-time="end" data-step="1" aria-label="Move end time later">▲</button>
+        <strong id="endTimeValue"></strong>
+        <button class="time-arrow" type="button" data-time="end" data-step="-1" aria-label="Move end time earlier">▼</button>
+      </div>
+    </div>
+    <p class="shift-duration" id="shiftDuration"></p>
+    <div class="modal-btns day-note-actions">
+      <button class="modal-btn done" type="button" id="saveShiftTimeBtn">Save Hours</button>
+      <button class="modal-btn cancel" type="button" id="cancelShiftTimeBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MONTHS = ["January","February","March","April","May","June",
@@ -129,6 +157,7 @@ let schedules = { frontdesk: {}, lifeguard: {} };
 let dayNotes = { frontdesk: {}, lifeguard: {} };
 let employees = [];
 let activeNoteKey = null;
+let activeTimeEdit = null;
 let selectedEmployee = null;
 let toastTimer = null;
 let suppressCardClick = false;
@@ -175,9 +204,35 @@ function employeeNameTaken(name, except = null) {
 }
 
 function compareShiftEntries(a, b) {
-  const order = { am: 1, pm: 2, sat: 3 };
-  const shiftOrder = (order[a.shift] || 9) - (order[b.shift] || 9);
-  return shiftOrder || compareEmployees(a.name, b.name);
+  const startOrder = getShiftStart(a) - getShiftStart(b);
+  const endOrder = getShiftEnd(a) - getShiftEnd(b);
+  const colorOrder = (getShiftStart(a) >= 12 ? 1 : 0) - (getShiftStart(b) >= 12 ? 1 : 0);
+  return startOrder || endOrder || colorOrder || compareEmployees(a.name, b.name);
+}
+
+function getDefaultTimes(shift) {
+  if (shift === 'pm') return { start: 17, end: 20 };
+  if (shift === 'sat') return { start: 8, end: 12 };
+  return { start: 8, end: 13 };
+}
+
+function getShiftStart(entry) {
+  return Number.isInteger(entry.start) ? entry.start : getDefaultTimes(entry.shift).start;
+}
+
+function getShiftEnd(entry) {
+  return Number.isInteger(entry.end) ? entry.end : getDefaultTimes(entry.shift).end;
+}
+
+function formatHour(hour, compact = false) {
+  const normalized = hour % 24;
+  const display = normalized % 12 || 12;
+  const suffix = normalized < 12 ? 'AM' : 'PM';
+  return compact ? String(display) : `${display}:00 ${suffix}`;
+}
+
+function formatShiftRange(entry) {
+  return `${formatHour(getShiftStart(entry), true)}-${formatHour(getShiftEnd(entry), true)}`;
 }
 
 function sortDayShifts(shifts) {
@@ -314,11 +369,13 @@ function normalizeSchedules(savedSchedules) {
       const entries = cal[key]
         .map(entry => ({
           name: String(entry.name || '').trim(),
-          shift: ['am', 'pm', 'sat'].includes(entry.shift) ? entry.shift : 'am'
+          shift: ['am', 'pm', 'sat'].includes(entry.shift) ? entry.shift : 'am',
+          start: Number.isInteger(entry.start) ? entry.start : getDefaultTimes(entry.shift).start,
+          end: Number.isInteger(entry.end) ? entry.end : getDefaultTimes(entry.shift).end
         }))
-        .filter(entry => entry.name)
+        .filter(entry => entry.name && entry.start >= 0 && entry.start <= 23 && entry.end > entry.start && entry.end - entry.start <= 8 && entry.end <= 24)
         .filter(entry => {
-          const dedupeKey = `${entry.name.toLowerCase()}|${entry.shift}`;
+          const dedupeKey = `${entry.name.toLowerCase()}|${entry.start}|${entry.end}`;
           if (seen.has(dedupeKey)) return false;
           seen.add(dedupeKey);
           return true;
@@ -813,10 +870,23 @@ function renderCellShifts(container, key, isSaturday) {
 
   shifts.forEach((entry, idx) => {
     const chip = document.createElement('div');
-    chip.className = `shift-chip ${isSaturday ? 'sat' : entry.shift}`;
+    const color = getShiftStart(entry) < 12 ? 'am' : 'pm';
+    chip.className = `shift-chip ${color}`;
 
     const nameSpan = document.createElement('span');
-    nameSpan.textContent = entry.name;
+    nameSpan.className = 'shift-name';
+    nameSpan.textContent = `${entry.name} ${formatShiftRange(entry)}`;
+    nameSpan.title = `Edit ${entry.name}'s hours`;
+    nameSpan.setAttribute('role', 'button');
+    nameSpan.setAttribute('tabindex', '0');
+    const openEditor = e => {
+      e.stopPropagation();
+      openShiftTimeModal(key, idx);
+    };
+    nameSpan.addEventListener('click', openEditor);
+    nameSpan.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') openEditor(e);
+    });
 
     const removeBtn = document.createElement('button');
     removeBtn.className = 'remove-btn icon-x';
@@ -868,7 +938,8 @@ function addShift(key, name, shift, isSaturday) {
   if (!sched[key]) sched[key] = [];
   const effectiveShift = isSaturday ? 'sat' : shift;
   if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return 'duplicate';
-  sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift }]);
+  const defaults = getDefaultTimes(effectiveShift);
+  sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift, ...defaults }]);
   saveData();
   refreshCell(key);
   return 'added';
@@ -880,6 +951,63 @@ function removeShift(key, idx) {
   sched[key].splice(idx, 1);
   if (!sched[key].length) delete sched[key];
   saveData();
+  refreshCell(key);
+}
+
+function openShiftTimeModal(key, idx) {
+  const entry = getSchedule()[key]?.[idx];
+  if (!entry) return;
+  activeTimeEdit = { key, entry, start: getShiftStart(entry), end: getShiftEnd(entry) };
+  document.getElementById('shiftTimeTitle').textContent = `Edit ${entry.name}'s shift`;
+  updateTimeEditor();
+  document.getElementById('shiftTimeModal').classList.add('open');
+  setTimeout(() => document.getElementById('startTimePicker').focus(), 0);
+}
+
+function closeShiftTimeModal() {
+  document.getElementById('shiftTimeModal').classList.remove('open');
+  activeTimeEdit = null;
+}
+
+function updateTimeEditor() {
+  if (!activeTimeEdit) return;
+  const { start, end } = activeTimeEdit;
+  document.getElementById('startTimeValue').textContent = formatHour(start);
+  document.getElementById('endTimeValue').textContent = formatHour(end);
+  document.getElementById('shiftDuration').textContent = `${end - start} hour${end - start === 1 ? '' : 's'} - ${start < 12 ? 'Purple' : 'Yellow'} pill`;
+  const startPicker = document.getElementById('startTimePicker');
+  const endPicker = document.getElementById('endTimePicker');
+  startPicker.setAttribute('aria-valuenow', start);
+  startPicker.setAttribute('aria-valuetext', formatHour(start));
+  endPicker.setAttribute('aria-valuenow', end);
+  endPicker.setAttribute('aria-valuetext', formatHour(end));
+}
+
+function adjustShiftTime(which, step) {
+  if (!activeTimeEdit) return;
+  if (which === 'start') {
+    const next = activeTimeEdit.start + step;
+    if (next < 0 || next > 23) return;
+    activeTimeEdit.start = next;
+    if (activeTimeEdit.end <= next) activeTimeEdit.end = Math.min(24, next + 1);
+    if (activeTimeEdit.end - next > 8) activeTimeEdit.end = next + 8;
+  } else {
+    const next = activeTimeEdit.end + step;
+    if (next < activeTimeEdit.start + 1 || next > Math.min(24, activeTimeEdit.start + 8)) return;
+    activeTimeEdit.end = next;
+  }
+  updateTimeEditor();
+}
+
+function saveShiftTime() {
+  if (!activeTimeEdit) return;
+  const { key, entry, start, end } = activeTimeEdit;
+  entry.start = start;
+  entry.end = end;
+  entry.shift = entry.shift === 'sat' ? 'sat' : (start < 12 ? 'am' : 'pm');
+  getSchedule()[key] = sortDayShifts(getSchedule()[key]);
+  saveData();
+  closeShiftTimeModal();
   refreshCell(key);
 }
 
@@ -948,6 +1076,10 @@ document.addEventListener('click', e => {
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  if (document.getElementById('shiftTimeModal').classList.contains('open')) {
+    closeShiftTimeModal();
+    return;
+  }
   if (document.getElementById('employeeModal').classList.contains('open')) {
     closeEmployeeModal();
     return;
@@ -982,6 +1114,28 @@ document.getElementById('employeeModal').addEventListener('click', e => {
 document.getElementById('dayNoteModal').addEventListener('click', e => {
   if (e.target === document.getElementById('dayNoteModal')) closeDayNoteModal();
 });
+document.getElementById('shiftTimeModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('shiftTimeModal')) closeShiftTimeModal();
+});
+document.querySelectorAll('.time-arrow').forEach(button => {
+  button.addEventListener('click', () => adjustShiftTime(button.dataset.time, Number(button.dataset.step)));
+});
+document.querySelectorAll('.time-picker').forEach((picker, index, pickers) => {
+  picker.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      adjustShiftTime(picker.id === 'startTimePicker' ? 'start' : 'end', e.key === 'ArrowUp' ? 1 : -1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      pickers[Math.min(index + 1, pickers.length - 1)].focus();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      pickers[Math.max(index - 1, 0)].focus();
+    }
+  });
+});
+document.getElementById('saveShiftTimeBtn').addEventListener('click', saveShiftTime);
+document.getElementById('cancelShiftTimeBtn').addEventListener('click', closeShiftTimeModal);
 document.getElementById('saveDayNoteBtn').addEventListener('click', saveDayNote);
 document.getElementById('dayNoteInput').addEventListener('keydown', e => {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveDayNote();
@@ -1124,9 +1278,8 @@ function buildPrintSheet(calKey, monthName, year) {
       const labelSize = entryCount <= 6 ? 7.2 : Math.max(3.9, Math.min(7.2, chipH * 0.55));
 
       ordered.forEach((s, n) => {
-        const isSat = day.dow === 6 || s.shift === 'sat';
-        const label = isSat ? '8-12' : (s.shift === 'pm' ? '5-8' : '8-1');
-        const isPM = s.shift === 'pm' && !isSat;
+        const label = formatShiftRange(s);
+        const isPM = getShiftStart(s) >= 12;
         const fill = white;
         const edge = isPM ? gold : purple;
         const stroke = isPM ? gold : purple;
