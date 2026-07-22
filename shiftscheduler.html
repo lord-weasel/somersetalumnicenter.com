@@ -151,6 +151,7 @@ let toastTimer = null;
 let suppressCardClick = false;
 
 const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
+const SERVER_NOTES_PREFIX = 'SAC_NOTES_V1:';
 const API_URL = 'scheduler-api.php';
 const DATA_URL = 'scheduler-data.json';
 let saveTimer = null;
@@ -252,11 +253,21 @@ function saveLocalBackup(data) {
   }
 }
 
-function loadLocalBackup() {
+function readLocalBackupData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      applySavedData(JSON.parse(raw));
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    console.warn('Local backup could not be read.', err);
+    return null;
+  }
+}
+
+function loadLocalBackup() {
+  try {
+    const saved = readLocalBackupData();
+    if (saved) {
+      applySavedData(saved);
       return true;
     }
   } catch (err) {
@@ -265,15 +276,44 @@ function loadLocalBackup() {
   return false;
 }
 
+function serializeDayNotesForServer(savedNotes) {
+  const serialized = { frontdesk: {}, lifeguard: {} };
+  CAL_KEYS.forEach(calKey => {
+    Object.keys(savedNotes[calKey] || {}).forEach(key => {
+      serialized[calKey][key] = SERVER_NOTES_PREFIX + JSON.stringify(savedNotes[calKey][key]);
+    });
+  });
+  return serialized;
+}
+
+function hasCorruptedServerNotes(savedNotes) {
+  if (!savedNotes || typeof savedNotes !== 'object') return false;
+  return Object.values(savedNotes).some(value => {
+    if (typeof value === 'string') {
+      if (/^(array|\[object object\])$/i.test(value.trim())) return true;
+      if (value.startsWith(SERVER_NOTES_PREFIX)) {
+        try {
+          JSON.parse(value.slice(SERVER_NOTES_PREFIX.length));
+        } catch (err) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return value && typeof value === 'object' && hasCorruptedServerNotes(value);
+  });
+}
+
 function saveData() {
   const data = getDataSnapshot();
   saveLocalBackup(data);
+  const serverData = { ...data, dayNotes: serializeDayNotesForServer(data.dayNotes) };
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(serverData),
       cache: 'no-store'
     })
       .then(response => {
@@ -312,8 +352,13 @@ async function loadData() {
     return a;
   };
 
-  const saved = pickNewest(apiData, jsonData);
+  let saved = pickNewest(apiData, jsonData);
   if (saved) {
+    if (hasCorruptedServerNotes(saved.dayNotes)) {
+      const localData = readLocalBackupData();
+      const recoveredNotes = localData?.dayNotes || jsonData?.dayNotes;
+      saved = { ...saved, dayNotes: recoveredNotes || { frontdesk: {}, lifeguard: {} } };
+    }
     applySavedData(saved);
     saveLocalBackup(getDataSnapshot());
     return;
@@ -351,7 +396,17 @@ function normalizeDayNotes(savedNotes) {
   const addNote = (calKey, key, value) => {
     if (!CAL_KEYS.includes(calKey)) return;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
-    const values = Array.isArray(value) ? value : [value];
+    let decodedValue = value;
+    if (typeof value === 'string' && value.startsWith(SERVER_NOTES_PREFIX)) {
+      try {
+        decodedValue = JSON.parse(value.slice(SERVER_NOTES_PREFIX.length));
+      } catch (err) {
+        console.warn('A saved day note could not be decoded.', err);
+        return;
+      }
+    }
+    if (typeof decodedValue === 'string' && /^(array|\[object object\])$/i.test(decodedValue.trim())) return;
+    const values = Array.isArray(decodedValue) ? decodedValue : [decodedValue];
     const notes = values.slice(0, MAX_NOTES_PER_DAY).map(item => {
       const isObject = item && typeof item === 'object' && !Array.isArray(item);
       const text = String(isObject ? item.text || '' : item || '').trim().replace(/\s+/g, ' ').slice(0, 80);
