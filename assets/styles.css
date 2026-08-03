@@ -274,12 +274,12 @@ body.unavailable-page .badge { margin-top: 1rem; }
 
 html.home-html {
     scroll-behavior: smooth;
-    background: #541565;
+    background: linear-gradient(to bottom, #541565 0 50%, #221428 50% 100%);
 }
 
 body.home-page {
     font-family: 'DM Sans', sans-serif;
-    background: var(--purple);
+    background: transparent;
     color: var(--text);
     overflow-x: hidden;
   }
@@ -446,8 +446,9 @@ body.home-page .mobile-hours-break { display: none; }
 
 /*HERO*/
 body.home-page .hero {
-    min-height: calc(100vh - var(--nav-height));
-    min-height: calc(var(--initial-screen-height, 100dvh) - var(--nav-height));
+    height: calc(100vh - var(--nav-height));
+    height: calc(100dvh - var(--nav-height));
+    min-height: 0;
     background: var(--purple);
     background-image:
       radial-gradient(ellipse at 20% 50%, rgba(221,185,42,0.08) 0%, transparent 60%),
@@ -455,10 +456,26 @@ body.home-page .hero {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     text-align: center;
-    padding: 36px 24px 72px;
+    padding: clamp(16px, 4dvh, 36px) 24px clamp(24px, 8dvh, 72px);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
+
+body.home-page .hero::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: 100%;
+    right: 0;
+    left: 0;
+    height: 0;
+    background: var(--purple);
+    pointer-events: none;
+}
+
+html.home-html.at-page-top body.home-page .hero::after {
+    height: var(--browser-pocket-height, 0px);
+}
 
 body.home-page .hero-badge {
     display: inline-block;
@@ -471,7 +488,7 @@ body.home-page .hero-badge {
     text-transform: uppercase;
     padding: 6px 20px;
     border-radius: var(--radius-pill);
-    margin-bottom: 28px;
+    margin-bottom: clamp(12px, 3dvh, 28px);
     position: relative;
   }
 
@@ -481,7 +498,7 @@ body.home-page .hero-sub {
     font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: clamp(10px, 2dvh, 20px);
     position: relative;
   }
 
@@ -491,7 +508,7 @@ body.home-page .hero h1 {
     font-weight: 900;
     color: var(--white);
     line-height: 1.1;
-    margin-bottom: 24px;
+    margin-bottom: clamp(14px, 2.5dvh, 24px);
     position: relative;
   }
 
@@ -502,7 +519,7 @@ body.home-page .hero p {
     font-size: 1.05rem;
     color: rgba(255,255,255,0.65);
     line-height: 1.75;
-    margin-bottom: 44px;
+    margin-bottom: clamp(20px, 4dvh, 44px);
     position: relative;
   }
 
@@ -522,9 +539,23 @@ body.home-page .hero-cta {
     letter-spacing: 0.03em;
   }
 
+@media (max-height: 700px) {
+body.home-page .hero {
+    padding-top: 14px;
+    padding-bottom: 20px;
+}
+
+body.home-page .hero-badge { margin-bottom: 10px; }
+body.home-page .hero-sub { margin-bottom: 8px; }
+body.home-page .hero h1 { margin-bottom: 10px; }
+body.home-page .hero p { margin-bottom: 14px; line-height: 1.55; }
+}
+
 /*FACILITIES STRIP*/
 body.home-page .facilities {
     background: var(--off-white);
+    position: relative;
+    z-index: 1;
     padding: 14px 40px;
     display: flex;
     justify-content: center;
@@ -993,7 +1024,7 @@ body.home-page .party-cta:hover { background: var(--gold-light); }
 /*FOOTER*/
 body.home-page footer {
     background: var(--text); color: rgba(255,255,255,0.45); text-align: center;
-    padding: 44px 24px; font-size: 0.83rem; line-height: 1.9;
+    padding: 44px 24px calc(44px + env(safe-area-inset-bottom, 0px)); font-size: 0.83rem; line-height: 1.9;
   }
 
 body.home-page footer strong { color: rgba(255,255,255,0.78); }
@@ -1097,7 +1128,12 @@ body.home-page nav ul { display: none; }
 }
 
 /* Shift scheduler (scheduler.html) */
+html.scheduler-html {
+    background: linear-gradient(to bottom, #541565 0 12%, #ffffff 28% 100%);
+}
+
 body.scheduler-page {
+    --scheduler-header-height: calc(74px + env(safe-area-inset-top, 0px));
     --purple:        #541565;
     --purple-hover:  var(--purple);
     --purple-pale:   #F7F1F9;
@@ -1131,9 +1167,14 @@ body.scheduler-page {
 
 body.scheduler-page {
     font-family: 'Inter', sans-serif;
-    background: var(--white);
+    background-color: var(--purple);
+    background-image: linear-gradient(var(--white), var(--white));
+    background-position: 0 var(--scheduler-header-height);
+    background-repeat: no-repeat;
+    background-size: 100% calc(100% - var(--scheduler-header-height));
     color: var(--text);
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1143,13 +1184,13 @@ body.scheduler-page {
 body.scheduler-page header {
     background: var(--purple);
     color: var(--white);
-    padding: 0 48px;
+    padding: env(safe-area-inset-top, 0px) 48px 0;
     display: flex;
     align-items: center;
     gap: 28px;
     flex-shrink: 0;
     border-bottom: 3px solid var(--gold);
-    height: 74px;
+    height: var(--scheduler-header-height);
   }
 
 body.scheduler-page .header-left {
@@ -2316,7 +2357,8 @@ body.scheduler-page button:focus-visible {
 
 @media (max-width: 640px) {
 body.scheduler-page header {
-      padding: 0 20px;
+      padding-right: 20px;
+      padding-left: 20px;
       gap: 10px;
       overflow-x: auto;
     }
@@ -2333,7 +2375,7 @@ body.scheduler-page.public-calendar-mode .calendar-panel { padding-left: 14px; p
 
 /* Public events calendar (calendar.html) */
 html.public-calendar-html {
-    background: #541565;
+    background: linear-gradient(to bottom, #541565 0 12%, #F7F1F9 28% 100%);
 }
 
 body.public-calendar-page {
@@ -2361,6 +2403,9 @@ body.public-calendar-page {
 }
 
 body.public-calendar-page .public-calendar-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     height: var(--calendar-header-height);
     min-height: var(--calendar-header-height);
     padding: env(safe-area-inset-top, 0px) 48px 0;
@@ -2431,7 +2476,7 @@ body.public-calendar-page .public-calendar-main {
     height: calc(100dvh - var(--calendar-header-height));
     margin: 0 auto;
     background: var(--purple-pale);
-    padding: 30px 34px 50px;
+    padding: 30px 34px calc(50px + env(safe-area-inset-bottom, 0px));
     position: relative;
     display: flex;
     flex-direction: column;
