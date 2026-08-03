@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en" class="scheduler-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Somerset Alumni Center - Scheduler</title>
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="760x760" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5a146e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Alumni Center">
+<link rel="stylesheet" href="assets/styles.css?v=20260803-32">
+
+</head>
+<body class="scheduler-page">
+
+<div class="drag-ghost am" id="dragGhost" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<header>
+  <div class="header-left">
+    <a href="home.html" class="logo" aria-label="Somerset Alumni Center home">
+      <img src="assets/logo.svg" alt="Somerset Alumni Center">
+    </a>
+  </div>
+
+  <div class="cal-toggle">
+    <button class="cal-toggle-btn active" id="toggleFD" type="button">Front Desk</button>
+    <button class="cal-toggle-btn" id="toggleLG" type="button">Lifeguards</button>
+  </div>
+  <button class="cal-toggle-btn public-calendar-btn" id="togglePublic" type="button">Public Calendar</button>
+
+  <div class="header-nav">
+    <button class="nav-arrow" id="prevMonth" type="button" title="Previous month" aria-label="Previous month">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="month-label" id="monthLabel"></div>
+    <button class="nav-arrow" id="nextMonth" type="button" title="Next month" aria-label="Next month">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-arrow today-btn" id="todayBtn" type="button" title="Go to current month">Today</button>
+    <button class="print-btn" id="openPrintModal" type="button">Print Schedule</button>
+  </div>
+</header>
+
+<div class="cal-type-bar" id="calTypeBar">
+  Front Desk Schedule
+</div>
+
+<div class="workspace">
+  <div class="calendar-panel">
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="public-recents-heading" id="publicRecentsHeading">Recents</div>
+      <div class="shift-type-tabs">
+        <button class="tab-btn active" id="tabAM" type="button">8-1 AM</button>
+        <button class="tab-btn" id="tabPM" type="button">5-8 PM</button>
+      </div>
+      <button class="manage-employees-btn" id="openEmployeeManager" type="button">Manage Employees</button>
+    </div>
+    <div class="staff-search-wrap">
+      <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="staff-list" id="staffList"></div>
+  </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal-overlay" id="printModal">
+  <div class="modal">
+    <h2>Print Schedule</h2>
+    <p>Choose which schedule to send to the printer for <span id="modalMonth"></span>.</p>
+    <div class="modal-btns">
+      <button class="modal-btn both" type="button" data-print-target="both">Print Both</button>
+      <button class="modal-btn fd" type="button" data-print-target="frontdesk">Front Desk Schedule</button>
+      <button class="modal-btn lg" type="button" data-print-target="lifeguard">Lifeguard Schedule</button>
+      <button class="modal-btn public" type="button" data-print-target="public">Print Public Schedule</button>
+      <button class="modal-btn cancel" type="button" id="cancelPrintBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Manager Modal -->
+<div class="modal-overlay" id="employeeModal">
+  <div class="modal employee-modal">
+    <div class="employee-modal-header">
+      <h2>Manage Employees</h2>
+      <p class="employee-modal-count" id="employeeManagerCount"></p>
+    </div>
+    <div class="employee-search-wrap">
+      <input class="employee-search-input" id="employeeSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="employee-manager-list" id="employeeManagerList"></div>
+    <div class="employee-add-row">
+      <input class="employee-input" id="employeeNameInput" type="text" placeholder="Add new employee..." autocomplete="off">
+      <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
+    </div>
+    <button class="modal-btn done" type="button" id="closeEmployeeBtn">Done</button>
+  </div>
+</div>
+
+<!-- Day Note Modal -->
+<div class="modal-overlay" id="dayNoteModal">
+  <div class="modal employee-modal">
+    <h2>Day Note</h2>
+    <p>Add a closure, event, or other schedule note.</p>
+    <label class="day-note-main-label" for="dayNoteInput">Note</label>
+    <textarea class="employee-input note-input" id="dayNoteInput" placeholder="Enter note..." maxlength="80"></textarea>
+    <button class="day-note-time-toggle" id="toggleDayNoteTime" type="button" aria-expanded="false" aria-controls="dayNoteTimeFields">Set specific hours</button>
+    <div class="day-note-time-fields" id="dayNoteTimeFields" hidden>
+      <div class="day-note-time-heading">Specific hours</div>
+      <div class="day-note-time-row">
+      <label class="day-note-time-label">Starts
+        <input class="employee-input day-note-time-input" id="dayNoteStartTime" type="text" placeholder="8:00 AM" inputmode="numeric" autocomplete="off">
+      </label>
+      <label class="day-note-time-label">Ends
+        <input class="employee-input day-note-time-input" id="dayNoteEndTime" type="text" placeholder="1:00 PM" inputmode="numeric" autocomplete="off">
+      </label>
+      </div>
+      <p class="day-note-time-hint">An ending time is optional.</p>
+    </div>
+    <div class="modal-btns day-note-actions">
+      <button class="modal-btn done" type="button" id="saveDayNoteBtn">Save Note</button>
+      <button class="modal-btn cancel" type="button" id="cancelDayNoteBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTHS = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+const STAFF_CAL_KEYS = ['frontdesk', 'lifeguard'];
+const CAL_KEYS = [...STAFF_CAL_KEYS, 'public'];
+const MAX_EMPLOYEES_PER_DAY = 6;
+const MAX_STAFF_NOTES_PER_DAY = 2;
+const MAX_PUBLIC_NOTES_PER_DAY = 8;
+const CAL_LABELS = {
+  frontdesk: { bar: 'Front Desk Schedule', print: 'Front Desk' },
+  lifeguard: { bar: 'Lifeguard Schedule', print: 'Lifeguards' },
+  public: { bar: 'Public Events Calendar', print: 'Public Calendar' }
+};
+
+let currentYear  = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+let activeShift  = 'am';
+let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard' | 'public'
+
+// Data is loaded from scheduler-data.json or scheduler-api.php.
+let schedules = { frontdesk: {}, lifeguard: {} };
+let dayNotes = { frontdesk: {}, lifeguard: {}, public: {} };
+let employees = [];
+let activeNoteKey = null;
+let activeNoteIndex = null;
+let selectedEmployee = null;
+let recentPublicNoteDrag = null;
+let toastTimer = null;
+let suppressCardClick = false;
+
+const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
+const SERVER_NOTES_PREFIX = 'SAC_NOTES_V1:';
+const API_URL = 'scheduler-api.php';
+const DATA_URL = 'scheduler-data.json';
+let saveTimer = null;
+
+function normalizeName(name) {
+  return String(name).trim().replace(/\s+/g, ' ');
+}
+
+function getNameParts(name) {
+  const parts = normalizeName(name).split(/\s+/).filter(Boolean);
+  const last = parts.length > 1 ? parts[parts.length - 1] : parts[0] || '';
+  const first = parts.length > 1 ? parts.slice(0, -1).join(' ') : '';
+  return { first: first.toLowerCase(), last: last.toLowerCase(), full: parts.join(' ').toLowerCase() };
+}
+
+function compareEmployees(a, b) {
+  const A = getNameParts(a);
+  const B = getNameParts(b);
+  return A.last.localeCompare(B.last) || A.first.localeCompare(B.first) || A.full.localeCompare(B.full);
+}
+
+function sortEmployees(list) {
+  const seen = new Set();
+  return list
+    .map(normalizeName)
+    .filter(Boolean)
+    .filter(name => {
+      const key = name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort(compareEmployees);
+}
+
+function employeeNameTaken(name, except = null) {
+  const key = normalizeName(name).toLowerCase();
+  return employees.some(existing => existing.toLowerCase() === key && existing !== except);
+}
+
+function compareShiftEntries(a, b) {
+  const order = { am: 1, pm: 2, sat: 3 };
+  const shiftOrder = (order[a.shift] || 9) - (order[b.shift] || 9);
+  return shiftOrder || compareEmployees(a.name, b.name);
+}
+
+function sortDayShifts(shifts) {
+  return shifts.slice().sort(compareShiftEntries);
+}
+
+function maxNotesForCalendar(calKey = activeCalendar) {
+  return calKey === 'public' ? MAX_PUBLIC_NOTES_PER_DAY : MAX_STAFF_NOTES_PER_DAY;
+}
+
+function getDataSnapshot() {
+  return {
+    employees: sortEmployees(employees),
+    schedules: normalizeSchedules(schedules),
+    dayNotes: normalizeDayNotes(dayNotes),
+    currentYear,
+    currentMonth,
+    activeShift,
+    activeCalendar,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function applySavedData(saved) {
+  if (!saved || typeof saved !== 'object') return;
+
+  if (Array.isArray(saved.employees)) {
+    employees = sortEmployees(saved.employees);
+  }
+  if (saved.schedules && typeof saved.schedules === 'object') {
+    schedules = normalizeSchedules(saved.schedules);
+  }
+  if (saved.dayNotes && typeof saved.dayNotes === 'object') {
+    dayNotes = normalizeDayNotes(saved.dayNotes);
+  }
+
+  if (Number.isInteger(saved.currentYear)) currentYear = saved.currentYear;
+  if (Number.isInteger(saved.currentMonth) && saved.currentMonth >= 0 && saved.currentMonth <= 11) currentMonth = saved.currentMonth;
+  if (saved.activeShift === 'am' || saved.activeShift === 'pm') activeShift = saved.activeShift;
+  if (CAL_KEYS.includes(saved.activeCalendar)) activeCalendar = saved.activeCalendar;
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.className = 'toast show' + (type === 'warn' ? ' warn' : '');
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
+
+function saveLocalBackup(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn('Local backup could not be saved.', err);
+  }
+}
+
+function readLocalBackupData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    console.warn('Local backup could not be read.', err);
+    return null;
+  }
+}
+
+function loadLocalBackup() {
+  try {
+    const saved = readLocalBackupData();
+    if (saved) {
+      applySavedData(saved);
+      return true;
+    }
+  } catch (err) {
+    console.warn('Local backup could not be loaded.', err);
+  }
+  return false;
+}
+
+function serializeDayNotesForServer(savedNotes) {
+  const serialized = { frontdesk: {}, lifeguard: {}, public: {} };
+  CAL_KEYS.forEach(calKey => {
+    Object.keys(savedNotes[calKey] || {}).forEach(key => {
+      serialized[calKey][key] = SERVER_NOTES_PREFIX + JSON.stringify(savedNotes[calKey][key]);
+    });
+  });
+  return serialized;
+}
+
+function hasCorruptedServerNotes(savedNotes) {
+  if (!savedNotes || typeof savedNotes !== 'object') return false;
+  return Object.values(savedNotes).some(value => {
+    if (typeof value === 'string') {
+      if (/^(array|\[object object\])$/i.test(value.trim())) return true;
+      if (value.startsWith(SERVER_NOTES_PREFIX)) {
+        try {
+          JSON.parse(value.slice(SERVER_NOTES_PREFIX.length));
+        } catch (err) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return value && typeof value === 'object' && hasCorruptedServerNotes(value);
+  });
+}
+
+function saveData() {
+  const data = getDataSnapshot();
+  saveLocalBackup(data);
+  const serverData = { ...data, dayNotes: serializeDayNotesForServer(data.dayNotes) };
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(serverData),
+      cache: 'no-store'
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      })
+      .catch(err => {
+        console.warn('Shared server data could not be saved.', err);
+      });
+  }, 150);
+}
+
+async function loadData() {
+  let apiData = null;
+  let jsonData = null;
+
+  try {
+    const response = await fetch(`${API_URL}?t=${Date.now()}`, { cache: 'no-store' });
+    if (response.ok) apiData = await response.json();
+  } catch (apiErr) {
+    console.warn('Shared server data could not be loaded.', apiErr);
+  }
+
+  try {
+    const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+    if (response.ok) jsonData = await response.json();
+  } catch (jsonErr) {
+    console.warn('Scheduler JSON could not be loaded.', jsonErr);
+  }
+
+  const pickNewest = (a, b) => {
+    if (!a) return b;
+    if (!b) return a;
+    const aTime = Date.parse(a.updatedAt || 0) || 0;
+    const bTime = Date.parse(b.updatedAt || 0) || 0;
+    if (aTime !== bTime) return aTime >= bTime ? a : b;
+    return a;
+  };
+
+  let saved = pickNewest(apiData, jsonData);
+  if (saved) {
+    if (hasCorruptedServerNotes(saved.dayNotes)) {
+      const localData = readLocalBackupData();
+      const recoveredNotes = localData?.dayNotes || jsonData?.dayNotes;
+      saved = { ...saved, dayNotes: recoveredNotes || { frontdesk: {}, lifeguard: {}, public: {} } };
+    }
+    applySavedData(saved);
+    saveLocalBackup(getDataSnapshot());
+    return;
+  }
+
+  if (loadLocalBackup()) return;
+}
+function normalizeSchedules(savedSchedules) {
+  const clean = { frontdesk: {}, lifeguard: {} };
+  STAFF_CAL_KEYS.forEach(calKey => {
+    const cal = savedSchedules[calKey] || {};
+    Object.keys(cal).forEach(key => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(key) || !Array.isArray(cal[key])) return;
+      const seen = new Set();
+      const entries = cal[key]
+        .map(entry => ({
+          name: String(entry.name || '').trim(),
+          shift: ['am', 'pm', 'sat'].includes(entry.shift) ? entry.shift : 'am'
+        }))
+        .filter(entry => entry.name)
+        .filter(entry => {
+          const dedupeKey = `${entry.name.toLowerCase()}|${entry.shift}`;
+          if (seen.has(dedupeKey)) return false;
+          seen.add(dedupeKey);
+          return true;
+        });
+      if (entries.length) clean[calKey][key] = sortDayShifts(entries);
+    });
+  });
+  return clean;
+}
+
+function normalizeDayNotes(savedNotes) {
+  const clean = { frontdesk: {}, lifeguard: {}, public: {} };
+  const addNote = (calKey, key, value) => {
+    if (!CAL_KEYS.includes(calKey)) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+    let decodedValue = value;
+    if (typeof value === 'string' && value.startsWith(SERVER_NOTES_PREFIX)) {
+      try {
+        decodedValue = JSON.parse(value.slice(SERVER_NOTES_PREFIX.length));
+      } catch (err) {
+        console.warn('A saved day note could not be decoded.', err);
+        return;
+      }
+    }
+    if (typeof decodedValue === 'string' && /^(array|\[object object\])$/i.test(decodedValue.trim())) return;
+    const values = Array.isArray(decodedValue) ? decodedValue : [decodedValue];
+    const notes = values.slice(0, maxNotesForCalendar(calKey)).map(item => {
+      const isObject = item && typeof item === 'object' && !Array.isArray(item);
+      const text = String(isObject ? item.text || '' : item || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+      const rawStart = isObject ? (item.start || item.time) : null;
+      const rawEnd = isObject ? item.end : null;
+      const start = /^([01]\d|2[0-3]):[0-5]\d$/.test(String(rawStart || '')) ? String(rawStart) : null;
+      const end = start && /^([01]\d|2[0-3]):[0-5]\d$/.test(String(rawEnd || '')) ? String(rawEnd) : null;
+      return text ? { text, start, end } : null;
+    }).filter(Boolean);
+    if (notes.length) clean[calKey][key] = sortNotesByTime(notes);
+  };
+
+  if (!savedNotes || typeof savedNotes !== 'object') return clean;
+
+  const hasCalendarKeys = CAL_KEYS.some(calKey =>
+    Object.prototype.hasOwnProperty.call(savedNotes, calKey)
+    && savedNotes[calKey]
+    && typeof savedNotes[calKey] === 'object'
+    && !Array.isArray(savedNotes[calKey])
+  );
+
+  if (hasCalendarKeys) {
+    CAL_KEYS.forEach(calKey => {
+      Object.keys(savedNotes[calKey] || {}).forEach(key => {
+        addNote(calKey, key, savedNotes[calKey][key]);
+      });
+    });
+    return clean;
+  }
+
+  Object.keys(savedNotes).forEach(key => {
+    const value = savedNotes[key];
+    if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+      CAL_KEYS.forEach(calKey => addNote(calKey, key, value));
+      return;
+    }
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.keys(value).forEach(noteKey => addNote(key, noteKey, value[noteKey]));
+    }
+  });
+
+  return clean;
+}
+
+function escapeHTML(value, forSvg = false) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, forSvg ? '&apos;' : '&#039;');
+}
+
+function svgEscape(value) {
+  return escapeHTML(value, true);
+}
+
+function dateKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function cssColor(name) {
+  const bodyValue = getComputedStyle(document.body).getPropertyValue(name).trim();
+  return bodyValue || getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function getNoteText(note) {
+  return note && typeof note === 'object' ? String(note.text || '') : String(note || '');
+}
+
+function getNoteStart(note) {
+  const value = note && typeof note === 'object' ? (note.start || note.time) : null;
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || '')) ? value : null;
+}
+
+function getNoteEnd(note) {
+  const value = note && typeof note === 'object' ? note.end : null;
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || '')) ? value : null;
+}
+
+function timeToMinutes(time) {
+  if (!time) return Number.POSITIVE_INFINITY;
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function parseTimeInput(value) {
+  const text = String(value || '').trim().toUpperCase().replace(/\s+/g, ' ');
+  if (!text) return null;
+  const match = text.match(/^(\d{1,2})(?::([0-5]\d))?\s*(AM|PM)?$/);
+  if (!match) return null;
+  let hours = Number(match[1]);
+  const minutes = Number(match[2] || 0);
+  const period = match[3] || null;
+  if (period) {
+    if (hours < 1 || hours > 12) return null;
+    hours = hours % 12 + (period === 'PM' ? 12 : 0);
+  } else if (hours > 23) {
+    return null;
+  }
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function adjustTypedTime(input, hoursToAdd) {
+  const fallback = input.id === 'dayNoteStartTime' ? '08:00' : '13:00';
+  const parsed = parseTimeInput(input.value) || fallback;
+  const total = (timeToMinutes(parsed) + hoursToAdd * 60 + 24 * 60) % (24 * 60);
+  const storageTime = `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  input.value = formatNoteTime(storageTime);
+}
+
+function formatNoteTime(time) {
+  if (!time) return '';
+  const [hours, minutes] = time.split(':').map(Number);
+  const displayHour = hours % 12 || 12;
+  return `${displayHour}:${String(minutes).padStart(2, '0')} ${hours < 12 ? 'AM' : 'PM'}`;
+}
+
+function formatCompactNoteTime(time) {
+  if (!time) return '';
+  const [hours, minutes] = time.split(':').map(Number);
+  const displayHour = hours % 12 || 12;
+  return minutes ? `${displayHour}:${String(minutes).padStart(2, '0')}` : String(displayHour);
+}
+
+function formatNoteTimeRange(note) {
+  const start = getNoteStart(note);
+  if (!start) return '';
+  const end = getNoteEnd(note);
+  return end ? `${formatCompactNoteTime(start)}-${formatCompactNoteTime(end)}` : formatNoteTime(start);
+}
+
+function shiftStartMinutes(entry, isSaturday = false) {
+  return isSaturday || entry.shift === 'sat' || entry.shift === 'am' ? 8 * 60 : 17 * 60;
+}
+
+function sortNotesByTime(notes) {
+  return notes.slice().sort((a, b) => {
+    const startOrder = timeToMinutes(getNoteStart(a)) - timeToMinutes(getNoteStart(b));
+    if (!Number.isNaN(startOrder) && startOrder) return startOrder;
+    return getNoteText(a).localeCompare(getNoteText(b));
+  });
+}
+
+function compareCalendarItems(a, b) {
+  const aAllDay = a.type === 'note' && !getNoteStart(a.note);
+  const bAllDay = b.type === 'note' && !getNoteStart(b.note);
+  if (aAllDay !== bAllDay) return aAllDay ? -1 : 1;
+  const timeOrder = a.order - b.order;
+  if (timeOrder) return timeOrder;
+  if (a.type !== b.type) return a.type === 'shift' ? -1 : 1;
+  return (a.idx ?? a.noteIndex ?? 0) - (b.idx ?? b.noteIndex ?? 0);
+}
+
+function getSchedule() { return schedules[activeCalendar]; }
+function getDayNotes() { return dayNotes[activeCalendar]; }
+
+function syncCalendarUI() {
+  document.getElementById('toggleFD').classList.toggle('active', activeCalendar === 'frontdesk');
+  document.getElementById('toggleLG').classList.toggle('active', activeCalendar === 'lifeguard');
+  document.getElementById('togglePublic').classList.toggle('active', activeCalendar === 'public');
+  document.body.classList.toggle('public-calendar-mode', activeCalendar === 'public');
+  document.getElementById('calTypeBar').textContent = CAL_LABELS[activeCalendar].bar;
+}
+
+function syncShiftTabsUI() {
+  document.getElementById('tabAM').classList.toggle('active', activeShift === 'am');
+  document.getElementById('tabPM').classList.toggle('active', activeShift === 'pm');
+}
+
+function syncAssignUI() {
+  document.querySelectorAll('.cal-cell.assign-ready').forEach(cell => {
+    cell.classList.remove('assign-ready');
+  });
+  if (selectedEmployee) {
+    document.querySelectorAll('.cal-cell[data-key]').forEach(cell => {
+      if (parseInt(cell.dataset.dow, 10) !== 0) cell.classList.add('assign-ready');
+    });
+  }
+}
+
+function toggleSelectedEmployee(name, shift) {
+  if (selectedEmployee?.name === name && selectedEmployee?.shift === shift) {
+    selectedEmployee = null;
+  } else {
+    selectedEmployee = { name, shift };
+  }
+  syncAssignUI();
+  renderSidebar();
+}
+
+function goToToday() {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  saveData();
+  renderCalendar();
+}
+
+/* -- CALENDAR SWITCH -- */
+function switchCalendar(cal) {
+  if (!CAL_KEYS.includes(cal)) return;
+  activeCalendar = cal;
+  selectedEmployee = null;
+  syncCalendarUI();
+  syncAssignUI();
+  saveData();
+  renderCalendar();
+  renderSidebar();
+}
+
+/* -- SHIFT TYPE TABS -- */
+function setActiveShift(type) {
+  activeShift = type;
+  if (selectedEmployee) selectedEmployee.shift = type;
+  syncShiftTabsUI();
+  syncAssignUI();
+  saveData();
+  renderSidebar();
+}
+/* -- SIDEBAR -- */
+function renderSidebar() {
+  const list = document.getElementById('staffList');
+  const searchInput = document.getElementById('staffSearchInput');
+  if (activeCalendar === 'public') {
+    renderPublicRecents(list);
+    return;
+  }
+  const query = (searchInput?.value || '').trim().toLowerCase();
+  list.innerHTML = '';
+  const label = activeShift === 'am' ? '8-1' : '5-8';
+
+  const filtered = query
+    ? employees.filter(name => name.toLowerCase().includes(query))
+    : employees;
+
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'staff-search-empty';
+    empty.textContent = query
+      ? 'No employees match your search.'
+      : 'No employees yet. Use Manage Employees to add some.';
+    list.appendChild(empty);
+    return;
+  }
+
+  let lastInitial = null;
+
+  filtered.forEach(name => {
+    const initial = getNameParts(name).last.charAt(0).toUpperCase();
+    if (initial !== lastInitial) {
+      lastInitial = initial;
+      const letterEl = document.createElement('div');
+      letterEl.className = `staff-group-letter ${activeShift}`;
+      letterEl.textContent = initial;
+      list.appendChild(letterEl);
+    }
+
+    const card = document.createElement('div');
+    card.className = `staff-card ${activeShift}`;
+    if (selectedEmployee?.name === name && selectedEmployee?.shift === activeShift) {
+      card.classList.add('selected');
+    }
+    card.draggable = true;
+    card.innerHTML = `<div class="staff-card-front"><div class="card-name">${escapeHTML(name)}</div><div class="card-shift-label">${label}</div></div>`;
+
+    card.addEventListener('click', () => {
+      if (suppressCardClick) {
+        suppressCardClick = false;
+        return;
+      }
+      toggleSelectedEmployee(name, activeShift);
+    });
+
+    card.addEventListener('dragstart', e => {
+      suppressCardClick = true;
+      selectedEmployee = null;
+      syncAssignUI();
+      card.classList.remove('selected');
+
+      e.dataTransfer.setData('name', name);
+      e.dataTransfer.setData('shift', activeShift);
+      const ghost = document.getElementById('dragGhost');
+      ghost.className = `drag-ghost ${activeShift}`;
+      ghost.textContent = `${name} - ${label}`;
+      e.dataTransfer.setDragImage(ghost, 12, 12);
+    });
+
+    list.appendChild(card);
+  });
+}
+
+function getRecentPublicNotes() {
+  const seen = new Set();
+  return Object.entries(dayNotes.public || {})
+    .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
+    .flatMap(([date, notes]) => (notes || []).slice().reverse().map(note => ({ date, note })))
+    .filter(({ note }) => {
+      const signature = `${getNoteText(note).toLowerCase()}|${getNoteStart(note) || ''}|${getNoteEnd(note) || ''}`;
+      if (!getNoteText(note) || seen.has(signature)) return false;
+      seen.add(signature);
+      return true;
+    });
+}
+
+function fitRecentCardTitle(element, fullText) {
+  element.textContent = fullText;
+  element.title = fullText;
+  const availableWidth = element.getBoundingClientRect().width;
+  if (availableWidth <= 0) return;
+
+  const probe = element.cloneNode(false);
+  probe.style.position = 'fixed';
+  probe.style.left = '-10000px';
+  probe.style.width = 'max-content';
+  probe.style.overflow = 'visible';
+  probe.style.visibility = 'hidden';
+  probe.style.pointerEvents = 'none';
+  document.body.appendChild(probe);
+  const measuredWidth = text => {
+    probe.textContent = text;
+    return probe.getBoundingClientRect().width;
+  };
+  if (measuredWidth(fullText) <= availableWidth) {
+    probe.remove();
+    return;
+  }
+
+  let low = 0;
+  let high = fullText.length;
+  let fitted = '...';
+  while (low <= high) {
+    const midpoint = Math.floor((low + high) / 2);
+    const candidate = `${fullText.slice(0, midpoint).trimEnd()}...`;
+    if (measuredWidth(candidate) <= availableWidth) {
+      fitted = candidate;
+      low = midpoint + 1;
+    } else {
+      high = midpoint - 1;
+    }
+  }
+  element.textContent = fitted;
+  probe.remove();
+}
+
+function renderPublicRecents(list) {
+  list.innerHTML = '';
+  const recents = getRecentPublicNotes();
+  if (!recents.length) {
+    const empty = document.createElement('div');
+    empty.className = 'staff-search-empty';
+    empty.textContent = 'Saved public events will appear here after you add them.';
+    list.appendChild(empty);
+    return;
+  }
+
+  recents.forEach(({ note }) => {
+    const card = document.createElement('div');
+    card.className = 'staff-card recent-note-card';
+    card.draggable = true;
+    const time = formatNoteTimeRange(note) || 'All day';
+    card.innerHTML = `<div class="staff-card-front"><div class="card-name">${escapeHTML(getNoteText(note))}</div><div class="card-shift-label">${escapeHTML(time)}</div></div>`;
+    card.addEventListener('dragstart', event => {
+      recentPublicNoteDrag = {
+        text: getNoteText(note),
+        start: getNoteStart(note),
+        end: getNoteEnd(note)
+      };
+      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.setData('application/x-public-note', JSON.stringify(recentPublicNoteDrag));
+      const ghost = document.getElementById('dragGhost');
+      ghost.className = 'drag-ghost recent-note';
+      ghost.textContent = `${getNoteText(note)} · ${time}`;
+      event.dataTransfer.setDragImage(ghost, 12, 12);
+    });
+    card.addEventListener('dragend', () => {
+      recentPublicNoteDrag = null;
+    });
+    list.appendChild(card);
+    fitRecentCardTitle(card.querySelector('.card-name'), getNoteText(note));
+  });
+}
+
+function renderEmployeeManager() {
+  const list = document.getElementById('employeeManagerList');
+  const searchInput = document.getElementById('employeeSearchInput');
+  const countEl = document.getElementById('employeeManagerCount');
+  if (!list) return;
+
+  const query = (searchInput?.value || '').trim().toLowerCase();
+  const filtered = query
+    ? employees.filter(name => name.toLowerCase().includes(query))
+    : employees;
+
+  if (countEl) {
+    const total = employees.length;
+    if (query) {
+      countEl.textContent = filtered.length
+        ? `${filtered.length} of ${total} employee${total === 1 ? '' : 's'}`
+        : `No matches among ${total} employee${total === 1 ? '' : 's'}`;
+    } else {
+      countEl.textContent = total === 1 ? '1 employee' : `${total} employees`;
+    }
+  }
+
+  list.innerHTML = '';
+
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'employee-list-empty';
+    empty.textContent = query
+      ? 'No employees match your search.'
+      : 'No employees yet. Add one below.';
+    list.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(name => {
+    const row = document.createElement('div');
+    row.className = 'employee-manager-row';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'employee-manager-name';
+    nameEl.textContent = name;
+
+    const actions = document.createElement('div');
+    actions.className = 'employee-manager-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'employee-icon-btn employee-edit-btn';
+    editBtn.type = 'button';
+    editBtn.setAttribute('aria-label', `Edit ${name}`);
+    editBtn.title = 'Edit name';
+    editBtn.innerHTML = ICON_EDIT;
+    editBtn.addEventListener('click', () => beginEmployeeRename(name, row));
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'employee-icon-btn employee-remove-btn icon-x';
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', `Remove ${name}`);
+    removeBtn.title = 'Remove';
+    removeBtn.addEventListener('click', () => removeEmployee(name));
+
+    actions.append(editBtn, removeBtn);
+    row.append(nameEl, actions);
+    list.appendChild(row);
+  });
+}
+
+function beginEmployeeRename(oldName, row) {
+  if (row.dataset.editing === '1') return;
+  row.dataset.editing = '1';
+
+  const nameEl = row.querySelector('.employee-manager-name');
+  const actions = row.querySelector('.employee-manager-actions');
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'employee-rename-input';
+  input.value = oldName;
+  input.autocomplete = 'off';
+
+  nameEl.replaceWith(input);
+  actions.innerHTML = '';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'employee-icon-btn employee-save-btn';
+  saveBtn.type = 'button';
+  saveBtn.setAttribute('aria-label', 'Save name');
+  saveBtn.title = 'Save';
+  saveBtn.innerHTML = ICON_SAVE;
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'employee-icon-btn employee-cancel-btn icon-x';
+  cancelBtn.type = 'button';
+  cancelBtn.setAttribute('aria-label', 'Cancel edit');
+  cancelBtn.title = 'Cancel';
+
+  actions.append(saveBtn, cancelBtn);
+  input.focus();
+  input.select();
+
+  const finish = saved => {
+    if (saved) {
+      const newName = normalizeName(input.value);
+      if (!newName) {
+        input.focus();
+        return;
+      }
+      if (newName !== oldName && employeeNameTaken(newName, oldName)) {
+        alert('An employee with that name already exists.');
+        input.focus();
+        input.select();
+        return;
+      }
+      if (newName !== oldName) renameEmployee(oldName, newName);
+      else renderEmployeeManager();
+      return;
+    }
+    renderEmployeeManager();
+  };
+
+  saveBtn.addEventListener('click', () => finish(true));
+  cancelBtn.addEventListener('click', () => finish(false));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') finish(true);
+    if (e.key === 'Escape') finish(false);
+  });
+}
+
+function renameEmployee(oldName, newName) {
+  newName = normalizeName(newName);
+  if (!newName || newName === oldName) return;
+
+  employees = sortEmployees(employees.map(employee => (employee === oldName ? newName : employee)));
+
+  CAL_KEYS.forEach(calKey => {
+    Object.keys(schedules[calKey]).forEach(key => {
+      schedules[calKey][key] = schedules[calKey][key].map(entry =>
+        entry.name === oldName ? { ...entry, name: newName } : entry
+      );
+    });
+  });
+
+  schedules = normalizeSchedules(schedules);
+  saveData();
+  renderSidebar();
+  renderEmployeeManager();
+  renderCalendar();
+}
+
+function openEmployeeModal() {
+  const searchInput = document.getElementById('employeeSearchInput');
+  if (searchInput) searchInput.value = '';
+  renderEmployeeManager();
+  document.getElementById('employeeModal').classList.add('open');
+  setTimeout(() => searchInput?.focus(), 0);
+}
+
+function closeEmployeeModal() {
+  document.getElementById('employeeModal').classList.remove('open');
+}
+
+function addEmployeeFromInput() {
+  const input = document.getElementById('employeeNameInput');
+  const name = normalizeName(input.value);
+  if (!name) return;
+  if (employeeNameTaken(name)) {
+    alert('An employee with that name already exists.');
+    input.focus();
+    input.select();
+    return;
+  }
+
+  employees = sortEmployees([...employees, name]);
+  input.value = '';
+  saveData();
+  renderSidebar();
+  renderEmployeeManager();
+  input.focus();
+}
+
+function removeEmployee(name) {
+  const hasAssignments = CAL_KEYS.some(calKey =>
+    Object.values(schedules[calKey] || {}).some(entries => entries.some(entry => entry.name === name))
+  );
+
+  const message = hasAssignments
+    ? `Remove ${name} from the employee list? Their scheduled shifts will stay on the calendar.`
+    : `Remove ${name} from the employee list?`;
+  if (!confirm(message)) return;
+
+  employees = sortEmployees(employees.filter(employee => employee !== name));
+  saveData();
+  renderSidebar();
+  renderEmployeeManager();
+}
+
+/* -- CALENDAR -- */
+function renderCalendar() {
+  document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  DAYS.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header-cell';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  const firstDay    = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const today       = new Date();
+
+  let visibleCells = 0;
+  for (let i = 0; i < firstDay; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell empty';
+    grid.appendChild(cell);
+    visibleCells++;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dow       = new Date(currentYear, currentMonth, d).getDay();
+    const isSunday  = dow === 0;
+    const isSaturday = dow === 6;
+    const key       = dateKey(currentYear, currentMonth, d);
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell' + (isSunday ? ' sunday' : '');
+    if (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear())
+      cell.classList.add('today');
+    cell.dataset.key = key;
+    cell.dataset.dow = dow;
+
+    const dayNum = document.createElement('div');
+    dayNum.className = 'day-num';
+    dayNum.textContent = d;
+    cell.appendChild(dayNum);
+
+    if (activeCalendar === 'public') {
+      cell.addEventListener('dragover', e => {
+        if (!recentPublicNoteDrag && !e.dataTransfer.types.includes('application/x-public-note')) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        cell.classList.add('drag-over');
+      });
+      cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+      cell.addEventListener('drop', e => {
+        e.preventDefault();
+        cell.classList.remove('drag-over');
+        let note = recentPublicNoteDrag;
+        if (!note) {
+          try {
+            note = JSON.parse(e.dataTransfer.getData('application/x-public-note'));
+          } catch (error) {
+            note = null;
+          }
+        }
+        if (!note) return;
+        const notes = dayNotes.public[key] || [];
+        if (notes.length >= MAX_PUBLIC_NOTES_PER_DAY) {
+          showToast(`This day already has the maximum of ${MAX_PUBLIC_NOTES_PER_DAY} notes.`, 'warn');
+          return;
+        }
+        dayNotes.public[key] = sortNotesByTime([...notes, {
+          text: getNoteText(note).slice(0, 80),
+          start: getNoteStart(note),
+          end: getNoteEnd(note)
+        }]);
+        saveData();
+        refreshCell(key);
+        renderSidebar();
+      });
+    } else if (!isSunday) {
+      cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('drag-over'); });
+      cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+      cell.addEventListener('drop', e => {
+        e.preventDefault();
+        cell.classList.remove('drag-over');
+        const name = e.dataTransfer.getData('name');
+        const shift = e.dataTransfer.getData('shift');
+        const result = addShift(key, name, shift, isSaturday);
+        if (result === 'duplicate') {
+          showToast(`${name} is already scheduled for this shift.`, 'warn');
+        } else if (result === 'full') {
+          showToast('This day already has the maximum of 6 employees.', 'warn');
+        }
+      });
+    }
+    cell.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      if (e.target.closest('.note-chip')) return;
+      if (activeCalendar !== 'public' && selectedEmployee && !isSunday) {
+        const result = addShift(key, selectedEmployee.name, selectedEmployee.shift, isSaturday);
+        if (result === 'duplicate') {
+          showToast(`${selectedEmployee.name} is already scheduled for this shift.`, 'warn');
+        } else if (result === 'full') {
+          showToast('This day already has the maximum of 6 employees.', 'warn');
+        }
+        return;
+      }
+      if (activeCalendar === 'public' || !isSunday) openDayNoteModal(key);
+    });
+
+    const shiftsList = document.createElement('div');
+    shiftsList.className = 'shifts-list';
+    cell.appendChild(shiftsList);
+    renderCellShifts(shiftsList, key, isSaturday);
+    grid.appendChild(cell);
+    visibleCells++;
+  }
+
+  while (visibleCells < 42) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell empty';
+    grid.appendChild(cell);
+    visibleCells++;
+  }
+
+  syncAssignUI();
+}
+
+function renderCellShifts(container, key, isSaturday) {
+  container.innerHTML = '';
+  const sched  = activeCalendar === 'public' ? {} : getSchedule();
+  const shifts = sched[key] || [];
+  const notes = getDayNotes()[key] || [];
+  const items = shifts.map((entry, idx) => ({ type: 'shift', entry, idx, order: shiftStartMinutes(entry, isSaturday) }));
+  notes.forEach((note, noteIndex) => items.push({ type: 'note', note, noteIndex, order: timeToMinutes(getNoteStart(note)) }));
+  items.sort(compareCalendarItems);
+
+  items.forEach(item => {
+    if (item.type === 'note') {
+      const noteChip = document.createElement('div');
+      noteChip.className = 'shift-chip note-chip';
+
+      const noteSpan = document.createElement('span');
+      noteSpan.textContent = getNoteText(item.note);
+
+      const noteTime = formatNoteTimeRange(item.note);
+      if (noteTime) {
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'note-time-label';
+        timeSpan.textContent = noteTime;
+        noteChip.appendChild(noteSpan);
+        noteChip.appendChild(timeSpan);
+      } else {
+        noteChip.appendChild(noteSpan);
+      }
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn icon-x';
+      removeBtn.type = 'button';
+      removeBtn.setAttribute('aria-label', 'Remove note');
+      removeBtn.title = 'Remove note';
+      removeBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        removeDayNote(key, item.noteIndex);
+      });
+      noteChip.addEventListener('click', e => {
+        if (e.target.closest('button')) return;
+        openDayNoteModal(key, item.noteIndex);
+      });
+      noteChip.appendChild(removeBtn);
+      container.appendChild(noteChip);
+      return;
+    }
+
+    const { entry, idx } = item;
+    const chip = document.createElement('div');
+    chip.className = `shift-chip ${isSaturday ? 'sat' : entry.shift}`;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = entry.name;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn icon-x';
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', `Remove ${entry.name}`);
+    removeBtn.title = 'Remove';
+    removeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      removeShift(key, idx);
+    });
+
+    chip.appendChild(nameSpan);
+    chip.appendChild(removeBtn);
+    container.appendChild(chip);
+  });
+}
+
+function addShift(key, name, shift, isSaturday) {
+  if (activeCalendar === 'public') return 'invalid';
+  if (!name || !['am', 'pm'].includes(shift)) return 'invalid';
+
+  const sched = getSchedule();
+  if (!sched[key]) sched[key] = [];
+  const effectiveShift = isSaturday ? 'sat' : shift;
+  if (sched[key].some(e => e.name === name && e.shift === effectiveShift)) return 'duplicate';
+  if (sched[key].length >= MAX_EMPLOYEES_PER_DAY) return 'full';
+  sched[key] = sortDayShifts([...sched[key], { name, shift: effectiveShift }]);
+  saveData();
+  refreshCell(key);
+  return 'added';
+}
+
+function removeShift(key, idx) {
+  const sched = getSchedule();
+  if (!sched[key]) return;
+  sched[key].splice(idx, 1);
+  if (!sched[key].length) delete sched[key];
+  saveData();
+  refreshCell(key);
+  renderSidebar();
+}
+
+function refreshCell(key) {
+  const cell = document.querySelector(`[data-key="${key}"]`);
+  if (!cell) return;
+  const isSat = parseInt(cell.dataset.dow) === 6;
+  renderCellShifts(cell.querySelector('.shifts-list'), key, isSat);
+}
+
+function removeDayNote(key, noteIndex) {
+  const targetCalendars = activeCalendar === 'public' ? ['public'] : STAFF_CAL_KEYS;
+  if (!targetCalendars.some(calKey => dayNotes[calKey] && dayNotes[calKey][key])) return;
+  targetCalendars.forEach(calKey => {
+    const notes = dayNotes[calKey]?.[key];
+    if (!Array.isArray(notes)) return;
+    notes.splice(noteIndex, 1);
+    if (!notes.length) delete dayNotes[calKey][key];
+  });
+  saveData();
+  refreshCell(key);
+  renderSidebar();
+}
+
+function openDayNoteModal(key, noteIndex = null) {
+  const notes = getDayNotes()[key] || [];
+  const maxNotes = maxNotesForCalendar();
+  if (noteIndex === null && notes.length >= maxNotes) {
+    showToast(`This day already has the maximum of ${maxNotes} notes.`, 'warn');
+    return;
+  }
+  activeNoteKey = key;
+  activeNoteIndex = noteIndex;
+  const note = noteIndex === null ? null : notes[noteIndex];
+  document.getElementById('dayNoteInput').value = getNoteText(note);
+  document.getElementById('dayNoteStartTime').value = getNoteStart(note) ? formatNoteTime(getNoteStart(note)) : '';
+  document.getElementById('dayNoteEndTime').value = getNoteEnd(note) ? formatNoteTime(getNoteEnd(note)) : '';
+  setDayNoteTimeEnabled(Boolean(getNoteStart(note)));
+  document.getElementById('dayNoteModal').classList.add('open');
+  setTimeout(() => document.getElementById('dayNoteInput').focus(), 0);
+}
+
+function setDayNoteTimeEnabled(enabled) {
+  const fields = document.getElementById('dayNoteTimeFields');
+  const button = document.getElementById('toggleDayNoteTime');
+  fields.hidden = !enabled;
+  button.setAttribute('aria-expanded', String(enabled));
+  button.textContent = enabled ? 'Use all day' : 'Set specific hours';
+  if (enabled) {
+    const startInput = document.getElementById('dayNoteStartTime');
+    const endInput = document.getElementById('dayNoteEndTime');
+    if (!startInput.value && !endInput.value) {
+      startInput.value = '8:00 AM';
+      endInput.value = '1:00 PM';
+    }
+  } else {
+    document.getElementById('dayNoteStartTime').value = '';
+    document.getElementById('dayNoteEndTime').value = '';
+  }
+}
+
+function closeDayNoteModal() {
+  document.getElementById('dayNoteModal').classList.remove('open');
+  activeNoteKey = null;
+  activeNoteIndex = null;
+}
+
+function saveDayNote() {
+  if (!activeNoteKey) return;
+  const note = document.getElementById('dayNoteInput').value.trim().replace(/\s+/g, ' ').slice(0, 80);
+  const startValue = document.getElementById('dayNoteStartTime').value;
+  const endValue = document.getElementById('dayNoteEndTime').value;
+  const start = parseTimeInput(startValue);
+  const end = parseTimeInput(endValue);
+  if (startValue.trim() && !start) {
+    showToast('Enter a valid starting time, such as 8:00 AM.', 'warn');
+    return;
+  }
+  if (endValue.trim() && !end) {
+    showToast('Enter a valid ending time, such as 1:00 PM.', 'warn');
+    return;
+  }
+  if (end && !start) {
+    showToast('Choose a starting time before choosing an ending time.', 'warn');
+    return;
+  }
+  if (start && end && timeToMinutes(end) <= timeToMinutes(start)) {
+    showToast('The ending time must be later than the starting time.', 'warn');
+    return;
+  }
+  const editingIndex = activeNoteIndex;
+  const targetCalendars = activeCalendar === 'public' ? ['public'] : STAFF_CAL_KEYS;
+  targetCalendars.forEach(calKey => {
+    const notes = dayNotes[calKey][activeNoteKey] || [];
+    if (note) {
+      const savedNote = { text: note, start, end: start ? end : null };
+      if (editingIndex === null) notes.push(savedNote);
+      else notes[editingIndex] = savedNote;
+      dayNotes[calKey][activeNoteKey] = sortNotesByTime(notes.slice(0, maxNotesForCalendar(calKey)));
+    } else if (editingIndex !== null) {
+      notes.splice(editingIndex, 1);
+      if (notes.length) dayNotes[calKey][activeNoteKey] = notes;
+      else delete dayNotes[calKey][activeNoteKey];
+    }
+  });
+  const key = activeNoteKey;
+  saveData();
+  closeDayNoteModal();
+  refreshCell(key);
+  renderSidebar();
+}
+
+/* -- NAV -- */
+document.getElementById('prevMonth').addEventListener('click', () => {
+  if (--currentMonth < 0) { currentMonth = 11; currentYear--; }
+  saveData();
+  renderCalendar();
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+  if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
+  saveData();
+  renderCalendar();
+});
+document.getElementById('todayBtn').addEventListener('click', goToToday);
+
+document.addEventListener('click', e => {
+  if (!selectedEmployee) return;
+  if (e.target.closest('.cal-cell[data-key]')) return;
+  if (e.target.closest('.staff-card')) return;
+  selectedEmployee = null;
+  syncAssignUI();
+  renderSidebar();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('employeeModal').classList.contains('open')) {
+    closeEmployeeModal();
+    return;
+  }
+  if (document.getElementById('dayNoteModal').classList.contains('open')) {
+    closeDayNoteModal();
+    return;
+  }
+  if (document.getElementById('printModal').classList.contains('open')) {
+    closePrintModal();
+    return;
+  }
+  if (selectedEmployee) {
+    selectedEmployee = null;
+    syncAssignUI();
+    renderSidebar();
+  }
+});
+
+/* -- PRINT MODAL -- */
+document.getElementById('openPrintModal').addEventListener('click', () => {
+  document.getElementById('modalMonth').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+  document.getElementById('printModal').classList.add('open');
+});
+function closePrintModal() { document.getElementById('printModal').classList.remove('open'); }
+document.getElementById('printModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('printModal')) closePrintModal();
+});
+document.getElementById('employeeModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('employeeModal')) closeEmployeeModal();
+});
+document.getElementById('dayNoteModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('dayNoteModal')) closeDayNoteModal();
+});
+document.getElementById('saveDayNoteBtn').addEventListener('click', saveDayNote);
+document.getElementById('toggleDayNoteTime').addEventListener('click', () => {
+  const enabled = document.getElementById('toggleDayNoteTime').getAttribute('aria-expanded') === 'true';
+  setDayNoteTimeEnabled(!enabled);
+  if (!enabled) setTimeout(() => document.getElementById('dayNoteStartTime').focus(), 0);
+});
+document.querySelectorAll('.day-note-time-input').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    adjustTypedTime(input, e.key === 'ArrowUp' ? 1 : -1);
+  });
+  input.addEventListener('blur', () => {
+    const parsed = parseTimeInput(input.value);
+    if (parsed) input.value = formatNoteTime(parsed);
+  });
+});
+document.getElementById('dayNoteInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveDayNote();
+});
+
+/* -- PRINT -- */
+function getPrintCalendarCells(calKey, monthName, year) {
+  const sched       = schedules[calKey] || {};
+  const notes       = dayNotes[calKey] || {};
+  const mIdx        = MONTHS.indexOf(monthName);
+  const daysInMonth = new Date(year, mIdx + 1, 0).getDate();
+  const firstDay    = new Date(year, mIdx, 1).getDay();
+
+  let cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push({ empty: true });
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dow = new Date(year, mIdx, d).getDay();
+    const key = dateKey(year, mIdx, d);
+    cells.push({ empty: false, d, dow, shifts: sched[key] || [], notes: notes[key] || [] });
+  }
+  while (cells.length < 42) cells.push({ empty: true });
+  return cells;
+}
+
+function fitSvgText(value, maxChars = 22) {
+  const text = String(value);
+  return text.length <= maxChars ? text : text.slice(0, maxChars - 1) + '...';
+}
+
+function buildPrintSheet(calKey, monthName, year) {
+  const calLabel = CAL_LABELS[calKey].print;
+  const cells = getPrintCalendarCells(calKey, monthName, year);
+
+  // SVG print workaround:
+  // Use integer geometry and draw the calendar grid with single shared lines.
+  // This avoids Chrome print-preview gaps caused by fractional SVG coordinates,
+  // overlapping strokes, and anti-aliased borders.
+  const pageW = 1100;
+  const pageH = 850;
+  const shellX = 25;
+  const shellY = 24;
+  const shellW = 1050;        // 7 columns x 150
+  const topH = 55;
+  const daysH = 30;
+  const gridY = shellY + topH + daysH;
+  const colW = 150;
+  const rowH = 120;
+  const gridW = colW * 7;
+  const gridH = rowH * 6;
+  const shellH = topH + daysH + gridH;
+  const sheetRadius = 24;
+  const noteRadius = 16;
+  // Color print palette: follows the UI brand colors, with dark borders and labels
+  // so the page still reads well when printed in grayscale.
+  const purple = cssColor('--purple');
+  const gold = cssColor('--gold');
+  const white = cssColor('--white');
+  const pagePreview = cssColor('--purple-pale');
+  const bar = purple;
+  const dayBar = purple;
+  const grid = cssColor('--text-muted');
+  const headerLine = gold;
+  const text = cssColor('--text');
+  const mutedText = cssColor('--print-muted');
+  const clipId = `print-shell-${calKey}`;
+  const headerInset = 18;
+
+  let out = `<section class="sheet"><svg class="print-svg" viewBox="0 0 ${pageW} ${pageH}" xmlns="http://www.w3.org/2000/svg" aria-label="${svgEscape(calLabel)} ${svgEscape(monthName)} ${year}" shape-rendering="crispEdges">`;
+  out += `<defs><clipPath id="${clipId}"><rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" rx="${sheetRadius}" ry="${sheetRadius}"/></clipPath></defs>`;
+
+  // Solid, flush background blocks. Borders are drawn separately as shared lines.
+  out += `<rect x="0" y="0" width="${pageW}" height="${pageH}" fill="${white}"/>`;
+  out += `<g clip-path="url(#${clipId})">`;
+  out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" fill="${white}"/>`;
+  out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${topH}" fill="${bar}"/>`;
+  out += `<rect x="${shellX}" y="${shellY + topH}" width="${shellW}" height="${daysH}" fill="${dayBar}"/>`;
+  out += `<rect x="${shellX}" y="${gridY}" width="${gridW}" height="${gridH}" fill="${white}"/>`;
+
+  // Top bar text.
+  out += `<text x="${shellX + headerInset}" y="${shellY + 24}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="${white}" shape-rendering="geometricPrecision">Somerset</text>`;
+  out += `<text x="${shellX + headerInset}" y="${shellY + 43}" font-family="Playfair Display, Georgia, serif" font-size="17" font-weight="700" fill="${gold}" shape-rendering="geometricPrecision">Alumni Center</text>`;
+  out += `<text x="${shellX + shellW - headerInset}" y="${shellY + 24}" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" fill="${white}" shape-rendering="geometricPrecision">${svgEscape(calLabel)}</text>`;
+  out += `<text x="${shellX + shellW - headerInset}" y="${shellY + 42}" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="end" fill="${white}" shape-rendering="geometricPrecision">${svgEscape(monthName)} ${year}</text>`;
+
+  // Header separators and weekday labels.
+  const rightPanelX = shellX + shellW - 185;
+  out += `<line x1="${rightPanelX}" y1="${shellY}" x2="${rightPanelX}" y2="${shellY + topH}" stroke="${headerLine}" stroke-width="2"/>`;
+  DAYS.forEach((dayName, i) => {
+    const x = shellX + i * colW;
+    if (i > 0) out += `<line x1="${x}" y1="${shellY + topH}" x2="${x}" y2="${shellY + topH + daysH}" stroke="${headerLine}" stroke-width="2"/>`;
+    out += `<text x="${x + colW / 2}" y="${shellY + topH + 20}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="middle" fill="${white}" shape-rendering="geometricPrecision">${svgEscape(dayName.toUpperCase())}</text>`;
+  });
+
+  // Calendar entries. The grid is drawn afterward so all
+  // borders land perfectly on top and remain connected.
+  for (let r = 0; r < 6; r++) {
+    for (let c = 0; c < 7; c++) {
+      const idx = r * 7 + c;
+      const day = cells[idx];
+      const x = shellX + c * colW;
+      const y = gridY + r * rowH;
+      if (!day || day.empty) continue;
+
+      out += `<rect x="${x}" y="${y}" width="${colW}" height="${rowH}" fill="${white}"/>`;
+      out += `<text x="${x + colW - 8}" y="${y + 15}" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="800" text-anchor="end" fill="${purple}" shape-rendering="geometricPrecision">${day.d}</text>`;
+
+      if (day.dow === 0 && calKey !== 'public') {
+        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">-</text>`;
+        continue;
+      }
+
+      const shifts = day.shifts || [];
+      const notesForDay = day.notes || [];
+      if (!shifts.length && !notesForDay.length) {
+        out += `<text x="${x + colW / 2}" y="${y + rowH / 2 + 5}" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="${mutedText}" shape-rendering="geometricPrecision">-</text>`;
+        continue;
+      }
+
+      const ordered = sortDayShifts(shifts).map((entry, idx) => ({ type: 'shift', entry, idx, order: shiftStartMinutes(entry, day.dow === 6) }));
+      notesForDay.forEach((note, noteIndex) => ordered.push({ type: 'note', note, noteIndex, order: timeToMinutes(getNoteStart(note)) }));
+      ordered.sort(compareCalendarItems);
+
+      const entryCount = ordered.length;
+      const chipGap = 2;
+      const chipH = entryCount <= 6 ? 13 : 10;
+      const stepY = chipH + chipGap;
+      const nameSize = entryCount <= 6 ? 7.8 : Math.max(4.2, Math.min(7.8, chipH * 0.6));
+      const labelSize = entryCount <= 6 ? 7.2 : Math.max(3.9, Math.min(7.2, chipH * 0.55));
+
+      ordered.forEach((item, n) => {
+        const isNote = item.type === 'note';
+        const s = item.entry;
+        const isSat = !isNote && (day.dow === 6 || s.shift === 'sat');
+        const label = isNote ? formatNoteTimeRange(item.note) : (isSat ? '8-12' : (s.shift === 'pm' ? '5-8' : '8-1'));
+        const displayName = isNote ? getNoteText(item.note) : s.name;
+        const isPM = !isNote && s.shift === 'pm' && !isSat;
+        const fill = white;
+        const edge = isPM ? gold : purple;
+        const stroke = isPM ? gold : purple;
+        const ay = y + 23 + n * stepY;
+        const offset = 4;
+        const chipPadLeft = 6;
+        const chipPadRight = 5;
+        const ax = x + 7 - offset / 2;
+        const aw = colW - 14;
+        const centerY = ay + chipH / 2;
+        const labelX = ax + aw - chipPadRight;
+        const nameX = ax + offset + chipPadLeft;
+        const printedName = fitSvgText(displayName, label ? 17 : 24);
+        out += `<foreignObject x="${ax}" y="${ay}" width="${aw}" height="${chipH}">`;
+        out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;overflow:hidden;">`;
+        out += `<div style="position:absolute;inset:0;border-radius:999px;background:${edge};"></div>`;
+        out += `<div style="position:absolute;left:${offset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${stroke};border-radius:999px;background:${fill};"></div>`;
+        out += `</div></foreignObject>`;
+        out += `<text x="${nameX}" y="${centerY}" font-family="Inter, Arial, sans-serif" font-size="${nameSize}" font-weight="800" fill="${text}" dominant-baseline="central">${svgEscape(printedName)}</text>`;
+        if (label) out += `<text x="${labelX}" y="${centerY}" font-family="Inter, Arial, sans-serif" font-size="${labelSize}" font-weight="800" text-anchor="end" fill="${text}" dominant-baseline="central">${svgEscape(label)}</text>`;
+      });
+    }
+  }
+
+  // Shared grid lines: single strokes only, aligned to integer coordinates.
+  out += `<line x1="${shellX}" y1="${shellY}" x2="${shellX + shellW}" y2="${shellY}" stroke="${grid}" stroke-width="2"/>`;
+  out += `<line x1="${shellX}" y1="${shellY + topH}" x2="${shellX + shellW}" y2="${shellY + topH}" stroke="${headerLine}" stroke-width="2"/>`;
+  out += `<line x1="${shellX}" y1="${shellY + topH + daysH}" x2="${shellX + shellW}" y2="${shellY + topH + daysH}" stroke="${grid}" stroke-width="2"/>`;
+  for (let c = 0; c <= 7; c++) {
+    const x = shellX + c * colW;
+    out += `<line x1="${x}" y1="${gridY}" x2="${x}" y2="${gridY + gridH}" stroke="${grid}" stroke-width="2"/>`;
+  }
+  for (let r = 0; r <= 6; r++) {
+    const y = gridY + r * rowH;
+    out += `<line x1="${shellX}" y1="${y}" x2="${shellX + gridW}" y2="${y}" stroke="${grid}" stroke-width="2"/>`;
+  }
+  out += `</g>`;
+  out += `<rect x="${shellX}" y="${shellY}" width="${shellW}" height="${shellH}" rx="${sheetRadius}" ry="${sheetRadius}" fill="none" stroke="${grid}" stroke-width="2"/>`;
+
+  out += `</svg></section>`;
+  return out;
+}
+
+function buildScheduleHTML(which, monthName, year) {
+  const title = which === 'both'
+    ? `Schedules - ${monthName} ${year}`
+    : `${CAL_LABELS[which].print} - ${monthName} ${year}`;
+  const white = cssColor('--white');
+  const text = cssColor('--text');
+  const pagePreview = cssColor('--purple-pale');
+  const sheets = which === 'both'
+    ? buildPrintSheet('frontdesk', monthName, year) + buildPrintSheet('lifeguard', monthName, year)
+    : buildPrintSheet(which, monthName, year);
+
+  return `<!DOCTYPE html><html><head>
+<title>${title}</title>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;background:${white};}
+body{font-family:'Inter',Arial,sans-serif;color:${text};background:${white};padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.sheet{width:11in;height:8.5in;margin:0 auto;background:${white};display:block;overflow:hidden;page-break-after:always;break-after:page;}
+.sheet:last-child{page-break-after:auto;break-after:auto;}
+.print-svg{display:block;width:11in;height:8.5in;background:${white};}
+@media screen{
+  body{background:${pagePreview};padding:0;}
+  .sheet{margin:0 auto 16px auto;}
+}
+@media print{
+  @page{size:letter landscape;margin:0;}
+  html,body{width:11in;height:auto;margin:0;padding:0;background:${white};}
+  .sheet{width:11in;height:8.5in;margin:0;page-break-after:always;break-after:page;}
+  .sheet:last-child{page-break-after:auto;break-after:auto;}
+  .print-svg{width:11in;height:8.5in;}
+}
+</style></head><body>
+${sheets}
+<script>window.onload=()=>setTimeout(()=>window.print(),150);<\/script>
+</body></html>`;
+}
+
+function printSchedule(which) {
+  closePrintModal();
+  const monthName = MONTHS[currentMonth];
+  const year      = currentYear;
+  const win = window.open('', '_blank');
+
+  if (!win) {
+    alert('The print window was blocked. Allow pop-ups for this file, then try again.');
+    return;
+  }
+
+  win.document.write(buildScheduleHTML(which, monthName, year));
+  win.document.close();
+}
+
+const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9.2 2.3l2.5 2.5-6.7 6.7H2.5V8.9L9.2 2.3z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>';
+const ICON_SAVE = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+// Init
+async function initScheduler() {
+  document.getElementById('toggleFD').addEventListener('click', () => switchCalendar('frontdesk'));
+  document.getElementById('toggleLG').addEventListener('click', () => switchCalendar('lifeguard'));
+  document.getElementById('togglePublic').addEventListener('click', () => switchCalendar('public'));
+  document.getElementById('tabAM').addEventListener('click', () => setActiveShift('am'));
+  document.getElementById('tabPM').addEventListener('click', () => setActiveShift('pm'));
+  document.getElementById('openEmployeeManager').addEventListener('click', openEmployeeModal);
+  document.getElementById('addEmployeeBtn').addEventListener('click', addEmployeeFromInput);
+  document.getElementById('closeEmployeeBtn').addEventListener('click', closeEmployeeModal);
+  document.getElementById('cancelPrintBtn').addEventListener('click', closePrintModal);
+  document.getElementById('cancelDayNoteBtn').addEventListener('click', closeDayNoteModal);
+  document.querySelectorAll('[data-print-target]').forEach(button => {
+    button.addEventListener('click', () => printSchedule(button.dataset.printTarget));
+  });
+  document.getElementById('employeeNameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addEmployeeFromInput();
+  });
+  document.getElementById('employeeSearchInput').addEventListener('input', renderEmployeeManager);
+  document.getElementById('staffSearchInput').addEventListener('input', renderSidebar);
+
+  await loadData();
+  if (document.fonts?.ready) await document.fonts.ready;
+  employees = sortEmployees(employees);
+  syncCalendarUI();
+  syncShiftTabsUI();
+  syncAssignUI();
+  renderSidebar();
+  renderCalendar();
+}
+
+initScheduler();
+</script>
+</body>
+</html>
