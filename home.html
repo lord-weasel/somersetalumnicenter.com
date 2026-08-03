@@ -11,7 +11,38 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260803-42">
+<link rel="stylesheet" href="assets/styles.css?v=20260803-43">
+<script>
+  (() => {
+    const root = document.documentElement;
+    const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)');
+    let updateFrame = 0;
+
+    function updateInitialScreenHeight() {
+      cancelAnimationFrame(updateFrame);
+      updateFrame = requestAnimationFrame(() => {
+        const viewportHeight = Math.max(
+          window.innerHeight || 0,
+          document.documentElement.clientHeight || 0,
+          window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : 0
+        );
+        const deviceScreenHeight = window.screen && window.screen.height
+          ? window.screen.height
+          : viewportHeight;
+        const height = coarsePointer.matches
+          ? Math.max(viewportHeight, deviceScreenHeight)
+          : viewportHeight;
+
+        root.style.setProperty('--initial-screen-height', `${Math.round(height)}px`);
+      });
+    }
+
+    updateInitialScreenHeight();
+    window.addEventListener('resize', updateInitialScreenHeight, { passive: true });
+    window.visualViewport?.addEventListener('resize', updateInitialScreenHeight, { passive: true });
+    window.screen?.orientation?.addEventListener('change', updateInitialScreenHeight);
+  })();
+</script>
 </head>
 <body class="home-page">
 
