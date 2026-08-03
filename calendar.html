@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" class="public-calendar-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Public Events Calendar - Somerset Alumni Center</title>
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="760x760" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#541565">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Alumni Center">
+<link rel="stylesheet" href="assets/styles.css?v=20260803-36">
+</head>
+<body class="public-calendar-page">
+<header class="public-calendar-header">
+  <a href="home.html" class="public-calendar-logo" aria-label="Somerset Alumni Center home">
+    <img src="assets/logo.svg" alt="Somerset Alumni Center">
+  </a>
+  <div class="public-calendar-nav">
+    <div id="monthLabel" aria-live="polite"></div>
+  </div>
+</header>
+<main class="public-calendar-main">
+  <p class="public-calendar-intro">View upcoming facility closures, reservations, and community events. Select a day to see all events.</p>
+  <div class="public-calendar-grid" id="calendarGrid" aria-label="Public events calendar"></div>
+  <p class="public-calendar-empty" id="emptyMessage" hidden>No public events are scheduled for this month.</p>
+  <section class="public-mobile-agenda" id="mobileAgenda" aria-live="polite">
+    <div class="public-mobile-agenda-header">
+      <span>Selected day</span>
+      <h2 id="mobileAgendaTitle"></h2>
+    </div>
+    <div class="public-mobile-agenda-events" id="mobileAgendaEvents"></div>
+  </section>
+</main>
+<div class="public-day-overlay" id="dayDetailsModal" aria-hidden="true">
+  <section class="public-day-dialog" role="dialog" aria-modal="true" aria-labelledby="dayDetailsTitle">
+    <div class="public-day-dialog-header">
+      <div>
+        <span class="public-day-dialog-kicker">Public Calendar</span>
+        <h2 id="dayDetailsTitle"></h2>
+      </div>
+      <button class="public-day-close" id="closeDayDetails" type="button" aria-label="Close day details">&times;</button>
+    </div>
+    <div class="public-day-events" id="dayDetailsEvents"></div>
+  </section>
+</div>
+<script>
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const PREFIX = 'SAC_NOTES_V1:';
+const LOCAL_STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+let publicNotes = {};
+let loadFailed = false;
+let usingLocalData = false;
+let lastFocusedDay = null;
+let selectedDay = null;
+
+function dateKey(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function decodeNotes(value) {
+  let decoded = value;
+  if (typeof decoded === 'string' && decoded.startsWith(PREFIX)) {
+    try { decoded = JSON.parse(decoded.slice(PREFIX.length)); } catch (error) { return []; }
+  }
+  const values = Array.isArray(decoded) ? decoded : [decoded];
+  return values.map(item => {
+    const objectValue = item && typeof item === 'object';
+    return {
+      text: String(objectValue ? item.text || '' : item || '').trim(),
+      start: objectValue ? item.start || item.time || null : null,
+      end: objectValue ? item.end || null : null
+    };
+  }).filter(note => note.text);
+}
+
+function formatTime(value) {
+  if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return '';
+  const [hours, minutes] = value.split(':').map(Number);
+  return `${hours % 12 || 12}${minutes ? ':' + String(minutes).padStart(2, '0') : ''}${hours < 12 ? 'am' : 'pm'}`;
+}
+
+function formatRange(note) {
+  if (!note.start) return '';
+  return note.end ? `${formatTime(note.start)}–${formatTime(note.end)}` : formatTime(note.start);
+}
+
+function formatCompactTime(value) {
+  if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return '';
+  const [hours, minutes] = value.split(':').map(Number);
+  const displayHour = hours % 12 || 12;
+  return minutes ? `${displayHour}:${String(minutes).padStart(2, '0')}` : String(displayHour);
+}
+
+function formatPreviewRange(note) {
+  if (!note.start) return '';
+  if (note.end) return `${formatCompactTime(note.start)}-${formatCompactTime(note.end)}`;
+  const [hours, minutes] = note.start.split(':').map(Number);
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${hours < 12 ? 'AM' : 'PM'}`;
+}
+
+function sortPublicNotes(notes) {
+  return notes.slice().sort((a, b) => {
+    if (!a.start && b.start) return -1;
+    if (a.start && !b.start) return 1;
+    if (a.start && b.start) return a.start.localeCompare(b.start);
+    return a.text.localeCompare(b.text);
+  });
+}
+
+function closeDayDetails() {
+  const modal = document.getElementById('dayDetailsModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  lastFocusedDay?.focus();
+}
+
+function appendDayEvents(container, notes) {
+  container.innerHTML = '';
+  if (!notes.length) {
+    const empty = document.createElement('p');
+    empty.className = 'public-day-no-events';
+    empty.textContent = 'No public events are scheduled for this day.';
+    container.appendChild(empty);
+    return;
+  }
+  sortPublicNotes(notes).forEach(note => {
+    const item = document.createElement('article');
+    item.className = 'public-day-event-detail';
+    const front = document.createElement('div');
+    front.className = 'public-day-event-detail-front';
+    const time = document.createElement('div');
+    time.className = 'public-day-event-time';
+    time.textContent = formatRange(note) || 'All day';
+    const text = document.createElement('div');
+    text.className = 'public-day-event-text';
+    text.textContent = note.text;
+    front.append(time, text);
+    item.appendChild(front);
+    container.appendChild(item);
+  });
+}
+
+function showMobileAgenda(day, notes) {
+  selectedDay = day;
+  document.querySelectorAll('.public-calendar-cell[data-day]').forEach(cell => {
+    const isSelected = Number(cell.dataset.day) === day;
+    cell.classList.toggle('is-selected', isSelected);
+    cell.setAttribute('aria-pressed', String(isSelected));
+  });
+  const date = new Date(currentYear, currentMonth, day);
+  document.getElementById('mobileAgendaTitle').textContent = date.toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+  const agendaEvents = document.getElementById('mobileAgendaEvents');
+  appendDayEvents(agendaEvents, notes);
+  if (loadFailed) {
+    agendaEvents.innerHTML = '';
+    const error = document.createElement('p');
+    error.className = 'public-day-no-events';
+    error.textContent = 'The public calendar is temporarily unavailable. Please try again shortly.';
+    agendaEvents.appendChild(error);
+  }
+}
+
+function selectDay(day, notes, trigger) {
+  if (window.matchMedia('(max-width: 760px)').matches) {
+    showMobileAgenda(day, notes);
+  } else {
+    openDayDetails(day, notes, trigger);
+  }
+}
+
+function openDayDetails(day, notes, trigger) {
+  lastFocusedDay = trigger;
+  const date = new Date(currentYear, currentMonth, day);
+  document.getElementById('dayDetailsTitle').textContent = date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  appendDayEvents(document.getElementById('dayDetailsEvents'), notes);
+  const modal = document.getElementById('dayDetailsModal');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.getElementById('closeDayDetails').focus();
+}
+
+function readLocalPublicNotes() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) return null;
+    const saved = JSON.parse(raw);
+    const notes = saved?.dayNotes?.public;
+    return notes && typeof notes === 'object' && !Array.isArray(notes) ? notes : {};
+  } catch (error) {
+    console.warn('Local public calendar data could not be read.', error);
+    return null;
+  }
+}
+
+function fitPublicEventTitle(element, fullText) {
+  element.textContent = fullText;
+  element.title = fullText;
+  const availableWidth = Math.max(0, element.getBoundingClientRect().width - 4);
+  if (availableWidth <= 0) return;
+
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return;
+  context.font = getComputedStyle(element).font;
+  const measuredWidth = value => context.measureText(value).width;
+  if (measuredWidth(fullText) <= availableWidth) return;
+
+  let low = 0;
+  let high = fullText.length;
+  let fitted = '...';
+  while (low <= high) {
+    const midpoint = Math.floor((low + high) / 2);
+    const candidate = `${fullText.slice(0, midpoint).trimEnd()}...`;
+    if (measuredWidth(candidate) <= availableWidth) {
+      fitted = candidate;
+      low = midpoint + 1;
+    } else {
+      high = midpoint - 1;
+    }
+  }
+  element.textContent = fitted;
+}
+
+function renderCalendar() {
+  document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  const previewLimit = window.innerHeight < 850 ? 1 : 2;
+  DAYS.forEach(day => {
+    const heading = document.createElement('div');
+    heading.className = 'public-calendar-day-heading';
+    heading.textContent = day;
+    grid.appendChild(heading);
+  });
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const today = new Date();
+  let eventCount = 0;
+  for (let index = 0; index < firstDay; index++) {
+    const blank = document.createElement('div');
+    blank.className = 'public-calendar-cell is-empty';
+    grid.appendChild(blank);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement('div');
+    cell.className = 'public-calendar-cell';
+    cell.dataset.day = day;
+    if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) cell.classList.add('is-today');
+    const number = document.createElement('div');
+    number.className = 'public-calendar-date';
+    number.textContent = day;
+    cell.appendChild(number);
+    const notes = sortPublicNotes(decodeNotes(publicNotes[dateKey(currentYear, currentMonth, day)]));
+    cell.tabIndex = 0;
+    cell.setAttribute('role', 'button');
+    cell.setAttribute('aria-pressed', 'false');
+    cell.setAttribute('aria-label', `${MONTHS[currentMonth]} ${day}: ${notes.length} public ${notes.length === 1 ? 'event' : 'events'}. View details.`);
+    cell.addEventListener('click', () => selectDay(day, notes, cell));
+    cell.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      selectDay(day, notes, cell);
+    });
+    grid.appendChild(cell);
+    const preview = document.createElement('div');
+    preview.className = 'public-calendar-events-preview';
+    cell.appendChild(preview);
+    if (notes.length) {
+      const indicators = document.createElement('div');
+      indicators.className = 'public-calendar-indicators';
+      indicators.setAttribute('aria-hidden', 'true');
+      indicators.textContent = `${notes.length} ${notes.length === 1 ? 'event' : 'events'}`;
+      cell.appendChild(indicators);
+    }
+    eventCount += notes.length;
+    notes.slice(0, previewLimit).forEach(note => {
+      const event = document.createElement('div');
+      event.className = 'public-calendar-event';
+      const eventFront = document.createElement('div');
+      eventFront.className = 'public-calendar-event-front';
+      const time = formatPreviewRange(note);
+      let timeElement = null;
+      if (time) {
+        timeElement = document.createElement('span');
+        timeElement.textContent = time;
+      }
+      const text = document.createElement('strong');
+      text.textContent = note.text;
+      eventFront.appendChild(text);
+      if (timeElement) eventFront.appendChild(timeElement);
+      event.appendChild(eventFront);
+      preview.appendChild(event);
+      fitPublicEventTitle(text, note.text);
+    });
+    if (notes.length > previewLimit) {
+      const more = document.createElement('div');
+      more.className = 'public-calendar-more';
+      more.textContent = `+${notes.length - previewLimit} more`;
+      preview.appendChild(more);
+    }
+  }
+  const renderedDateCells = firstDay + daysInMonth;
+  for (let index = renderedDateCells; index < 42; index++) {
+    const blank = document.createElement('div');
+    blank.className = 'public-calendar-cell is-empty';
+    grid.appendChild(blank);
+  }
+  const emptyMessage = document.getElementById('emptyMessage');
+  emptyMessage.textContent = loadFailed
+    ? 'The public calendar is temporarily unavailable. Please try again shortly.'
+    : 'No public events are scheduled for this month.';
+  emptyMessage.hidden = eventCount !== 0;
+  const defaultDay = selectedDay && selectedDay <= daysInMonth
+    ? selectedDay
+    : (currentMonth === today.getMonth() && currentYear === today.getFullYear() ? today.getDate() : 1);
+  const defaultNotes = decodeNotes(publicNotes[dateKey(currentYear, currentMonth, defaultDay)]);
+  showMobileAgenda(defaultDay, defaultNotes);
+}
+
+async function loadCalendar() {
+  try {
+    const response = await fetch(`scheduler-api.php?public=1&t=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Calendar unavailable');
+    const data = await response.json();
+    publicNotes = data.dayNotes?.public || {};
+    loadFailed = false;
+    usingLocalData = false;
+  } catch (error) {
+    const localNotes = readLocalPublicNotes();
+    publicNotes = localNotes || {};
+    loadFailed = localNotes === null;
+    usingLocalData = localNotes !== null;
+  }
+  if (document.fonts?.ready) await document.fonts.ready;
+  renderCalendar();
+}
+
+window.addEventListener('storage', event => {
+  if (!usingLocalData || event.key !== LOCAL_STORAGE_KEY) return;
+  const localNotes = readLocalPublicNotes();
+  if (localNotes === null) return;
+  publicNotes = localNotes;
+  loadFailed = false;
+  renderCalendar();
+});
+
+document.getElementById('closeDayDetails').addEventListener('click', closeDayDetails);
+document.getElementById('dayDetailsModal').addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeDayDetails();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.getElementById('dayDetailsModal').classList.contains('open')) {
+    closeDayDetails();
+  }
+});
+
+loadCalendar();
+</script>
+</body>
+</html>
