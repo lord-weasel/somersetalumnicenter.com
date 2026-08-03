@@ -447,7 +447,7 @@ body.home-page .mobile-hours-break { display: none; }
 /*HERO*/
 body.home-page .hero {
     min-height: calc(100vh - var(--nav-height));
-    min-height: calc(100dvh - var(--nav-height) + env(safe-area-inset-bottom, 0px));
+    min-height: calc(var(--initial-screen-height, 100dvh) - var(--nav-height));
     background: var(--purple);
     background-image:
       radial-gradient(ellipse at 20% 50%, rgba(221,185,42,0.08) 0%, transparent 60%),
@@ -2351,7 +2351,11 @@ body.public-calendar-page {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    background: var(--purple-pale);
+    background-color: var(--purple);
+    background-image: linear-gradient(var(--purple-pale), var(--purple-pale));
+    background-position: 0 var(--calendar-header-height);
+    background-repeat: no-repeat;
+    background-size: 100% calc(100% - var(--calendar-header-height));
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
 }
