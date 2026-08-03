@@ -7,40 +7,43 @@
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" sizes="760x760" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5a146e">
+<meta name="theme-color" content="#541565">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260803-43">
+<link rel="stylesheet" href="assets/styles.css?v=20260803-45">
 <script>
   (() => {
     const root = document.documentElement;
     const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)');
+    const browserMode = window.matchMedia('(display-mode: browser)');
     let updateFrame = 0;
 
-    function updateInitialScreenHeight() {
+    function updateBrowserPocket() {
       cancelAnimationFrame(updateFrame);
       updateFrame = requestAnimationFrame(() => {
-        const viewportHeight = Math.max(
-          window.innerHeight || 0,
-          document.documentElement.clientHeight || 0,
-          window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : 0
-        );
-        const deviceScreenHeight = window.screen && window.screen.height
-          ? window.screen.height
-          : viewportHeight;
-        const height = coarsePointer.matches
-          ? Math.max(viewportHeight, deviceScreenHeight)
-          : viewportHeight;
+        const viewportBottom = window.visualViewport
+          ? window.visualViewport.height + window.visualViewport.offsetTop
+          : window.innerHeight;
+        const screenHeight = window.screen?.height || viewportBottom;
+        const pocketHeight = coarsePointer.matches && browserMode.matches
+          ? Math.max(0, screenHeight - viewportBottom)
+          : 0;
 
-        root.style.setProperty('--initial-screen-height', `${Math.round(height)}px`);
+        root.style.setProperty('--browser-pocket-height', `${Math.round(pocketHeight)}px`);
       });
     }
 
-    updateInitialScreenHeight();
-    window.addEventListener('resize', updateInitialScreenHeight, { passive: true });
-    window.visualViewport?.addEventListener('resize', updateInitialScreenHeight, { passive: true });
-    window.screen?.orientation?.addEventListener('change', updateInitialScreenHeight);
+    function updatePageEdge() {
+      root.classList.toggle('at-page-top', window.scrollY <= 1);
+    }
+
+    updateBrowserPocket();
+    updatePageEdge();
+    window.addEventListener('resize', updateBrowserPocket, { passive: true });
+    window.addEventListener('scroll', updatePageEdge, { passive: true });
+    window.visualViewport?.addEventListener('resize', updateBrowserPocket, { passive: true });
+    window.screen?.orientation?.addEventListener('change', updateBrowserPocket);
   })();
 </script>
 </head>
