@@ -1,0 +1,19 @@
+{
+  "name": "Somerset Alumni Center",
+  "short_name": "Alumni Center",
+  "description": "Somerset Alumni Center information, events, and scheduling.",
+  "id": "./",
+  "start_url": "./home.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5a146e",
+  "icons": [
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "760x760",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
