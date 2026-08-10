@@ -11,11 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260803-43">
+<link rel="stylesheet" href="assets/styles.css?v=20260810-51">
 <script>
   (() => {
     const root = document.documentElement;
-    const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)');
     let updateFrame = 0;
 
     function updateInitialScreenHeight() {
@@ -26,14 +25,7 @@
           document.documentElement.clientHeight || 0,
           window.visualViewport ? window.visualViewport.height + window.visualViewport.offsetTop : 0
         );
-        const deviceScreenHeight = window.screen && window.screen.height
-          ? window.screen.height
-          : viewportHeight;
-        const height = coarsePointer.matches
-          ? Math.max(viewportHeight, deviceScreenHeight)
-          : viewportHeight;
-
-        root.style.setProperty('--initial-screen-height', `${Math.round(height)}px`);
+        root.style.setProperty('--viewport-height', `${Math.round(viewportHeight)}px`);
       });
     }
 
@@ -46,6 +38,8 @@
 </head>
 <body class="home-page">
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- NAV -->
 <nav>
   <a href="home.html" class="nav-logo" aria-label="Somerset Alumni Center home">
@@ -56,12 +50,26 @@
       <li><a href="#about">About</a></li>
       <li><a href="#membership">Membership</a></li>
       <li><a href="#rates">Rates</a></li>
+      <li><a href="#classes">Classes</a></li>
       <li><a href="#complimentary">Complimentary</a></li>
     </ul>
+    <details class="mobile-nav-menu">
+      <summary aria-label="Open section navigation">Menu</summary>
+      <div class="mobile-nav-panel" aria-label="Jump to a section">
+        <span>Jump to a section</span>
+        <a href="#about">About</a>
+        <a href="#membership">Membership</a>
+        <a href="#rates">Rates</a>
+        <a href="#classes">Classes</a>
+        <a href="#complimentary">Complimentary Access</a>
+      </div>
+    </details>
     <a href="calendar.html" class="nav-calendar">Calendar</a>
     <a href="tel:+16066797428" class="nav-call" aria-label="Call Somerset Alumni Center at (606) 679-7428">Call us</a>
   </div>
 </nav>
+
+<main id="main-content" tabindex="-1">
 
 <!-- HERO -->
 <section class="hero" id="home">
@@ -337,6 +345,123 @@
   </div>
 </section>
 
+<!-- CLASSES -->
+<section id="classes">
+  <div class="container">
+    <div class="section-label">Weekly Classes</div>
+    <h2 class="section-title">Class Times &amp; Prices</h2>
+    <p class="section-intro">Join an instructor-led fitness or aquatic class. Class fees are paid separately from membership unless noted below.</p>
+
+    <div class="class-grid">
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Cycling</div>
+            <h3>Spin</h3>
+          </div>
+          <span class="class-price">$5</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Cindy Ikerd</div>
+          <ul class="class-times">
+            <li><strong>Tuesday</strong><span>5&ndash;6pm</span></li>
+            <li><strong>Saturday</strong><span>9&ndash;10am</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Group Fitness</div>
+            <h3>SilverSneakers</h3>
+          </div>
+          <span class="class-price included">Included</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Kay Keller</div>
+          <ul class="class-times">
+            <li><strong>Mon, Wed &amp; Fri</strong><span>9&ndash;10am</span></li>
+          </ul>
+          <p class="class-note">Available with a SilverSneakers membership.</p>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Aquatics</div>
+            <h3>Water Aerobics</h3>
+          </div>
+          <span class="class-price">$3</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Kay Keller</div>
+          <ul class="class-times">
+            <li><strong>Mon, Wed &amp; Fri</strong><span>10:30&ndash;11:30am</span></li>
+            <li><strong>Mon, Wed &amp; Fri</strong><span>11:30am&ndash;12:15pm</span></li>
+          </ul>
+          <p class="class-note">Free with a SilverSneakers membership.</p>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Mind &amp; Body</div>
+            <h3>Yoga</h3>
+          </div>
+          <span class="class-price">$5</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Sherrye Tucker</div>
+          <ul class="class-times">
+            <li><strong>Tuesday</strong><span>11:15am &amp; 5:15pm</span></li>
+            <li><strong>Thursday</strong><span>11:15am</span></li>
+            <li><strong>Saturday</strong><span>10:30am</span></li>
+          </ul>
+          <p class="class-note">SilverSneakers price: $3.</p>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Strength &amp; Mobility</div>
+            <h3>Pilates</h3>
+          </div>
+          <span class="class-price">$10</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Sherrye Tucker</div>
+          <ul class="class-times">
+            <li><strong>Mon, Wed &amp; Fri</strong><span>11am</span></li>
+            <li><strong>Sunday</strong><span>2pm by appointment</span></li>
+          </ul>
+          <p class="class-note">Call the instructor at <a href="tel:+16068759352">(606) 875-9352</a> to schedule Sunday. SilverSneakers price: $7.</p>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="class-card-header">
+          <div>
+            <div class="class-category">Conditioning</div>
+            <h3>Core &amp; Cardio</h3>
+          </div>
+          <span class="class-price">$5</span>
+        </div>
+        <div class="class-card-body">
+          <div class="class-instructor">Sherrye Tucker</div>
+          <ul class="class-times">
+            <li><strong>Tuesday &amp; Thursday</strong><span>10:15am</span></li>
+          </ul>
+          <p class="class-note">SilverSneakers price: $2.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- COMPLIMENTARY -->
 <section id="complimentary">
   <div class="container">
@@ -359,6 +484,8 @@
 </section>
 
 <!-- FOOTER -->
+</main>
+
 <footer>
   <strong>Somerset Alumni Center</strong><br>
   Somerset, Kentucky &middot; 100 E. Somerset Church Rd.<br><br>
@@ -367,6 +494,12 @@
 </footer>
 
 <script>
+  document.querySelectorAll('.mobile-nav-panel a').forEach(link => {
+    link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+  });
+
+  document.querySelectorAll('.option-btn').forEach(button => button.setAttribute('aria-pressed', 'false'));
+
   const answers = { type: null, duration: null, eligibility: null };
 
   function selectOpt(step, val, button) {
@@ -379,21 +512,35 @@
       ['opt-6mo','opt-annual'].forEach(id => { const el = document.getElementById(id); el.disabled = false; });
     }
 
-    document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll(`#step-${step} .option-btn`).forEach(b => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
+    });
     button.classList.add('selected');
+    button.setAttribute('aria-pressed', 'true');
     document.getElementById(`next-${step}`).disabled = false;
   }
 
   function nextStep(current) {
     document.getElementById(`step-${current}`).classList.remove('active');
-    document.getElementById(`step-${current + 1}`).classList.add('active');
+    const next = document.getElementById(`step-${current + 1}`);
+    next.classList.add('active');
     updateDots(current + 1);
+    requestAnimationFrame(() => {
+      const heading = next.querySelector('.wizard-question, h3');
+      if (heading) { heading.tabIndex = -1; heading.focus(); }
+    });
   }
 
   function prevStep(current) {
     document.getElementById(`step-${current}`).classList.remove('active');
-    document.getElementById(`step-${current - 1}`).classList.add('active');
+    const previous = document.getElementById(`step-${current - 1}`);
+    previous.classList.add('active');
     updateDots(current - 1);
+    requestAnimationFrame(() => {
+      const heading = previous.querySelector('.wizard-question');
+      if (heading) { heading.tabIndex = -1; heading.focus(); }
+    });
   }
 
   function updateDots(active) {
@@ -460,7 +607,11 @@
     answers.type = null; answers.duration = null; answers.eligibility = null;
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     document.getElementById('step-0').classList.add('active');
-    document.querySelectorAll('.option-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; });
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
+      b.disabled = false;
+    });
     document.querySelectorAll('.btn-next').forEach(b => b.disabled = true);
     updateDots(0);
   }
