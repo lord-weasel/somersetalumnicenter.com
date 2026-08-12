@@ -2,16 +2,16 @@
 <html lang="en" class="scheduler-html">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Somerset Alumni Center - Scheduler</title>
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" sizes="760x760" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5a146e">
+<meta name="theme-color" content="#541565">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260803-32">
+<link rel="stylesheet" href="assets/styles.css?v=20260812-72">
 
 </head>
 <body class="scheduler-page">
@@ -41,7 +41,7 @@
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <button class="nav-arrow today-btn" id="todayBtn" type="button" title="Go to current month">Today</button>
-    <button class="print-btn" id="openPrintModal" type="button">Print Schedule</button>
+    <button class="print-btn" id="openPrintModal" type="button"><span class="print-label-full">Print Schedule</span><span class="print-label-short">Print</span></button>
   </div>
 </header>
 
@@ -105,12 +105,38 @@
 </div>
 
 <!-- Day Note Modal -->
+<div class="modal-overlay" id="dayEventsModal">
+  <div class="modal employee-modal day-events-modal" role="dialog" aria-modal="true" aria-labelledby="dayEventsTitle">
+    <div class="day-events-header">
+      <div>
+        <div class="day-events-kicker">Public Calendar</div>
+        <h2 id="dayEventsTitle">Events</h2>
+      </div>
+      <button class="employee-icon-btn day-events-close icon-x" id="closeDayEventsBtn" type="button" aria-label="Close day events"></button>
+    </div>
+    <div class="day-events-list" id="dayEventsList"></div>
+    <button class="modal-btn done day-events-add" type="button" id="addDayEventBtn">Add Event</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="dayNoteModal">
   <div class="modal employee-modal">
     <h2>Day Note</h2>
     <p>Add a closure, event, or other schedule note.</p>
     <label class="day-note-main-label" for="dayNoteInput">Note</label>
     <textarea class="employee-input note-input" id="dayNoteInput" placeholder="Enter note..." maxlength="80"></textarea>
+    <fieldset class="event-category-fieldset" id="eventCategoryFieldset">
+      <legend>Color</legend>
+      <div class="event-category-options" id="eventCategoryOptions">
+        <label title="Purple"><input type="radio" name="eventColor" value="purple" aria-label="Purple" checked><span class="event-category-dot purple"></span></label>
+        <label title="Gold"><input type="radio" name="eventColor" value="gold" aria-label="Gold"><span class="event-category-dot gold"></span></label>
+        <label title="Red"><input type="radio" name="eventColor" value="red" aria-label="Red"><span class="event-category-dot red"></span></label>
+        <label title="Orange"><input type="radio" name="eventColor" value="orange" aria-label="Orange"><span class="event-category-dot orange"></span></label>
+        <label title="Green"><input type="radio" name="eventColor" value="green" aria-label="Green"><span class="event-category-dot green"></span></label>
+        <label title="Blue"><input type="radio" name="eventColor" value="blue" aria-label="Blue"><span class="event-category-dot blue"></span></label>
+        <label title="Gray"><input type="radio" name="eventColor" value="gray" aria-label="Gray"><span class="event-category-dot gray"></span></label>
+      </div>
+    </fieldset>
     <button class="day-note-time-toggle" id="toggleDayNoteTime" type="button" aria-expanded="false" aria-controls="dayNoteTimeFields">Set specific hours</button>
     <div class="day-note-time-fields" id="dayNoteTimeFields" hidden>
       <div class="day-note-time-heading">Specific hours</div>
@@ -140,6 +166,15 @@ const CAL_KEYS = [...STAFF_CAL_KEYS, 'public'];
 const MAX_EMPLOYEES_PER_DAY = 6;
 const MAX_STAFF_NOTES_PER_DAY = 2;
 const MAX_PUBLIC_NOTES_PER_DAY = 8;
+const EVENT_COLORS = ['purple', 'gold', 'red', 'orange', 'green', 'blue', 'gray'];
+const EVENT_COLOR_VALUES = {
+  purple: '#541565', gold: '#DDB92A', red: '#FF3B30', orange: '#FF9500',
+  green: '#34C759', blue: '#007AFF', gray: '#8E8E93'
+};
+const LEGACY_EVENT_COLORS = {
+  closure: 'red', reservation: 'orange', important: 'gold', program: 'green',
+  community: 'blue', school: 'purple', maintenance: 'gray'
+};
 const CAL_LABELS = {
   frontdesk: { bar: 'Front Desk Schedule', print: 'Front Desk' },
   lifeguard: { bar: 'Lifeguard Schedule', print: 'Lifeguards' },
@@ -157,6 +192,7 @@ let dayNotes = { frontdesk: {}, lifeguard: {}, public: {} };
 let employees = [];
 let activeNoteKey = null;
 let activeNoteIndex = null;
+let activeDayEventsKey = null;
 let selectedEmployee = null;
 let recentPublicNoteDrag = null;
 let toastTimer = null;
@@ -428,9 +464,13 @@ function normalizeDayNotes(savedNotes) {
       const text = String(isObject ? item.text || '' : item || '').trim().replace(/\s+/g, ' ').slice(0, 80);
       const rawStart = isObject ? (item.start || item.time) : null;
       const rawEnd = isObject ? item.end : null;
+      const updatedAt = isObject && Number.isFinite(Number(item.updatedAt)) ? Number(item.updatedAt) : null;
+      const color = isObject && EVENT_COLORS.includes(item.color)
+        ? item.color
+        : (isObject && LEGACY_EVENT_COLORS[item.category]) || 'purple';
       const start = /^([01]\d|2[0-3]):[0-5]\d$/.test(String(rawStart || '')) ? String(rawStart) : null;
       const end = start && /^([01]\d|2[0-3]):[0-5]\d$/.test(String(rawEnd || '')) ? String(rawEnd) : null;
-      return text ? { text, start, end } : null;
+      return text ? { text, start, end, updatedAt, color } : null;
     }).filter(Boolean);
     if (notes.length) clean[calKey][key] = sortNotesByTime(notes);
   };
@@ -501,6 +541,11 @@ function getNoteStart(note) {
 function getNoteEnd(note) {
   const value = note && typeof note === 'object' ? note.end : null;
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || '')) ? value : null;
+}
+
+function getNoteColor(note) {
+  if (note && EVENT_COLORS.includes(note.color)) return note.color;
+  return note && LEGACY_EVENT_COLORS[note.category] ? LEGACY_EVENT_COLORS[note.category] : 'purple';
 }
 
 function timeToMinutes(time) {
@@ -718,14 +763,20 @@ function renderSidebar() {
 function getRecentPublicNotes() {
   const seen = new Set();
   return Object.entries(dayNotes.public || {})
-    .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
-    .flatMap(([date, notes]) => (notes || []).slice().reverse().map(note => ({ date, note })))
+    .flatMap(([date, notes]) => (notes || []).map((note, noteIndex) => ({ date, note, noteIndex })))
+    .sort((a, b) => {
+      const updatedOrder = (Number(b.note.updatedAt) || 0) - (Number(a.note.updatedAt) || 0);
+      if (updatedOrder) return updatedOrder;
+      const dateOrder = b.date.localeCompare(a.date);
+      return dateOrder || b.noteIndex - a.noteIndex;
+    })
     .filter(({ note }) => {
       const signature = `${getNoteText(note).toLowerCase()}|${getNoteStart(note) || ''}|${getNoteEnd(note) || ''}`;
       if (!getNoteText(note) || seen.has(signature)) return false;
       seen.add(signature);
       return true;
-    });
+    })
+    .slice(0, 25);
 }
 
 function fitRecentCardTitle(element, fullText) {
@@ -782,6 +833,8 @@ function renderPublicRecents(list) {
   recents.forEach(({ note }) => {
     const card = document.createElement('div');
     card.className = 'staff-card recent-note-card';
+    card.dataset.color = getNoteColor(note);
+    card.style.setProperty('--event-color', EVENT_COLOR_VALUES[getNoteColor(note)]);
     card.draggable = true;
     const time = formatNoteTimeRange(note) || 'All day';
     card.innerHTML = `<div class="staff-card-front"><div class="card-name">${escapeHTML(getNoteText(note))}</div><div class="card-shift-label">${escapeHTML(time)}</div></div>`;
@@ -789,7 +842,8 @@ function renderPublicRecents(list) {
       recentPublicNoteDrag = {
         text: getNoteText(note),
         start: getNoteStart(note),
-        end: getNoteEnd(note)
+        end: getNoteEnd(note),
+        color: getNoteColor(note)
       };
       event.dataTransfer.effectAllowed = 'copy';
       event.dataTransfer.setData('application/x-public-note', JSON.stringify(recentPublicNoteDrag));
@@ -802,7 +856,6 @@ function renderPublicRecents(list) {
       recentPublicNoteDrag = null;
     });
     list.appendChild(card);
-    fitRecentCardTitle(card.querySelector('.card-name'), getNoteText(note));
   });
 }
 
@@ -852,18 +905,19 @@ function renderEmployeeManager() {
     actions.className = 'employee-manager-actions';
 
     const editBtn = document.createElement('button');
-    editBtn.className = 'employee-icon-btn employee-edit-btn';
+    editBtn.className = 'employee-action-btn employee-edit-btn';
     editBtn.type = 'button';
     editBtn.setAttribute('aria-label', `Edit ${name}`);
     editBtn.title = 'Edit name';
-    editBtn.innerHTML = ICON_EDIT;
+    editBtn.textContent = 'Edit';
     editBtn.addEventListener('click', () => beginEmployeeRename(name, row));
 
     const removeBtn = document.createElement('button');
-    removeBtn.className = 'employee-icon-btn employee-remove-btn icon-x';
+    removeBtn.className = 'employee-action-btn employee-remove-btn';
     removeBtn.type = 'button';
     removeBtn.setAttribute('aria-label', `Remove ${name}`);
     removeBtn.title = 'Remove';
+    removeBtn.textContent = 'Delete';
     removeBtn.addEventListener('click', () => removeEmployee(name));
 
     actions.append(editBtn, removeBtn);
@@ -887,18 +941,19 @@ function beginEmployeeRename(oldName, row) {
   nameEl.replaceWith(input);
   actions.innerHTML = '';
 
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'employee-icon-btn employee-save-btn';
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'employee-action-btn employee-save-btn';
   saveBtn.type = 'button';
   saveBtn.setAttribute('aria-label', 'Save name');
   saveBtn.title = 'Save';
-  saveBtn.innerHTML = ICON_SAVE;
+    saveBtn.textContent = 'Save';
 
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'employee-icon-btn employee-cancel-btn icon-x';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'employee-action-btn employee-cancel-btn';
   cancelBtn.type = 'button';
   cancelBtn.setAttribute('aria-label', 'Cancel edit');
-  cancelBtn.title = 'Cancel';
+    cancelBtn.title = 'Cancel';
+    cancelBtn.textContent = 'Cancel';
 
   actions.append(saveBtn, cancelBtn);
   input.focus();
@@ -1071,7 +1126,9 @@ function renderCalendar() {
         dayNotes.public[key] = sortNotesByTime([...notes, {
           text: getNoteText(note).slice(0, 80),
           start: getNoteStart(note),
-          end: getNoteEnd(note)
+          end: getNoteEnd(note),
+          color: getNoteColor(note),
+          updatedAt: Date.now()
         }]);
         saveData();
         refreshCell(key);
@@ -1105,7 +1162,8 @@ function renderCalendar() {
         }
         return;
       }
-      if (activeCalendar === 'public' || !isSunday) openDayNoteModal(key);
+      if (activeCalendar === 'public') openDayEventsModal(key);
+      else if (!isSunday) openDayNoteModal(key);
     });
 
     const shiftsList = document.createElement('div');
@@ -1139,6 +1197,8 @@ function renderCellShifts(container, key, isSaturday) {
     if (item.type === 'note') {
       const noteChip = document.createElement('div');
       noteChip.className = 'shift-chip note-chip';
+      noteChip.dataset.color = getNoteColor(item.note);
+      noteChip.style.setProperty('--event-color', EVENT_COLOR_VALUES[getNoteColor(item.note)]);
 
       const noteSpan = document.createElement('span');
       noteSpan.textContent = getNoteText(item.note);
@@ -1241,6 +1301,65 @@ function removeDayNote(key, noteIndex) {
   renderSidebar();
 }
 
+function formatDayEventsTitle(key) {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+}
+
+function renderDayEventsList() {
+  const list = document.getElementById('dayEventsList');
+  const notes = dayNotes.public[activeDayEventsKey] || [];
+  list.innerHTML = '';
+  if (!notes.length) {
+    const empty = document.createElement('p');
+    empty.className = 'day-events-empty';
+    empty.textContent = 'No events are scheduled for this day.';
+    list.appendChild(empty);
+    return;
+  }
+  notes.forEach((note, noteIndex) => {
+    const color = getNoteColor(note);
+    const row = document.createElement('article');
+    row.className = 'day-events-row';
+    row.dataset.color = color;
+    row.style.setProperty('--event-color', EVENT_COLOR_VALUES[color]);
+    row.innerHTML = `<div class="day-events-row-front">
+        <div class="day-events-content">
+          <div class="day-events-meta"><span>${escapeHTML(formatNoteTimeRange(note) || 'All day')}</span></div>
+          <div class="day-events-name">${escapeHTML(getNoteText(note))}</div>
+        </div>
+        <div class="day-events-actions">
+          <button type="button" class="day-event-edit">Edit</button>
+          <button type="button" class="day-event-delete">Delete</button>
+        </div>
+      </div>`;
+    row.querySelector('.day-event-edit').addEventListener('click', () => {
+      closeDayEventsModal();
+      openDayNoteModal(activeDayEventsKey || row.dataset.key, noteIndex);
+    });
+    row.querySelector('.day-event-delete').addEventListener('click', () => {
+      if (!confirm(`Delete “${getNoteText(note)}”?`)) return;
+      removeDayNote(activeDayEventsKey, noteIndex);
+      renderDayEventsList();
+    });
+    list.appendChild(row);
+  });
+}
+
+function openDayEventsModal(key) {
+  activeDayEventsKey = key;
+  document.getElementById('dayEventsTitle').textContent = formatDayEventsTitle(key);
+  renderDayEventsList();
+  document.getElementById('dayEventsModal').classList.add('open');
+  setTimeout(() => document.getElementById('closeDayEventsBtn').focus(), 0);
+}
+
+function closeDayEventsModal() {
+  document.getElementById('dayEventsModal').classList.remove('open');
+}
+
 function openDayNoteModal(key, noteIndex = null) {
   const notes = getDayNotes()[key] || [];
   const maxNotes = maxNotesForCalendar();
@@ -1251,9 +1370,13 @@ function openDayNoteModal(key, noteIndex = null) {
   activeNoteKey = key;
   activeNoteIndex = noteIndex;
   const note = noteIndex === null ? null : notes[noteIndex];
+  document.getElementById('eventCategoryFieldset').hidden = false;
   document.getElementById('dayNoteInput').value = getNoteText(note);
   document.getElementById('dayNoteStartTime').value = getNoteStart(note) ? formatNoteTime(getNoteStart(note)) : '';
   document.getElementById('dayNoteEndTime').value = getNoteEnd(note) ? formatNoteTime(getNoteEnd(note)) : '';
+  const color = getNoteColor(note);
+  const colorInput = document.querySelector(`input[name="eventColor"][value="${color}"]`);
+  if (colorInput) colorInput.checked = true;
   setDayNoteTimeEnabled(Boolean(getNoteStart(note)));
   document.getElementById('dayNoteModal').classList.add('open');
   setTimeout(() => document.getElementById('dayNoteInput').focus(), 0);
@@ -1291,6 +1414,7 @@ function saveDayNote() {
   const endValue = document.getElementById('dayNoteEndTime').value;
   const start = parseTimeInput(startValue);
   const end = parseTimeInput(endValue);
+  const color = document.querySelector('input[name="eventColor"]:checked')?.value || 'purple';
   if (startValue.trim() && !start) {
     showToast('Enter a valid starting time, such as 8:00 AM.', 'warn');
     return;
@@ -1312,7 +1436,7 @@ function saveDayNote() {
   targetCalendars.forEach(calKey => {
     const notes = dayNotes[calKey][activeNoteKey] || [];
     if (note) {
-      const savedNote = { text: note, start, end: start ? end : null };
+      const savedNote = { text: note, start, end: start ? end : null, color, updatedAt: Date.now() };
       if (editingIndex === null) notes.push(savedNote);
       else notes[editingIndex] = savedNote;
       dayNotes[calKey][activeNoteKey] = sortNotesByTime(notes.slice(0, maxNotesForCalendar(calKey)));
@@ -1361,6 +1485,10 @@ document.addEventListener('keydown', e => {
     closeDayNoteModal();
     return;
   }
+  if (document.getElementById('dayEventsModal').classList.contains('open')) {
+    closeDayEventsModal();
+    return;
+  }
   if (document.getElementById('printModal').classList.contains('open')) {
     closePrintModal();
     return;
@@ -1386,6 +1514,15 @@ document.getElementById('employeeModal').addEventListener('click', e => {
 });
 document.getElementById('dayNoteModal').addEventListener('click', e => {
   if (e.target === document.getElementById('dayNoteModal')) closeDayNoteModal();
+});
+document.getElementById('dayEventsModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('dayEventsModal')) closeDayEventsModal();
+});
+document.getElementById('closeDayEventsBtn').addEventListener('click', closeDayEventsModal);
+document.getElementById('addDayEventBtn').addEventListener('click', () => {
+  const key = activeDayEventsKey;
+  closeDayEventsModal();
+  openDayNoteModal(key);
 });
 document.getElementById('saveDayNoteBtn').addEventListener('click', saveDayNote);
 document.getElementById('toggleDayNoteTime').addEventListener('click', () => {
@@ -1430,6 +1567,30 @@ function getPrintCalendarCells(calKey, monthName, year) {
 function fitSvgText(value, maxChars = 22) {
   const text = String(value);
   return text.length <= maxChars ? text : text.slice(0, maxChars - 1) + '...';
+}
+
+const printMeasureCanvas = document.createElement('canvas');
+const printMeasureContext = printMeasureCanvas.getContext('2d');
+
+function measurePrintText(value, fontSize, fontWeight = 800) {
+  printMeasureContext.font = `${fontWeight} ${fontSize}px Inter, Arial, sans-serif`;
+  return printMeasureContext.measureText(String(value)).width;
+}
+
+function fitPrintTextToWidth(value, maxWidth, fontSize, fontWeight = 800) {
+  const text = String(value);
+  if (measurePrintText(text, fontSize, fontWeight) <= maxWidth) return text;
+  const suffix = '...';
+  const suffixWidth = measurePrintText(suffix, fontSize, fontWeight);
+  if (suffixWidth >= maxWidth) return '';
+  let low = 0;
+  let high = text.length;
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2);
+    if (measurePrintText(text.slice(0, middle), fontSize, fontWeight) + suffixWidth <= maxWidth) low = middle;
+    else high = middle - 1;
+  }
+  return text.slice(0, low).trimEnd() + suffix;
 }
 
 function buildPrintSheet(calKey, monthName, year) {
@@ -1540,8 +1701,9 @@ function buildPrintSheet(calKey, monthName, year) {
         const displayName = isNote ? getNoteText(item.note) : s.name;
         const isPM = !isNote && s.shift === 'pm' && !isSat;
         const fill = white;
-        const edge = isPM ? gold : purple;
-        const stroke = isPM ? gold : purple;
+        const noteColor = isNote ? EVENT_COLOR_VALUES[getNoteColor(item.note)] : null;
+        const edge = noteColor || (isPM ? gold : purple);
+        const stroke = edge;
         const ay = y + 23 + n * stepY;
         const offset = 4;
         const chipPadLeft = 6;
@@ -1551,14 +1713,17 @@ function buildPrintSheet(calKey, monthName, year) {
         const centerY = ay + chipH / 2;
         const labelX = ax + aw - chipPadRight;
         const nameX = ax + offset + chipPadLeft;
-        const printedName = fitSvgText(displayName, label ? 17 : 24);
+        const labelWidth = label ? measurePrintText(label, labelSize) : 0;
+        const nameRightEdge = label ? labelX - labelWidth - 4 : ax + aw - chipPadRight;
+        const printedName = fitPrintTextToWidth(displayName, Math.max(0, nameRightEdge - nameX), nameSize);
+        const timeTextColor = isNote ? edge : text;
         out += `<foreignObject x="${ax}" y="${ay}" width="${aw}" height="${chipH}">`;
         out += `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:100%;height:100%;box-sizing:border-box;overflow:hidden;">`;
         out += `<div style="position:absolute;inset:0;border-radius:999px;background:${edge};"></div>`;
         out += `<div style="position:absolute;left:${offset}px;right:0;top:0;bottom:0;box-sizing:border-box;border:1px solid ${stroke};border-radius:999px;background:${fill};"></div>`;
         out += `</div></foreignObject>`;
         out += `<text x="${nameX}" y="${centerY}" font-family="Inter, Arial, sans-serif" font-size="${nameSize}" font-weight="800" fill="${text}" dominant-baseline="central">${svgEscape(printedName)}</text>`;
-        if (label) out += `<text x="${labelX}" y="${centerY}" font-family="Inter, Arial, sans-serif" font-size="${labelSize}" font-weight="800" text-anchor="end" fill="${text}" dominant-baseline="central">${svgEscape(label)}</text>`;
+        if (label) out += `<text x="${labelX}" y="${centerY}" font-family="Inter, Arial, sans-serif" font-size="${labelSize}" font-weight="800" text-anchor="end" fill="${timeTextColor}" dominant-baseline="central">${svgEscape(label)}</text>`;
       });
     }
   }

@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260803-43">
+<link rel="stylesheet" href="assets/styles.css?v=20260812-72">
 </head>
 <body class="public-calendar-page">
 <header class="public-calendar-header">
@@ -74,7 +74,10 @@ function decodeNotes(value) {
     return {
       text: String(objectValue ? item.text || '' : item || '').trim(),
       start: objectValue ? item.start || item.time || null : null,
-      end: objectValue ? item.end || null : null
+      end: objectValue ? item.end || null : null,
+      color: objectValue && ['purple','gold','red','orange','green','blue','gray'].includes(item.color)
+        ? item.color
+        : ({ closure:'red', reservation:'orange', important:'gold', program:'green', community:'blue', school:'purple', maintenance:'gray' }[objectValue ? item.category : ''] || 'purple')
     };
   }).filter(note => note.text);
 }
@@ -132,6 +135,7 @@ function appendDayEvents(container, notes) {
   sortPublicNotes(notes).forEach(note => {
     const item = document.createElement('article');
     item.className = 'public-day-event-detail';
+    item.dataset.color = note.color;
     const front = document.createElement('div');
     front.className = 'public-day-event-detail-front';
     const time = document.createElement('div');
@@ -289,6 +293,7 @@ function renderCalendar() {
     notes.slice(0, previewLimit).forEach(note => {
       const event = document.createElement('div');
       event.className = 'public-calendar-event';
+      event.dataset.color = note.color;
       const eventFront = document.createElement('div');
       eventFront.className = 'public-calendar-event-front';
       const time = formatPreviewRange(note);
