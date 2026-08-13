@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Alumni Center">
-<link rel="stylesheet" href="assets/styles.css?v=20260812-72">
+<link rel="stylesheet" href="assets/styles.css?v=20260813-92">
 
 </head>
 <body class="scheduler-page">
@@ -52,9 +52,23 @@
 <div class="workspace">
   <div class="calendar-panel">
     <div class="cal-grid" id="calGrid"></div>
+    <section class="scheduler-mobile-agenda" id="mobileDayAgenda" hidden>
+      <div class="scheduler-mobile-agenda-header">
+        <div class="day-events-kicker" id="mobileDayEventsKicker">Selected day</div>
+        <h2 id="mobileDayEventsTitle">Schedule</h2>
+      </div>
+      <div class="day-events-list" id="mobileDayEventsList"></div>
+      <button class="modal-btn done day-events-add" type="button" id="mobileAddDayEventBtn">Add Schedule Note</button>
+    </section>
   </div>
 
-  <div class="sidebar">
+  <div class="sidebar" id="schedulerTray">
+    <button class="mobile-tray-toggle" id="mobileTrayToggle" type="button" aria-expanded="false" aria-controls="mobileTrayContent">
+      <span class="mobile-tray-title" id="mobileTrayTitle">Employees</span>
+      <span class="mobile-tray-summary" id="mobileTraySummary"></span>
+      <span class="mobile-tray-chevron" aria-hidden="true"></span>
+    </button>
+    <div class="mobile-tray-content" id="mobileTrayContent">
     <div class="sidebar-top">
       <div class="public-recents-heading" id="publicRecentsHeading">Recents</div>
       <div class="shift-type-tabs">
@@ -67,6 +81,7 @@
       <input class="staff-search-input" id="staffSearchInput" type="search" placeholder="Search employees..." autocomplete="off" spellcheck="false">
     </div>
     <div class="staff-list" id="staffList"></div>
+    </div>
   </div>
 </div>
 
@@ -109,7 +124,7 @@
   <div class="modal employee-modal day-events-modal" role="dialog" aria-modal="true" aria-labelledby="dayEventsTitle">
     <div class="day-events-header">
       <div>
-        <div class="day-events-kicker">Public Calendar</div>
+        <div class="day-events-kicker" id="dayEventsKicker">Public Calendar</div>
         <h2 id="dayEventsTitle">Events</h2>
       </div>
       <button class="employee-icon-btn day-events-close icon-x" id="closeDayEventsBtn" type="button" aria-label="Close day events"></button>
@@ -194,7 +209,9 @@ let activeNoteKey = null;
 let activeNoteIndex = null;
 let activeDayEventsKey = null;
 let selectedEmployee = null;
+let selectedRecentNote = null;
 let recentPublicNoteDrag = null;
+let mobileTrayExpanded = false;
 let toastTimer = null;
 let suppressCardClick = false;
 
@@ -638,6 +655,30 @@ function syncShiftTabsUI() {
   document.getElementById('tabPM').classList.toggle('active', activeShift === 'pm');
 }
 
+function setMobileTrayExpanded(expanded) {
+  mobileTrayExpanded = Boolean(expanded);
+  document.getElementById('schedulerTray')?.classList.toggle('mobile-expanded', mobileTrayExpanded);
+  document.getElementById('mobileTrayToggle')?.setAttribute('aria-expanded', String(mobileTrayExpanded));
+  syncMobileTray();
+}
+
+function syncMobileTray() {
+  const title = document.getElementById('mobileTrayTitle');
+  const summary = document.getElementById('mobileTraySummary');
+  if (!title || !summary) return;
+  if (activeCalendar === 'public') {
+    title.textContent = 'Recent Events';
+    summary.textContent = selectedRecentNote
+      ? `${getNoteText(selectedRecentNote)} · ${formatNoteTimeRange(selectedRecentNote) || 'All day'}`
+      : '';
+  } else {
+    title.textContent = 'Employees';
+    summary.textContent = selectedEmployee
+      ? `${selectedEmployee.name} · ${selectedEmployee.shift === 'pm' ? '5–8' : '8–1'}`
+      : '';
+  }
+}
+
 function syncAssignUI() {
   document.querySelectorAll('.cal-cell.assign-ready').forEach(cell => {
     cell.classList.remove('assign-ready');
@@ -657,6 +698,7 @@ function toggleSelectedEmployee(name, shift) {
   }
   syncAssignUI();
   renderSidebar();
+  syncMobileTray();
 }
 
 function goToToday() {
@@ -672,6 +714,8 @@ function switchCalendar(cal) {
   if (!CAL_KEYS.includes(cal)) return;
   activeCalendar = cal;
   selectedEmployee = null;
+  selectedRecentNote = null;
+  setMobileTrayExpanded(false);
   syncCalendarUI();
   syncAssignUI();
   saveData();
@@ -694,6 +738,7 @@ function renderSidebar() {
   const searchInput = document.getElementById('staffSearchInput');
   if (activeCalendar === 'public') {
     renderPublicRecents(list);
+    syncMobileTray();
     return;
   }
   const query = (searchInput?.value || '').trim().toLowerCase();
@@ -711,6 +756,7 @@ function renderSidebar() {
       ? 'No employees match your search.'
       : 'No employees yet. Use Manage Employees to add some.';
     list.appendChild(empty);
+    syncMobileTray();
     return;
   }
 
@@ -740,6 +786,10 @@ function renderSidebar() {
         return;
       }
       toggleSelectedEmployee(name, activeShift);
+      if (isMobileScheduler() && selectedEmployee) {
+        showToast(`${name} selected. Tap a day to review and assign the shift.`);
+        setMobileTrayExpanded(false);
+      }
     });
 
     card.addEventListener('dragstart', e => {
@@ -758,6 +808,7 @@ function renderSidebar() {
 
     list.appendChild(card);
   });
+  syncMobileTray();
 }
 
 function getRecentPublicNotes() {
@@ -838,6 +889,17 @@ function renderPublicRecents(list) {
     card.draggable = true;
     const time = formatNoteTimeRange(note) || 'All day';
     card.innerHTML = `<div class="staff-card-front"><div class="card-name">${escapeHTML(getNoteText(note))}</div><div class="card-shift-label">${escapeHTML(time)}</div></div>`;
+    if (selectedRecentNote && getNoteText(selectedRecentNote) === getNoteText(note) && getNoteStart(selectedRecentNote) === getNoteStart(note) && getNoteEnd(selectedRecentNote) === getNoteEnd(note)) card.classList.add('selected');
+    card.addEventListener('click', () => {
+      if (!isMobileScheduler()) return;
+      const isSame = selectedRecentNote && getNoteText(selectedRecentNote) === getNoteText(note) && getNoteStart(selectedRecentNote) === getNoteStart(note) && getNoteEnd(selectedRecentNote) === getNoteEnd(note);
+      selectedRecentNote = isSame ? null : { text: getNoteText(note), start: getNoteStart(note), end: getNoteEnd(note), color: getNoteColor(note) };
+      renderSidebar();
+      if (isMobileScheduler() && selectedRecentNote) {
+        setMobileTrayExpanded(false);
+        showToast('Event selected. Tap a day to review and add it.');
+      }
+    });
     card.addEventListener('dragstart', event => {
       recentPublicNoteDrag = {
         text: getNoteText(note),
@@ -857,6 +919,7 @@ function renderPublicRecents(list) {
     });
     list.appendChild(card);
   });
+  syncMobileTray();
 }
 
 function renderEmployeeManager() {
@@ -1057,6 +1120,7 @@ function removeEmployee(name) {
 
 /* -- CALENDAR -- */
 function renderCalendar() {
+  if (isMobileScheduler()) document.getElementById('mobileDayAgenda').hidden = true;
   document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
@@ -1152,6 +1216,10 @@ function renderCalendar() {
     }
     cell.addEventListener('click', e => {
       if (e.target.closest('button')) return;
+      if (isMobileScheduler()) {
+        if (!isSunday || activeCalendar === 'public') openDayEventsModal(key);
+        return;
+      }
       if (e.target.closest('.note-chip')) return;
       if (activeCalendar !== 'public' && selectedEmployee && !isSunday) {
         const result = addShift(key, selectedEmployee.name, selectedEmployee.shift, isSaturday);
@@ -1182,6 +1250,13 @@ function renderCalendar() {
   }
 
   syncAssignUI();
+  if (isMobileScheduler()) {
+    const selectedKeyIsVisible = activeDayEventsKey && document.querySelector(`[data-key="${activeDayEventsKey}"]`);
+    const defaultDay = currentMonth === today.getMonth() && currentYear === today.getFullYear()
+      ? today.getDate()
+      : 1;
+    openDayEventsModal(selectedKeyIsVisible ? activeDayEventsKey : dateKey(currentYear, currentMonth, defaultDay));
+  }
 }
 
 function renderCellShifts(container, key, isSaturday) {
@@ -1189,6 +1264,24 @@ function renderCellShifts(container, key, isSaturday) {
   const sched  = activeCalendar === 'public' ? {} : getSchedule();
   const shifts = sched[key] || [];
   const notes = getDayNotes()[key] || [];
+
+  if (shifts.length || notes.length) {
+    const summary = document.createElement('div');
+    summary.className = 'scheduler-day-counts';
+    summary.setAttribute('aria-hidden', 'true');
+    if (shifts.length) {
+      const shiftCount = document.createElement('span');
+      shiftCount.textContent = `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'}`;
+      summary.appendChild(shiftCount);
+    }
+    if (notes.length) {
+      const eventCount = document.createElement('span');
+      eventCount.textContent = `${notes.length} ${notes.length === 1 ? 'event' : 'events'}`;
+      summary.appendChild(eventCount);
+    }
+    container.appendChild(summary);
+  }
+
   const items = shifts.map((entry, idx) => ({ type: 'shift', entry, idx, order: shiftStartMinutes(entry, isSaturday) }));
   notes.forEach((note, noteIndex) => items.push({ type: 'note', note, noteIndex, order: timeToMinutes(getNoteStart(note)) }));
   items.sort(compareCalendarItems);
@@ -1225,7 +1318,8 @@ function renderCellShifts(container, key, isSaturday) {
       });
       noteChip.addEventListener('click', e => {
         if (e.target.closest('button')) return;
-        openDayNoteModal(key, item.noteIndex);
+        if (isMobileScheduler()) openDayEventsModal(key);
+        else openDayNoteModal(key, item.noteIndex);
       });
       noteChip.appendChild(removeBtn);
       container.appendChild(noteChip);
@@ -1247,6 +1341,11 @@ function renderCellShifts(container, key, isSaturday) {
     removeBtn.addEventListener('click', e => {
       e.stopPropagation();
       removeShift(key, idx);
+    });
+
+    chip.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      if (isMobileScheduler()) openDayEventsModal(key);
     });
 
     chip.appendChild(nameSpan);
@@ -1278,6 +1377,30 @@ function removeShift(key, idx) {
   saveData();
   refreshCell(key);
   renderSidebar();
+  if (isMobileScheduler() && activeDayEventsKey === key && !document.getElementById('mobileDayAgenda').hidden) {
+    renderDayEventsList(document.getElementById('mobileDayEventsList'));
+    syncDayEventsAction(document.getElementById('mobileAddDayEventBtn'));
+  }
+}
+
+function changeShift(key, idx) {
+  const sched = getSchedule();
+  const entry = sched[key]?.[idx];
+  if (!entry || entry.shift === 'sat') return;
+  const nextShift = entry.shift === 'am' ? 'pm' : 'am';
+  if (sched[key].some((other, otherIndex) => otherIndex !== idx && other.name === entry.name && other.shift === nextShift)) {
+    showToast(`${entry.name} is already scheduled for that shift.`, 'warn');
+    return;
+  }
+  sched[key][idx] = { ...entry, shift: nextShift };
+  sched[key] = sortDayShifts(sched[key]);
+  saveData();
+  refreshCell(key);
+  renderDayEventsList();
+}
+
+function isMobileScheduler() {
+  return window.matchMedia('(max-width: 640px)').matches;
 }
 
 function refreshCell(key) {
@@ -1308,17 +1431,53 @@ function formatDayEventsTitle(key) {
   });
 }
 
-function renderDayEventsList() {
-  const list = document.getElementById('dayEventsList');
-  const notes = dayNotes.public[activeDayEventsKey] || [];
+function formatMobileDayEventsTitle(key) {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+}
+
+function renderDayEventsList(list = document.getElementById('dayEventsList')) {
+  const notes = getDayNotes()[activeDayEventsKey] || [];
+  const shifts = activeCalendar === 'public' ? [] : (getSchedule()[activeDayEventsKey] || []);
   list.innerHTML = '';
-  if (!notes.length) {
+  if (!notes.length && !shifts.length) {
     const empty = document.createElement('p');
     empty.className = 'day-events-empty';
-    empty.textContent = 'No events are scheduled for this day.';
+    empty.textContent = activeCalendar === 'public'
+      ? 'No events are scheduled for this day.'
+      : 'No employees or notes are scheduled for this day.';
     list.appendChild(empty);
-    return;
   }
+
+  shifts.forEach((entry, shiftIndex) => {
+    const row = document.createElement('article');
+    row.className = 'day-events-row day-shift-row';
+    row.style.setProperty('--event-color', entry.shift === 'pm' ? '#DDB92A' : '#541565');
+    const shiftLabel = entry.shift === 'sat' ? '8–12' : (entry.shift === 'pm' ? '5–8 PM' : '8–1 AM');
+    row.innerHTML = `<div class="day-events-row-front">
+        <div class="day-events-content">
+          <div class="day-events-meta"><span>${shiftLabel}</span></div>
+          <div class="day-events-name">${escapeHTML(entry.name)}</div>
+        </div>
+        <div class="day-events-actions">
+          ${entry.shift === 'sat' ? '' : '<button type="button" class="day-shift-change">Change shift</button>'}
+          <button type="button" class="day-event-delete">Delete</button>
+        </div>
+      </div>`;
+    row.querySelector('.day-shift-change')?.addEventListener('click', () => {
+      changeShift(activeDayEventsKey, shiftIndex);
+      renderDayEventsViews();
+    });
+    row.querySelector('.day-event-delete').addEventListener('click', () => {
+      if (!confirm(`Delete ${entry.name}'s shift?`)) return;
+      removeShift(activeDayEventsKey, shiftIndex);
+      renderDayEventsViews();
+    });
+    list.appendChild(row);
+  });
+
   notes.forEach((note, noteIndex) => {
     const color = getNoteColor(note);
     const row = document.createElement('article');
@@ -1342,22 +1501,66 @@ function renderDayEventsList() {
     row.querySelector('.day-event-delete').addEventListener('click', () => {
       if (!confirm(`Delete “${getNoteText(note)}”?`)) return;
       removeDayNote(activeDayEventsKey, noteIndex);
-      renderDayEventsList();
+      renderDayEventsViews();
     });
     list.appendChild(row);
   });
 }
 
+function renderDayEventsViews() {
+  renderDayEventsList(document.getElementById('dayEventsList'));
+  if (!document.getElementById('mobileDayAgenda').hidden) {
+    renderDayEventsList(document.getElementById('mobileDayEventsList'));
+  }
+}
+
 function openDayEventsModal(key) {
   activeDayEventsKey = key;
-  document.getElementById('dayEventsTitle').textContent = formatDayEventsTitle(key);
-  renderDayEventsList();
+  document.querySelectorAll('.cal-cell.mobile-selected-day').forEach(cell => cell.classList.remove('mobile-selected-day'));
+  document.querySelector(`[data-key="${key}"]`)?.classList.add('mobile-selected-day');
+  const calendarLabel = CAL_LABELS[activeCalendar].bar;
+  const dateLabel = formatDayEventsTitle(key);
+  if (isMobileScheduler()) {
+    document.getElementById('mobileDayEventsKicker').textContent = 'Selected day';
+    document.getElementById('mobileDayEventsTitle').textContent = formatMobileDayEventsTitle(key);
+    document.getElementById('mobileDayAgenda').hidden = false;
+    renderDayEventsList(document.getElementById('mobileDayEventsList'));
+    syncDayEventsAction(document.getElementById('mobileAddDayEventBtn'));
+    return;
+  }
+  document.getElementById('dayEventsKicker').textContent = calendarLabel;
+  document.getElementById('dayEventsTitle').textContent = dateLabel;
+  renderDayEventsList(document.getElementById('dayEventsList'));
+  syncDayEventsAction(document.getElementById('addDayEventBtn'));
   document.getElementById('dayEventsModal').classList.add('open');
   setTimeout(() => document.getElementById('closeDayEventsBtn').focus(), 0);
 }
 
 function closeDayEventsModal() {
   document.getElementById('dayEventsModal').classList.remove('open');
+}
+
+function syncDayEventsAction(button = document.getElementById('addDayEventBtn')) {
+  button.disabled = false;
+  if (activeCalendar === 'public') {
+    button.textContent = selectedRecentNote ? `Add ${getNoteText(selectedRecentNote)}` : 'Add Event';
+    return;
+  }
+  if (!selectedEmployee) {
+    button.textContent = 'Add Schedule Note';
+    return;
+  }
+  const cell = document.querySelector(`[data-key="${activeDayEventsKey}"]`);
+  const isSaturday = Number(cell?.dataset.dow) === 6;
+  const effectiveShift = isSaturday ? 'sat' : selectedEmployee.shift;
+  const alreadyAssigned = (getSchedule()[activeDayEventsKey] || []).some(entry =>
+    entry.name === selectedEmployee.name && entry.shift === effectiveShift
+  );
+  const label = isSaturday ? '8–12' : (selectedEmployee.shift === 'pm' ? '5–8 PM' : '8–1 AM');
+  button.textContent = alreadyAssigned
+    ? `${selectedEmployee.name} is already assigned`
+    : `Assign ${selectedEmployee.name} · ${label}`;
+  button.disabled = alreadyAssigned;
 }
 
 function openDayNoteModal(key, noteIndex = null) {
@@ -1451,6 +1654,10 @@ function saveDayNote() {
   closeDayNoteModal();
   refreshCell(key);
   renderSidebar();
+  if (isMobileScheduler() && activeDayEventsKey === key && !document.getElementById('mobileDayAgenda').hidden) {
+    renderDayEventsList(document.getElementById('mobileDayEventsList'));
+    syncDayEventsAction(document.getElementById('mobileAddDayEventBtn'));
+  }
 }
 
 /* -- NAV -- */
@@ -1470,6 +1677,7 @@ document.addEventListener('click', e => {
   if (!selectedEmployee) return;
   if (e.target.closest('.cal-cell[data-key]')) return;
   if (e.target.closest('.staff-card')) return;
+  if (e.target.closest('.sidebar')) return;
   selectedEmployee = null;
   syncAssignUI();
   renderSidebar();
@@ -1519,11 +1727,38 @@ document.getElementById('dayEventsModal').addEventListener('click', e => {
   if (e.target === document.getElementById('dayEventsModal')) closeDayEventsModal();
 });
 document.getElementById('closeDayEventsBtn').addEventListener('click', closeDayEventsModal);
-document.getElementById('addDayEventBtn').addEventListener('click', () => {
+function handleDayEventsAction(fromMobileAgenda = false) {
   const key = activeDayEventsKey;
-  closeDayEventsModal();
+  if (activeCalendar === 'public' && selectedRecentNote) {
+    const notes = dayNotes.public[key] || [];
+    if (notes.length >= MAX_PUBLIC_NOTES_PER_DAY) {
+      showToast(`This day already has the maximum of ${MAX_PUBLIC_NOTES_PER_DAY} notes.`, 'warn');
+      return;
+    }
+    dayNotes.public[key] = sortNotesByTime([...notes, { ...selectedRecentNote, updatedAt: Date.now() }]);
+    selectedRecentNote = null;
+    saveData();
+    refreshCell(key);
+    renderSidebar();
+    renderDayEventsViews();
+    syncDayEventsAction(document.getElementById(fromMobileAgenda ? 'mobileAddDayEventBtn' : 'addDayEventBtn'));
+    showToast('Event added.');
+    return;
+  }
+  if (activeCalendar !== 'public' && selectedEmployee) {
+    const cell = document.querySelector(`[data-key="${key}"]`);
+    const result = addShift(key, selectedEmployee.name, selectedEmployee.shift, Number(cell?.dataset.dow) === 6);
+    if (result === 'full') showToast('This day already has the maximum of 6 employees.', 'warn');
+    else if (result === 'duplicate') showToast(`${selectedEmployee.name} is already scheduled for this shift.`, 'warn');
+    renderDayEventsViews();
+    syncDayEventsAction(document.getElementById(fromMobileAgenda ? 'mobileAddDayEventBtn' : 'addDayEventBtn'));
+    return;
+  }
+  if (!fromMobileAgenda) closeDayEventsModal();
   openDayNoteModal(key);
-});
+}
+document.getElementById('addDayEventBtn').addEventListener('click', () => handleDayEventsAction(false));
+document.getElementById('mobileAddDayEventBtn').addEventListener('click', () => handleDayEventsAction(true));
 document.getElementById('saveDayNoteBtn').addEventListener('click', saveDayNote);
 document.getElementById('toggleDayNoteTime').addEventListener('click', () => {
   const enabled = document.getElementById('toggleDayNoteTime').getAttribute('aria-expanded') === 'true';
@@ -1806,6 +2041,7 @@ const ICON_SAVE = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="
 
 // Init
 async function initScheduler() {
+  document.getElementById('mobileTrayToggle').addEventListener('click', () => setMobileTrayExpanded(!mobileTrayExpanded));
   document.getElementById('toggleFD').addEventListener('click', () => switchCalendar('frontdesk'));
   document.getElementById('toggleLG').addEventListener('click', () => switchCalendar('lifeguard'));
   document.getElementById('togglePublic').addEventListener('click', () => switchCalendar('public'));
