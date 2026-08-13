@@ -3087,7 +3087,7 @@ body.scheduler-page .calendar-panel,
 body.scheduler-page.public-calendar-mode .calendar-panel {
     flex: 0 0 auto;
     min-height: 0;
-    padding: 11.375px 12px calc(82px + env(safe-area-inset-bottom, 0px));
+    padding: 11.375px 12px calc(110px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
     gap: 0;
   }
@@ -3340,7 +3340,7 @@ body.scheduler-page .scheduler-mobile-agenda .day-events-actions button {
 body.scheduler-page .scheduler-mobile-agenda .day-events-add {
     width: calc(100% - 32px);
     margin: 0 16px 16px;
-    scroll-margin-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    scroll-margin-bottom: calc(102px + env(safe-area-inset-bottom, 0px));
   }
 
 body.scheduler-page .staff-card.selected .staff-card-front {
