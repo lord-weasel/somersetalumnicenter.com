@@ -1,0 +1,3 @@
+# Manually managed server files; keep only the folder placeholder in Git.
+/server/*
+!/server/.gitkeep

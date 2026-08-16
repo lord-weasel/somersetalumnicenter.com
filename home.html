@@ -42,9 +42,12 @@
 
 <!-- NAV -->
 <nav>
-  <a href="home.html" class="nav-logo" aria-label="Somerset Alumni Center home">
-    <img src="assets/logo.svg" alt="Somerset Alumni Center">
-  </a>
+  <div class="nav-brand-group">
+    <a href="home.html" class="nav-logo" aria-label="Somerset Alumni Center home">
+      <img src="assets/logo.svg" alt="Somerset Alumni Center">
+    </a>
+    <a href="server/staff.php" class="nav-staff">Staff<svg class="nav-lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="3.25" y="7" width="9.5" height="7" rx="0.8" fill="currentColor"/></svg></a>
+  </div>
   <div class="nav-right">
     <ul>
       <li><a href="#about">About</a></li>
@@ -62,6 +65,7 @@
         <a href="#rates">Rates</a>
         <a href="#classes">Classes</a>
         <a href="#complimentary">Complimentary Access</a>
+        <a href="server/staff.php" class="mobile-staff-link">Staff<svg class="nav-lock-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="3.25" y="7" width="9.5" height="7" rx="0.8" fill="currentColor"/></svg></a>
       </div>
     </details>
     <a href="calendar.html" class="nav-calendar">Calendar</a>
@@ -476,8 +480,20 @@
 </footer>
 
 <script>
+  const mobileNavMenu = document.querySelector('.mobile-nav-menu');
+
   document.querySelectorAll('.mobile-nav-panel a').forEach(link => {
     link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+  });
+
+  document.addEventListener('pointerdown', event => {
+    if (mobileNavMenu?.hasAttribute('open') && !mobileNavMenu.contains(event.target)) {
+      mobileNavMenu.removeAttribute('open');
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') mobileNavMenu?.removeAttribute('open');
   });
 
   document.querySelectorAll('.option-btn').forEach(button => button.setAttribute('aria-pressed', 'false'));

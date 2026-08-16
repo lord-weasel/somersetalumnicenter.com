@@ -337,7 +337,7 @@ function renderCalendar() {
 
 async function loadCalendar() {
   try {
-    const response = await fetch(`scheduler-api.php?public=1&t=${Date.now()}`, { cache: 'no-store' });
+    const response = await fetch(`server/scheduler.php?public=1&t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Calendar unavailable');
     const data = await response.json();
     publicNotes = data.dayNotes?.public || {};
