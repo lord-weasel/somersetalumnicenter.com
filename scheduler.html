@@ -116,7 +116,7 @@
       <input class="employee-input" id="employeeNameInput" type="text" placeholder="Add new employee..." autocomplete="off">
       <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
     </div>
-    <a class="change-password-link" href="staff.php?action=change-password">Change Staff Password</a>
+    <a class="change-password-link" href="server/staff.php?action=change-password">Change Staff Password</a>
     <button class="modal-btn done" type="button" id="closeEmployeeBtn">Done</button>
   </div>
 </div>
@@ -203,7 +203,7 @@ let currentMonth = new Date().getMonth();
 let activeShift  = 'am';
 let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard' | 'public'
 
-// Data is loaded from scheduler.json or scheduler.php.
+// Data is loaded from the protected server/scheduler.php endpoint.
 let schedules = { frontdesk: {}, lifeguard: {} };
 let dayNotes = { frontdesk: {}, lifeguard: {}, public: {} };
 let employees = [];
@@ -219,8 +219,7 @@ let suppressCardClick = false;
 
 const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
 const SERVER_NOTES_PREFIX = 'SAC_NOTES_V1:';
-const API_URL = 'scheduler.php';
-const DATA_URL = 'scheduler.json';
+const API_URL = 'server/scheduler.php';
 let saveTimer = null;
 
 function normalizeName(name) {
@@ -405,13 +404,6 @@ async function loadData() {
     if (response.ok) apiData = await response.json();
   } catch (apiErr) {
     console.warn('Shared server data could not be loaded.', apiErr);
-  }
-
-  try {
-    const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-    if (response.ok) jsonData = await response.json();
-  } catch (jsonErr) {
-    console.warn('Scheduler JSON could not be loaded.', jsonErr);
   }
 
   const pickNewest = (a, b) => {

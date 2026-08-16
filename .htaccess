@@ -1,0 +1,12 @@
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+  <Files "scheduler.html">
+    Require all denied
+  </Files>
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "same-origin"
+</IfModule>
