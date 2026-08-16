@@ -33,6 +33,7 @@
   <button class="cal-toggle-btn public-calendar-btn" id="togglePublic" type="button">Public Calendar</button>
 
   <div class="header-nav">
+    <!-- STAFF_LOGOUT -->
     <button class="nav-arrow" id="prevMonth" type="button" title="Previous month" aria-label="Previous month">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -115,6 +116,7 @@
       <input class="employee-input" id="employeeNameInput" type="text" placeholder="Add new employee..." autocomplete="off">
       <button class="employee-add-btn" id="addEmployeeBtn" type="button">Add</button>
     </div>
+    <a class="change-password-link" href="staff.php?action=change-password">Change Staff Password</a>
     <button class="modal-btn done" type="button" id="closeEmployeeBtn">Done</button>
   </div>
 </div>
@@ -201,7 +203,7 @@ let currentMonth = new Date().getMonth();
 let activeShift  = 'am';
 let activeCalendar = 'frontdesk'; // 'frontdesk' | 'lifeguard' | 'public'
 
-// Data is loaded from scheduler-data.json or scheduler-api.php.
+// Data is loaded from scheduler.json or scheduler.php.
 let schedules = { frontdesk: {}, lifeguard: {} };
 let dayNotes = { frontdesk: {}, lifeguard: {}, public: {} };
 let employees = [];
@@ -217,8 +219,8 @@ let suppressCardClick = false;
 
 const STORAGE_KEY = 'somersetAlumniCenterScheduler.v4';
 const SERVER_NOTES_PREFIX = 'SAC_NOTES_V1:';
-const API_URL = 'scheduler-api.php';
-const DATA_URL = 'scheduler-data.json';
+const API_URL = 'scheduler.php';
+const DATA_URL = 'scheduler.json';
 let saveTimer = null;
 
 function normalizeName(name) {

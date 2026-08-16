@@ -1,0 +1,6 @@
+# Server-only data and secrets
+/.private/
+/staff.php
+/scheduler.php
+/scheduler.json
+/.htaccess
